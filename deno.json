@@ -1,0 +1,6 @@
+{
+    "importMap": "./importmap.json",
+    "compilerOptions": {
+        "strictFunctionTypes": false
+    }
+}

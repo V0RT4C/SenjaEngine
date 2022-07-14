@@ -1,0 +1,36 @@
+{
+  "compilerOptions": {
+    "strictFunctionTypes": false,
+    "strictNullChecks": false,
+    "noUnusedLocals": false,                /* Report errors on unused locals. */
+    "noUnusedParameters": false,            /* Report errors on unused parameters. */
+    "paths": {
+      "Network/*": "./Network/*",
+      "TCP/*": "./Network/TCP/*",
+      "Game/*": "./Game/*",
+      "Constants/*": "./Constants/*",
+      "ProtocolOutgoing/*": "./Network/Protocol/Outgoing/*",
+      "ProtocolIncoming/*": "./Network/Protocol/Incoming/*",
+      "OutgoingProtocolMessages/*": "./Network/Protocol/Outgoing/Messages/*",
+      "OutgoingSendOperations/*": "./Network/Protocol/Outgoing/SendOperations/*",
+      "Map": "./Game/Map/Map.class.ts",
+      "Thing": "./Game/Thing.class.ts",
+      "Creature": "./Game/Creature.class.ts",
+      "Player": "./Game/Player.class.ts",
+      "Players": "./Game/Players.class.ts",
+      "Things": "./Game/Things.class.ts",
+      "MapTile": "./Game/Map/MapTile.class.ts",
+      "Item": "./Game/Item.class.ts",
+      "Container": "./Game/Container.class.ts",
+      "TCPGameServer": "./Network/TCP/Game/server.ts",
+      "TCPLoginServer": "./Network/TCP/Login/server.ts",
+      "Types": "./@types/App.d.ts",
+      "Constants": "./Constants/Constants.ts",
+      "NetworkMessage": "./Network/Lib/NetworkMessage.class.ts",
+      "Dependencies": "./deps.ts",
+      "Decorators": "./@types/Decorators.ts",
+      "DB": "./DB/index.ts",
+      "Config": "./config.ts"
+    }
+  }
+}
