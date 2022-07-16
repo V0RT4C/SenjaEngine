@@ -1,6 +1,7 @@
 import { OutgoingSendOperation } from "OutgoingSendOperations/OutgoingSendOperation.abtract.ts";
 import { OutgoingNetworkMessage } from "Network/Lib/OutgoingNetworkMessage.class.ts";
-import { SendTextMessageOperation } from "OutgoingSendOperations/CoreSendOperations/SendTextMessageOperation.class.ts";
+import { SendTextMessageOperation } from "CoreSendOperations/SendTextMessageOperation.class.ts";
+
 import { MESSAGE_TYPE } from "Constants";
 import { TCP } from 'Dependencies';
 

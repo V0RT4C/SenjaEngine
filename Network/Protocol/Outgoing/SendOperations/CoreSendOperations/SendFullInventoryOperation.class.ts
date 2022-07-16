@@ -1,6 +1,6 @@
 import { OutgoingNetworkMessage } from "Network/Lib/OutgoingNetworkMessage.class.ts";
 import { OutgoingSendOperation } from "OutgoingSendOperations/OutgoingSendOperation.abtract.ts";
-import { SendUpdateInventoryOperation } from "OutgoingSendOperations/CoreSendOperations/SendUpdateInventoryOperation.class.ts";
+import { SendUpdateInventoryOperation } from "CoreSendOperations/SendUpdateInventoryOperation.class.ts";
 import { TCP } from 'Dependencies';
 import { INVENTORY_SLOT, PROTOCOL_SEND } from "Constants";
 import { Player } from "Player";

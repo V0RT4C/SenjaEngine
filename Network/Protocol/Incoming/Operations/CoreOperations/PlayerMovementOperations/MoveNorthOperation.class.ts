@@ -1,5 +1,4 @@
-import { IncomingMoveOperation } from "ProtocolIncoming/Operations/CoreOperations/PlayerMovementOperations/IncomingMoveOperation.abstract.ts";
-
+import { IncomingMoveOperation } from "CoreOperations/PlayerMovementOperations/IncomingMoveOperation.abstract.ts";
 import { StaticImplements } from "Decorators";
 import { PROTOCOL_RECEIVE } from "Constants";
 import { StaticOperationCode } from "Types";

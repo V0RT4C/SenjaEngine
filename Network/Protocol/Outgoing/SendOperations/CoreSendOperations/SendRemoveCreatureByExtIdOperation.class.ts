@@ -1,6 +1,5 @@
 import { OutgoingNetworkMessage } from "Network/Lib/OutgoingNetworkMessage.class.ts";
 import { OutgoingSendOperation } from "OutgoingSendOperations/OutgoingSendOperation.abtract.ts";
-import { TCP } from 'Dependencies';
 import { PROTOCOL_SEND } from "Constants";
 import { IPosition } from "Types";
 

@@ -1,9 +1,8 @@
 import { OutgoingNetworkMessage } from "Network/Lib/OutgoingNetworkMessage.class.ts";
-import { TCP } from 'Dependencies';
 import { OutgoingSendOperation } from "OutgoingSendOperations/OutgoingSendOperation.abtract.ts";
+import players from "Game/Player/Players.class.ts";
 import { PROTOCOL_SEND, SPEAK_TYPE } from "Constants";
 import { IPosition } from "Types";
-import players from "Game/Player/Players.class.ts";
 
 export class SendCreatureSpeakOperation implements OutgoingSendOperation {
     constructor(

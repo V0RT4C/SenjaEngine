@@ -1,7 +1,7 @@
 import { IncomingGameOperation } from "ProtocolIncoming/Operations/IncomingGameOperation.abstract.ts";
-import { SendCreatureSpeakOperation } from "OutgoingSendOperations/CoreSendOperations/SendCreatureSpeakOperation.class.ts";
-import { SendAddThingToMapOperation } from "OutgoingSendOperations/CoreSendOperations/SendAddThingToMapOperation.class.ts";
-import { SendCreatureLightOperation } from "OutgoingSendOperations/CoreSendOperations/SendCreatureLightOperation.class.ts";
+import { SendAddThingToMapOperation } from "CoreSendOperations/SendAddThingToMapOperation.class.ts";
+import { SendCreatureLightOperation } from "CoreSendOperations/SendCreatureLightOperation.class.ts";
+import { SendCreatureSpeakOperation } from "CoreSendOperations/SendCreatureSpeakOperation.class.ts";
 import { Creature } from "Creature";
 import { MapTile } from "MapTile";
 import { Item } from "Item";

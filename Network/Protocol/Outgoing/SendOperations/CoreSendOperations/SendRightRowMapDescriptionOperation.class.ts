@@ -1,7 +1,7 @@
 import { OutgoingNetworkMessage } from "Network/Lib/OutgoingNetworkMessage.class.ts";
-import { TCP } from 'Dependencies';
 import { OutgoingSendOperation } from "OutgoingSendOperations/OutgoingSendOperation.abtract.ts";
 import { CLIENT_VIEWPORT, PROTOCOL_SEND } from "Constants";
+import { TCP } from 'Dependencies';
 import { IPosition } from "Types";
 import map from "Map";
 

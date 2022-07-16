@@ -1,5 +1,4 @@
 import { OutgoingNetworkMessage } from "Network/Lib/OutgoingNetworkMessage.class.ts";
-import { TCP } from 'Dependencies';
 import { OutgoingSendOperation } from "OutgoingSendOperations/OutgoingSendOperation.abtract.ts";
 import { CREATURE_DIRECTION, PROTOCOL_SEND, THING_ID } from "Constants";
 import { Creature } from "Creature";

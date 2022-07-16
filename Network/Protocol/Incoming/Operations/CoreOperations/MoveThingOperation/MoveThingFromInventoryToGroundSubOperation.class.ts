@@ -1,20 +1,21 @@
 import { IncomingGameOperation } from "ProtocolIncoming/Operations/IncomingGameOperation.abstract.ts";
 import { IncomingNetworkMessage } from "Network/Lib/IncomingNetworkMessage.class.ts";
-import { SendAddThingToMapOperation } from "OutgoingSendOperations/CoreSendOperations/SendAddThingToMapOperation.class.ts";
 import { OutgoingNetworkMessage } from "Network/Lib/OutgoingNetworkMessage.class.ts";
-import { SendDeleteFromInventoryOperation } from "OutgoingSendOperations/CoreSendOperations/SendDeleteFromInventoryOperation.class.ts";
-import { SendDeleteFromContainerOperation } from "OutgoingSendOperations/CoreSendOperations/SendDeleteFromContainerOperation.class.ts";
-import { Player } from "Player";
+import { SendAddThingToMapOperation } from "CoreSendOperations/SendAddThingToMapOperation.class.ts";
+import { SendDeleteFromInventoryOperation } from "CoreSendOperations/SendDeleteFromInventoryOperation.class.ts";
+import { SendDeleteFromContainerOperation } from "CoreSendOperations/SendDeleteFromContainerOperation.class.ts";
 
-import players from "Game/Player/Players.class.ts";
-
-import { INVENTORY_SLOT } from "Constants";
-import { TCP } from 'Dependencies';
-import { IPosition } from "Types";
 import { MapTile } from "MapTile";
-import map from "Map";
+import { Player } from "Player";
 import { Container } from "Game/Container.class.ts";
 import { Item } from "Item";
+
+import players from "Game/Player/Players.class.ts";
+import map from "Map";
+
+import { TCP } from 'Dependencies';
+import { INVENTORY_SLOT } from "Constants";
+import { IPosition } from "Types";
 
 export class MoveThingFromInventoryToGroundSubOperation extends IncomingGameOperation {
     constructor(

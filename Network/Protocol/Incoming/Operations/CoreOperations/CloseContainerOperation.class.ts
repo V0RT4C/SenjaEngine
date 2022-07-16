@@ -1,6 +1,6 @@
 import { IncomingGameOperation } from "ProtocolIncoming/Operations/IncomingGameOperation.abstract.ts";
-import { SendCloseContainerOperation } from "OutgoingSendOperations/CoreSendOperations/SendCloseContainerOperation.class.ts";
 import { OutgoingNetworkMessage } from "Network/Lib/OutgoingNetworkMessage.class.ts";
+import { SendCloseContainerOperation } from "CoreSendOperations/SendCloseContainerOperation.class.ts";
 import players from "Game/Player/Players.class.ts";
 import { Player } from "Game/Player/Player.class.ts";
 import { StaticImplements } from "Decorators";

@@ -1,10 +1,10 @@
 import { IncomingGameOperation } from "ProtocolIncoming/Operations/IncomingGameOperation.abstract.ts";
 import { IncomingNetworkMessage } from "Network/Lib/IncomingNetworkMessage.class.ts";
-import { SendRemoveThingFromTileOperation } from "OutgoingSendOperations/CoreSendOperations/SendRemoveThingFromTileOperation.class.ts";
-import { SendUpdateInventoryOperation } from "OutgoingSendOperations/CoreSendOperations/SendUpdateInventoryOperation.class.ts";
 import { OutgoingNetworkMessage } from "Network/Lib/OutgoingNetworkMessage.class.ts";
-import { SendAddThingToContainerOperation } from "OutgoingSendOperations/CoreSendOperations/SendAddThingToContainerOperation.class.ts";
-import { SendAddThingToMapOperation } from "OutgoingSendOperations/CoreSendOperations/SendAddThingToMapOperation.class.ts";
+import { SendRemoveThingFromTileOperation } from "CoreSendOperations/SendRemoveThingFromTileOperation.class.ts";
+import { SendUpdateInventoryOperation } from "CoreSendOperations/SendUpdateInventoryOperation.class.ts";
+import { SendAddThingToContainerOperation } from "CoreSendOperations/SendAddThingToContainerOperation.class.ts";
+import { SendAddThingToMapOperation } from "CoreSendOperations/SendAddThingToMapOperation.class.ts";
 import { Player } from "Player";
 import { TCP } from 'Dependencies';
 import { IPosition } from "Types";

@@ -1,15 +1,13 @@
 import { OutgoingNetworkMessage } from "Network/Lib/OutgoingNetworkMessage.class.ts";
 import { IncomingGameOperation } from "ProtocolIncoming/Operations/IncomingGameOperation.abstract.ts";
-import { SendTextMessageOperation } from "OutgoingSendOperations/CoreSendOperations/SendTextMessageOperation.class.ts";
-import {
-    SendMoveCreatureOperation
-} from "OutgoingSendOperations/CoreSendOperations/SendMoveCreatureOperation.class.ts";
-import { SendCancelWalkOperation } from "OutgoingSendOperations/CoreSendOperations/SendCancelWalkOperation.class.ts";
+import { SendMoveCreatureOperation } from "CoreSendOperations/SendMoveCreatureOperation.class.ts";
+import { SendTextMessageOperation } from "CoreSendOperations/SendTextMessageOperation.class.ts";
+import { SendCancelWalkOperation } from "CoreSendOperations/SendCancelWalkOperation.class.ts";
 import { Player } from "Player";
 import { MapTile } from "MapTile";
 import map from "Map";
 import players from "Game/Player/Players.class.ts";
-import { MESSAGE_TYPE } from "Constants";
+import { MESSAGE_TYPE, RETURN_MESSAGE } from "Constants";
 import { IPosition } from "Types";
 
 export abstract class IncomingMoveOperation extends IncomingGameOperation {
@@ -72,7 +70,7 @@ export abstract class IncomingMoveOperation extends IncomingGameOperation {
                             );
 
             SendCancelWalkOperation.writeToNetworkMessage(this._player.direction, msg);
-            SendTextMessageOperation.writeToNetworkMessage('Sorry not possible.', MESSAGE_TYPE.WHITE_MESSAGE_SCREEN_BOTTOM_AND_CONSOLE, msg);
+            SendTextMessageOperation.writeToNetworkMessage(RETURN_MESSAGE.NOT_POSSIBLE, MESSAGE_TYPE.WHITE_MESSAGE_SCREEN_BOTTOM_AND_CONSOLE, msg);
             await msg.send();
             return false;
         }

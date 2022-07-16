@@ -1,6 +1,6 @@
-import { TCP } from 'Dependencies';
 import { OutgoingNetworkMessage } from "Network/Lib/OutgoingNetworkMessage.class.ts";
 import { OutgoingSendOperation } from "OutgoingSendOperations/OutgoingSendOperation.abtract.ts";
+import { TCP } from 'Dependencies';
 import { PROTOCOL_SEND } from "Constants";
 
 export class SendUpdateInventoryOperation implements OutgoingSendOperation {

@@ -1,5 +1,5 @@
 import { IncomingGameOperation } from "ProtocolIncoming/Operations/IncomingGameOperation.abstract.ts";
-import { SendEditOutfitOperation } from "OutgoingSendOperations/CoreSendOperations/SendEditOutfitOperation.class.ts";
+import { SendEditOutfitOperation } from "CoreSendOperations/SendEditOutfitOperation.class.ts";
 import { Player } from "Player";
 
 import players from "Game/Player/Players.class.ts";

@@ -1,11 +1,11 @@
 import { IncomingGameOperation } from "ProtocolIncoming/Operations/IncomingGameOperation.abstract.ts";
 import { OutgoingNetworkMessage } from "Network/Lib/OutgoingNetworkMessage.class.ts";
-import { MoveCreatureSubOperation } from "ProtocolIncoming/Operations/CoreOperations/MoveThingOperation/MoveCreatureSubOperation.class.ts";
-import { MoveThingFromInventoryToGroundSubOperation } from "ProtocolIncoming/Operations/CoreOperations/MoveThingOperation/MoveThingFromInventoryToGroundSubOperation.class.ts";
-import { MoveThingToInventorySubOperation } from "ProtocolIncoming/Operations/CoreOperations/MoveThingOperation/MoveThingToInventorySubOperation.class.ts";
-import { SendRemoveThingFromTileOperation } from "OutgoingSendOperations/CoreSendOperations/SendRemoveThingFromTileOperation.class.ts";
-import { SendAddThingToMapOperation } from "OutgoingSendOperations/CoreSendOperations/SendAddThingToMapOperation.class.ts";
-import { MoveThingFromInventoryToInventorySubOperation } from "ProtocolIncoming/Operations/CoreOperations/MoveThingOperation/MoveThingFromInventoryToInventorySubOperation.class.ts";
+import { SendRemoveThingFromTileOperation } from "CoreSendOperations/SendRemoveThingFromTileOperation.class.ts";
+import { SendAddThingToMapOperation } from "CoreSendOperations/SendAddThingToMapOperation.class.ts";
+import { MoveCreatureSubOperation } from "CoreOperations/MoveThingOperation/MoveCreatureSubOperation.class.ts";
+import { MoveThingToInventorySubOperation } from "CoreOperations/MoveThingOperation/MoveThingToInventorySubOperation.class.ts";
+import { MoveThingFromInventoryToGroundSubOperation } from "CoreOperations/MoveThingOperation/MoveThingFromInventoryToGroundSubOperation.class.ts";
+import { MoveThingFromInventoryToInventorySubOperation } from "CoreOperations/MoveThingOperation/MoveThingFromInventoryToInventorySubOperation.class.ts";
 
 import map from "Map";
 
@@ -50,8 +50,6 @@ export class MoveThingOperation extends IncomingGameOperation {
         else if (this._checkIsInventoryToInventoryMove()){
             const inventoryToInventoryMove = new MoveThingFromInventoryToInventorySubOperation(this._msg, this._fromPosition, this._toPosition, this._stackPos, this._thingId, this._count);
             await inventoryToInventoryMove.execute();
-            //console.log('Is inventory to inventory move');
-            //console.log({ pos: this._fromPosition, thingId: this._thingId, stackPos: this._stackPos, toPos: this._toPosition, count: this._count });
             return false;
         }
         else {

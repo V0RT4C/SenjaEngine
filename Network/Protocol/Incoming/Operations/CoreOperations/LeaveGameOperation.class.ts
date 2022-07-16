@@ -1,7 +1,8 @@
 import { IncomingGameOperation } from "ProtocolIncoming/Operations/IncomingGameOperation.abstract.ts";
 import { OutgoingNetworkMessage } from "Network/Lib/OutgoingNetworkMessage.class.ts";
-import { SendMagicEffectOperation } from "OutgoingSendOperations/CoreSendOperations/SendMagicEffectOperation.class.ts";
-import { SendRemoveCreatureByExtIdOperation } from "OutgoingSendOperations/CoreSendOperations/SendRemoveCreatureByExtIdOperation.class.ts";
+import { SendRemoveCreatureByExtIdOperation } from "CoreSendOperations/SendRemoveCreatureByExtIdOperation.class.ts";
+import { SendMagicEffectOperation } from "CoreSendOperations/SendMagicEffectOperation.class.ts";
+
 import { Player } from "Player";
 import { MapTile } from "MapTile";
 

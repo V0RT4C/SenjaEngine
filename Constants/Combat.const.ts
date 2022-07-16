@@ -1,20 +1,20 @@
-export const enum FIGHT_MODE {
+export enum FIGHT_MODE {
     OFFENSIVE                                   = 1,
     BALANCED                                    = 2,
     DEFENSE                                     = 3              
 }
 
-export const enum CHASE_MODE {
+export enum CHASE_MODE {
     ON                                          = 1,
     OFF                                         = 0
 }
 
-export const enum SAFE_FIGHT_MODE {
+export enum SAFE_FIGHT_MODE {
     ON                                          = 1,
     OFF                                         = 0
 }
 
-export const enum SKULL {
+export enum SKULL {
 	NONE                                        = 0,
 	YELLOW                                      = 1,
 	GREEN                                       = 2,
@@ -24,7 +24,7 @@ export const enum SKULL {
 	ORANGE                                      = 6,
 }
 
-export const enum PARTY_SHIELD {
+export enum PARTY_SHIELD {
     SHIELD_NONE                                 = 0,
 	SHIELD_WHITEYELLOW                          = 1,
 	SHIELD_WHITEBLUE                            = 2,
@@ -37,4 +37,14 @@ export const enum PARTY_SHIELD {
 	SHIELD_BLUE_NOSHAREDEXP                     = 9,
 	SHIELD_YELLOW_NOSHAREDEXP                   = 10,
 	SHIELD_GRAY                                 = 11,
+}
+
+export enum SKILL {
+    FIST                                        = 0,
+    CLUB,
+    SWORD,
+    AXE,
+    DISTANCE,
+    SHIELDING,
+    FISHING
 }

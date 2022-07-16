@@ -1,7 +1,8 @@
 import { IncomingNetworkMessage } from "Network/Lib/IncomingNetworkMessage.class.ts";
 import { OutgoingNetworkMessage } from "Network/Lib/OutgoingNetworkMessage.class.ts";
-import { SendMoveCreatureOperation } from "OutgoingSendOperations/CoreSendOperations/SendMoveCreatureOperation.class.ts";
 import { IncomingGameOperation } from "ProtocolIncoming/Operations/IncomingGameOperation.abstract.ts";
+import { SendMoveCreatureOperation } from "CoreSendOperations/SendMoveCreatureOperation.class.ts";
+import { SendTextMessageOperation } from "CoreSendOperations/SendTextMessageOperation.class.ts";
 
 import map from "Map";
 
@@ -9,7 +10,6 @@ import { TCP } from 'Dependencies';
 import { Creature } from "Creature";
 import { MESSAGE_TYPE, THING_ID } from "Constants";
 import { IPosition } from "Types";
-import { SendTextMessageOperation } from "OutgoingSendOperations/CoreSendOperations/SendTextMessageOperation.class.ts";
 
 export class MoveCreatureSubOperation extends IncomingGameOperation {
     constructor(

@@ -1,13 +1,13 @@
 import { OutgoingNetworkMessage } from "Network/Lib/OutgoingNetworkMessage.class.ts";
 import { OutgoingSendOperation } from "OutgoingSendOperations/OutgoingSendOperation.abtract.ts";
-import { SendTopRowMapDescriptionOperation } from "OutgoingSendOperations/CoreSendOperations/SendTopRowMapDescriptionOperation.class.ts";
-import { SendBottomRowMapDescriptionOperation } from "OutgoingSendOperations/CoreSendOperations/SendBottomRowMapDescriptionOperation.class.ts";
-import { SendLeftRowMapDescriptionOperation } from "OutgoingSendOperations/CoreSendOperations/SendLeftRowMapDescriptionOperation.class.ts";
-import { SendRightRowMapDescriptionOperation } from "OutgoingSendOperations/CoreSendOperations/SendRightRowMapDescriptionOperation.class.ts";
-import { SendMoveCreatureByExtIdOperation } from "OutgoingSendOperations/CoreSendOperations/SendMoveCreatureByExtIdOperation.class.ts";
-import { SendRemoveCreatureFromTileOperation } from "OutgoingSendOperations/CoreSendOperations/SendRemoveCreatureFromTileOperation.class.ts";
-import { SendMoveCreatureByStackPosOperation } from "OutgoingSendOperations/CoreSendOperations/SendMoveCreatureByStackPosOperation.class.ts";
-import { SendAddCreatureToMapOperation } from "OutgoingSendOperations/CoreSendOperations/SendAddCreatureToMapOperation.class.ts";
+import { SendRemoveCreatureFromTileOperation } from "CoreSendOperations/SendRemoveCreatureFromTileOperation.class.ts";
+import { SendMoveCreatureByStackPosOperation } from "CoreSendOperations/SendMoveCreatureByStackPosOperation.class.ts";
+import { SendMoveCreatureByExtIdOperation } from "CoreSendOperations/SendMoveCreatureByExtIdOperation.class.ts";
+import { SendTopRowMapDescriptionOperation } from "CoreSendOperations/SendTopRowMapDescriptionOperation.class.ts";
+import { SendBottomRowMapDescriptionOperation } from "CoreSendOperations/SendBottomRowMapDescriptionOperation.class.ts";
+import { SendLeftRowMapDescriptionOperation } from "CoreSendOperations/SendLeftRowMapDescriptionOperation.class.ts";
+import { SendRightRowMapDescriptionOperation } from "CoreSendOperations/SendRightRowMapDescriptionOperation.class.ts";
+import { SendAddCreatureToMapOperation } from "CoreSendOperations/SendAddCreatureToMapOperation.class.ts";
 
 import players from "Game/Player/Players.class.ts";
 

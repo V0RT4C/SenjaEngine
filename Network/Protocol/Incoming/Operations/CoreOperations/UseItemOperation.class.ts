@@ -1,8 +1,8 @@
 import { IncomingGameOperation } from "ProtocolIncoming/Operations/IncomingGameOperation.abstract.ts";
 import { OutgoingNetworkMessage } from "Network/Lib/OutgoingNetworkMessage.class.ts";
-import { SendCloseContainerOperation } from "OutgoingSendOperations/CoreSendOperations/SendCloseContainerOperation.class.ts";
-import { SendCancelMessageOperation } from "OutgoingSendOperations/CoreSendOperations/SendCancelMessageOperation.class.ts";
-import { SendOpenContainerOperation } from "OutgoingSendOperations/CoreSendOperations/SendOpenContainerOperation.class.ts";
+import { SendCloseContainerOperation } from "CoreSendOperations/SendCloseContainerOperation.class.ts";
+import { SendOpenContainerOperation } from "CoreSendOperations/SendOpenContainerOperation.class.ts";
+import { SendCancelMessageOperation } from "CoreSendOperations/SendCancelMessageOperation.class.ts";
 import { MapTile } from "MapTile";
 import { Thing } from "Thing";
 import { Container } from "Game/Container.class.ts";

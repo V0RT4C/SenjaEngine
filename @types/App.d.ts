@@ -61,6 +61,11 @@ export interface IPosition {
     z: number;
 }
 
+export interface ISkill {
+    level: number;
+    tries: number;
+}
+
 export interface IOTBMNode {
     type: any,
     nodes: any

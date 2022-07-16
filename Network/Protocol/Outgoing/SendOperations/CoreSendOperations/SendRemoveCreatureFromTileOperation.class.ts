@@ -1,7 +1,7 @@
 import { OutgoingNetworkMessage } from "Network/Lib/OutgoingNetworkMessage.class.ts";
 import { OutgoingSendOperation } from "OutgoingSendOperations/OutgoingSendOperation.abtract.ts";
-import { SendRemoveThingFromTileOperation } from "OutgoingSendOperations/CoreSendOperations/SendRemoveThingFromTileOperation.class.ts";
-import { SendRemoveCreatureByExtIdOperation } from "OutgoingSendOperations/CoreSendOperations/SendRemoveCreatureByExtIdOperation.class.ts";
+import { SendRemoveThingFromTileOperation } from "CoreSendOperations/SendRemoveThingFromTileOperation.class.ts";
+import { SendRemoveCreatureByExtIdOperation } from "CoreSendOperations/SendRemoveCreatureByExtIdOperation.class.ts";
 import { IPosition } from "Types";
 import { Creature } from "Creature";
 

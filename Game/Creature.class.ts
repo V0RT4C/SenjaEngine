@@ -4,6 +4,7 @@ import map from "Map";
 import { CLIENT_VIEWPORT, CREATURE_DIRECTION, CREATURE_TYPE, DEFAULT_LOOK, MAP } from 'Constants';
 import { IOutfit, IPosition } from "Types";
 import { BASE_SPEED } from "Config";
+import { Skills } from "Game/Skills.class.ts";
 
 export abstract class Creature extends Thing {
     protected _extId! : number;
@@ -22,6 +23,7 @@ export abstract class Creature extends Thing {
     protected _direction : CREATURE_DIRECTION = CREATURE_DIRECTION.SOUTH;
     //LookType 75 is GM
     protected _outfit : IOutfit = { lookType: DEFAULT_LOOK.LOOK_TYPE, lookTypeEx: 0, lookHead: DEFAULT_LOOK.LOOK_HEAD, lookBody: DEFAULT_LOOK.LOOK_BODY, lookLegs: DEFAULT_LOOK.LOOK_LEGS, lookFeet: DEFAULT_LOOK.LOOK_FEET, lookMount: 0 };
+    protected _skills : Skills = new Skills();
     protected _varSpeed : number = 0;
 
     protected abstract _type : CREATURE_TYPE;
@@ -80,6 +82,10 @@ export abstract class Creature extends Thing {
 
     public get outfit() : IOutfit {
         return this._outfit;
+    }
+
+    public get skills() : Skills {
+        return this._skills;
     }
 
     public get speed() : number {

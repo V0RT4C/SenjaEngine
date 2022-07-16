@@ -1,4 +1,4 @@
-import { IncomingTurnOperation } from "ProtocolIncoming/Operations/CoreOperations/PlayerMovementOperations/IncomingTurnOperation.abstract.ts";
+import { IncomingTurnOperation } from "CoreOperations/PlayerMovementOperations/IncomingTurnOperation.abstract.ts";
 import { CREATURE_DIRECTION, PROTOCOL_RECEIVE } from "Constants";
 import { StaticImplements } from "Decorators";
 import { StaticOperationCode } from "Types";

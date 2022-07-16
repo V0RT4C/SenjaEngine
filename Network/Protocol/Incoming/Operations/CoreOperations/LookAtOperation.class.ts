@@ -1,5 +1,5 @@
 import { IncomingGameOperation } from "ProtocolIncoming/Operations/IncomingGameOperation.abstract.ts";
-import { SendTextMessageOperation } from "OutgoingSendOperations/CoreSendOperations/SendTextMessageOperation.class.ts";
+import { SendTextMessageOperation } from "CoreSendOperations/SendTextMessageOperation.class.ts";
 
 import { Player } from "Player";
 import players from "Game/Player/Players.class.ts";

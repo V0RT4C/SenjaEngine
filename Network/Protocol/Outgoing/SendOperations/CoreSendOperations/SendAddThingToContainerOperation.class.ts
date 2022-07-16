@@ -1,7 +1,6 @@
 import { OutgoingSendOperation } from "OutgoingSendOperations/OutgoingSendOperation.abtract.ts";
 import { OutgoingNetworkMessage } from "Network/Lib/OutgoingNetworkMessage.class.ts";
-import { Player } from "Player";
-import { CREATURE_DIRECTION, PROTOCOL_SEND } from "Constants";
+import { PROTOCOL_SEND } from "Constants";
 import { TCP } from 'Dependencies';
 
 export class SendAddThingToContainerOperation implements OutgoingSendOperation {

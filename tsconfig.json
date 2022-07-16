@@ -13,6 +13,8 @@
       "ProtocolIncoming/*": "./Network/Protocol/Incoming/*",
       "OutgoingProtocolMessages/*": "./Network/Protocol/Outgoing/Messages/*",
       "OutgoingSendOperations/*": "./Network/Protocol/Outgoing/SendOperations/*",
+      "CoreOperations/*": "./Network/Protocol/Incoming/Operations/CoreOperations/*",
+      "CoreSendOperations/*": "./Network/Protocol/Outgoing/SendOperations/CoreSendOperations/*",
       "Map": "./Game/Map/Map.class.ts",
       "Thing": "./Game/Thing.class.ts",
       "Creature": "./Game/Creature.class.ts",

@@ -1,6 +1,6 @@
 import { IncomingGameOperation } from "ProtocolIncoming/Operations/IncomingGameOperation.abstract.ts";
 import { OutgoingNetworkMessage } from "Network/Lib/OutgoingNetworkMessage.class.ts";
-import { SendCreatureDirectionOperation } from "OutgoingSendOperations/CoreSendOperations/SendCreatureDirectionOperation.class.ts";
+import { SendCreatureDirectionOperation } from "CoreSendOperations/SendCreatureDirectionOperation.class.ts";
 import players from "Game/Player/Players.class.ts";
 import { Player } from "Game/Player/Player.class.ts";
 import { CREATURE_DIRECTION } from "Constants";

@@ -1,10 +1,11 @@
 import { IncomingGameOperation } from "ProtocolIncoming/Operations/IncomingGameOperation.abstract.ts";
 import { IncomingNetworkMessage } from "Network/Lib/IncomingNetworkMessage.class.ts";
 import { OutgoingNetworkMessage } from "Network/Lib/OutgoingNetworkMessage.class.ts";
-import { SendDeleteFromContainerOperation } from "OutgoingSendOperations/CoreSendOperations/SendDeleteFromContainerOperation.class.ts";
-import { SendAddThingToContainerOperation } from "OutgoingSendOperations/CoreSendOperations/SendAddThingToContainerOperation.class.ts";
-import { SendUpdateInventoryOperation } from "OutgoingSendOperations/CoreSendOperations/SendUpdateInventoryOperation.class.ts";
-import { SendDeleteFromInventoryOperation } from "OutgoingSendOperations/CoreSendOperations/SendDeleteFromInventoryOperation.class.ts";
+import { SendDeleteFromContainerOperation } from "CoreSendOperations/SendDeleteFromContainerOperation.class.ts";
+import { SendAddThingToContainerOperation } from "CoreSendOperations/SendAddThingToContainerOperation.class.ts";
+import { SendUpdateInventoryOperation } from "CoreSendOperations/SendUpdateInventoryOperation.class.ts";
+import { SendDeleteFromInventoryOperation } from "CoreSendOperations/SendDeleteFromInventoryOperation.class.ts";
+
 import { Player } from "Player";
 import { Container } from "Container";
 

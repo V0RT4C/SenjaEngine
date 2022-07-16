@@ -1,21 +1,15 @@
 import { OutgoingNetworkMessage } from "Network/Lib/OutgoingNetworkMessage.class.ts";
 import { IncomingGameOperation } from "ProtocolIncoming/Operations/IncomingGameOperation.abstract.ts";
-import {
-    SendFullInventoryOperation
-} from "OutgoingSendOperations/CoreSendOperations/SendFullInventoryOperation.class.ts";
-import {
-    SendFullMapDescriptionOperation
-} from "OutgoingSendOperations/CoreSendOperations/SendFullMapDescriptionOperation.class.ts";
-import { SendWorldLightOperation } from "OutgoingSendOperations/CoreSendOperations/SendWorldLightOperation.class.ts";
-import { SendPlayerStatsOperation } from "OutgoingSendOperations/CoreSendOperations/SendPlayerStatsOperation.class.ts";
-import { SendMagicEffectOperation } from "OutgoingSendOperations/CoreSendOperations/SendMagicEffectOperation.class.ts";
-import { SendFirstGameOperation } from "OutgoingSendOperations/CoreSendOperations/SendFirstGameOperation.class.ts";
-import {
-    SendLoginOrPendingOperation
-} from "OutgoingSendOperations/CoreSendOperations/SendLoginOrPendingOperation.class.ts";
-import {
-    SendAddCreatureToMapOperation
-} from "OutgoingSendOperations/CoreSendOperations/SendAddCreatureToMapOperation.class.ts";
+import { SendFirstGameOperation } from "CoreSendOperations/SendFirstGameOperation.class.ts";
+import { SendLoginOrPendingOperation } from "CoreSendOperations/SendLoginOrPendingOperation.class.ts";
+import { SendFullMapDescriptionOperation } from "CoreSendOperations/SendFullMapDescriptionOperation.class.ts";
+import { SendPlayerSkillsOperation } from "CoreSendOperations/SendPlayerSkillsOperation.class.ts";
+import { SendPlayerStatsOperation } from "CoreSendOperations/SendPlayerStatsOperation.class.ts";
+import { SendWorldLightOperation } from "CoreSendOperations/SendWorldLightOperation.class.ts";
+import { SendFullInventoryOperation } from "CoreSendOperations/SendFullInventoryOperation.class.ts";
+import { SendTextMessageOperation } from "CoreSendOperations/SendTextMessageOperation.class.ts";
+import { SendMagicEffectOperation } from "CoreSendOperations/SendMagicEffectOperation.class.ts";
+import { SendAddCreatureToMapOperation } from "CoreSendOperations/SendAddCreatureToMapOperation.class.ts";
 import { Player } from "Player";
 
 import players from "Players";
@@ -23,12 +17,11 @@ import map from "Map";
 import game from "Game/Game.class.ts";
 import db from "DB";
 
+import { CLIENT_VERSION_MAX, CLIENT_VERSION_MIN } from "Config";
 import { MESSAGE_TYPE, PROTOCOL_RECEIVE } from "Constants";
 import { StaticImplements } from "Decorators";
 import { StaticOperationCode } from "Types";
 import { TCP } from 'Dependencies';
-import { SendTextMessageOperation } from "OutgoingSendOperations/CoreSendOperations/SendTextMessageOperation.class.ts";
-import { CLIENT_VERSION_MAX, CLIENT_VERSION_MIN } from "Config";
 
 @StaticImplements<StaticOperationCode>()
 export class EnterGameOperation extends IncomingGameOperation {
@@ -73,8 +66,7 @@ export class EnterGameOperation extends IncomingGameOperation {
                     if (player === null){
                         return false;
                     }
-                    //player = players.createPlayer(this._name, this._msg.client as TCP.Client);
-                    //player.setPosition(25, 25, 7);
+
                     players.addPlayer(player);
                     //Add to tile
                     let tile = map.getTileAt(player.position);
@@ -94,28 +86,36 @@ export class EnterGameOperation extends IncomingGameOperation {
     protected async _networkOperations(): Promise<boolean> {
         if (this._player !== undefined){
             //Send only to player
-            const msg = OutgoingNetworkMessage.withClient(this._player.client, SendFirstGameOperation.messageSize + SendLoginOrPendingOperation.messageSize + SendFullMapDescriptionOperation.messageSize);
+            const msg = OutgoingNetworkMessage.withClient(
+                this._player.client,
+                SendFirstGameOperation.messageSize +
+                SendLoginOrPendingOperation.messageSize +
+                SendFullMapDescriptionOperation.messageSize +
+                SendPlayerSkillsOperation.messageSize +
+                SendPlayerStatsOperation.messageSize +
+                SendWorldLightOperation.messageSize +
+                SendFullInventoryOperation.messageSize +
+                SendTextMessageOperation.messageSize
+            );
             SendFirstGameOperation.writeToNetworkMessage(msg);
             SendLoginOrPendingOperation.writeToNetworkMessage(this._player.extId, msg);
+            SendPlayerSkillsOperation.writeToNetworkMessage(this._player, msg);
+            SendPlayerStatsOperation.writeToNetworkMessage(this._player, msg);
+            SendWorldLightOperation.writeToNetworkMessage(game.worldLight.level, game.worldLight.color, msg);
+            SendFullInventoryOperation.writeToNetworkMessage(this._player, msg);
+            SendTextMessageOperation.writeToNetworkMessage('Welcome to Senja Engine V.0.0.1', MESSAGE_TYPE.RED_MESSAGE_CONSOLE, msg);
             SendFullMapDescriptionOperation.writeToNetworkMessage(this._player.position, msg);
             await msg.send();
 
-            const msg2 = OutgoingNetworkMessage.withClient(this._player.client, SendPlayerStatsOperation.messageSize + SendWorldLightOperation.messageSize + SendFullInventoryOperation.messageSize + SendTextMessageOperation.messageSize);
-            SendPlayerStatsOperation.writeToNetworkMessage(this._player, msg2);
-            SendWorldLightOperation.writeToNetworkMessage(game.worldLight.level, game.worldLight.color, msg2);
-            SendFullInventoryOperation.writeToNetworkMessage(this._player, msg2);
-            SendTextMessageOperation.writeToNetworkMessage('Welcome to Senja Engine V.0.0.1', MESSAGE_TYPE.RED_MESSAGE_CONSOLE, msg2);
-            await msg2.send();
-
             //Send to spectators & player
-            const msg3 = new OutgoingNetworkMessage(SendMagicEffectOperation.messageSize);
-            SendMagicEffectOperation.writeToNetworkMessage(11, this._player.position, msg3);
-            await msg3.sendToPlayersInAwareRange(this._player.position);
+            const msg2 = new OutgoingNetworkMessage(SendMagicEffectOperation.messageSize);
+            SendMagicEffectOperation.writeToNetworkMessage(11, this._player.position, msg2);
+            await msg2.sendToPlayersInAwareRange(this._player.position);
 
             //Send only to spectators
-            const msg4 = new OutgoingNetworkMessage(SendAddCreatureToMapOperation.messageSize);
-            SendAddCreatureToMapOperation.writeToNetworkMessage(this._player, msg4);
-            await msg4.sendToPlayersInAwareRange(this._player.position, undefined, this._player);
+            const msg3 = new OutgoingNetworkMessage(SendAddCreatureToMapOperation.messageSize);
+            SendAddCreatureToMapOperation.writeToNetworkMessage(this._player, msg3);
+            await msg3.sendToPlayersInAwareRange(this._player.position, undefined, this._player);
 
             return true;
         }else{
