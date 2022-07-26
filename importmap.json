@@ -13,6 +13,7 @@
         "CoreSendOperations/": "./Network/Protocol/Outgoing/SendOperations/CoreSendOperations/",
         "Game": "./Game/Game.class.ts",
         "Map": "./Game/Map/Map.class.ts",
+        "RawItems": "./Game/RawItems.class.ts",
         "Thing": "./Game/Thing.class.ts",
         "Creature": "./Game/Creature.class.ts",
         "Player": "./Game/Player/Player.class.ts",

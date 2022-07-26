@@ -2,6 +2,7 @@ import { Thing } from 'Thing';
 import { Creature } from 'Creature';
 import { Player } from 'Player';
 import { IPosition } from "Types";
+import { Item } from "Item";
 
 export class MapTile {
     constructor(x: number, y: number, z: number){
@@ -15,6 +16,7 @@ export class MapTile {
     private _creatures : Array<Creature> = []; //Creatures are unshifted to array
     private _downItems : Array<Thing> = []; //Downitems are unshifted to array
     private _position : IPosition = {} as IPosition;
+    private _flags : any = {};
 
     public get position() : IPosition {
         return this._position;
@@ -36,6 +38,10 @@ export class MapTile {
         return this._downItems;
     }
 
+    public get flags() : any {
+        return this._flags;
+    }
+
     public getGround() : Thing | null {
         return this._ground;
     }
@@ -48,12 +54,20 @@ export class MapTile {
         thing.position = this.position;
         let idx = this._topItems.push(thing);
         thing.tileIndex = idx;
+
+        if (thing instanceof Item){
+            this.setFlagsFromItem(thing);
+        }
     }
 
     public addDownThing(thing : Thing){
         thing.position = this._position;
         let idx = this._downItems.unshift(thing);
         thing.tileIndex = idx;
+
+        if (thing instanceof Item){
+            this.setFlagsFromItem(thing);
+        }
     }
 
     public removeDownThingByThing(thing : Thing) : boolean {
@@ -68,6 +82,7 @@ export class MapTile {
 
         if (idx !== -1){
             this._downItems.splice(idx, 1);
+            this.resetFlags();
             return true;
         }else{
             return false;
@@ -77,6 +92,25 @@ export class MapTile {
     public removeDownThing(stackPos : number) : void {
         if (this._downItems[stackPos]){
             this._downItems.splice(stackPos, 1);
+            this.resetFlags();
+        }
+    }
+
+    public getRealTopThing() : Thing | null {
+        if (this._creatures.length > 0){
+            return this._creatures[this._creatures.length - 1];
+        }
+        else if (this._downItems.length > 0){
+            return this._downItems[this._downItems.length - 1];
+        }
+        else if (this._topItems.length > 0){
+            return this._topItems[this._topItems.length - 1];
+        }
+        else if (this.getGround() !== null){
+            return this._ground;
+        }
+        else {
+            return null;
         }
     }
 
@@ -204,7 +238,62 @@ export class MapTile {
         this._creatures = [];
     }
 
+    public setFlagsFromItem(item : Item) : void {
+        console.log("Setting flags")
+        if (item.flags.floorChangeDown){
+            this._flags.floorChangeDown = true;
+        }
+
+        if (item.flags.floorChangeNorth){
+            this._flags.floorChangeNorth = true;
+        }
+
+        if (item.flags.floorChangeEast){
+            this._flags.floorChangeEast = true;
+        }
+
+        if (item.flags.floorChangeSouth){
+            this._flags.floorChangeSouth = true;
+        }
+
+        if (item.flags.floorChangeWest){
+            this._flags.floorChangeWest = true;
+        }
+
+        if (item.flags.blockPathfinder){
+            this._flags.blockPathfinder = true;
+        }
+
+        if (item.flags.unpassable){
+            this._flags.unpassable = true;
+        }
+    }
+
+    public resetFlags(){
+        this._flags = {};
+
+        for (const item of this._topItems){
+            if (item instanceof Item){
+                this.setFlagsFromItem(item);
+            }
+        }
+
+        for (const item of this._downItems){
+            if (item instanceof Item){
+                this.setFlagsFromItem(item);
+            }
+        }
+    }
+
+    public isFloorChange() : boolean {
+        return this._flags.floorChangeDown === true ||
+               this._flags.floorChangeNorth === true ||
+               this._flags.floorChangeEast === true ||
+               this._flags.floorChangeSouth === true ||
+               this._flags.floorChangeWest === true
+    }
+
     public isWalkable() : boolean {
-        return this._creatures.length === 0;
+        return !this._flags.unpassable;
     }
 }

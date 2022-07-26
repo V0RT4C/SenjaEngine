@@ -3,15 +3,23 @@ import { OutgoingNetworkMessage } from "Network/Lib/OutgoingNetworkMessage.class
 import { SendRemoveThingFromTileOperation } from "CoreSendOperations/SendRemoveThingFromTileOperation.class.ts";
 import { SendAddThingToMapOperation } from "CoreSendOperations/SendAddThingToMapOperation.class.ts";
 import { MoveCreatureSubOperation } from "CoreOperations/MoveThingOperation/MoveCreatureSubOperation.class.ts";
-import { MoveThingToInventorySubOperation } from "CoreOperations/MoveThingOperation/MoveThingToInventorySubOperation.class.ts";
-import { MoveThingFromInventoryToGroundSubOperation } from "CoreOperations/MoveThingOperation/MoveThingFromInventoryToGroundSubOperation.class.ts";
-import { MoveThingFromInventoryToInventorySubOperation } from "CoreOperations/MoveThingOperation/MoveThingFromInventoryToInventorySubOperation.class.ts";
+import {
+    MoveThingToInventorySubOperation
+} from "CoreOperations/MoveThingOperation/MoveThingToInventorySubOperation.class.ts";
+import {
+    MoveThingFromInventoryToGroundSubOperation
+} from "CoreOperations/MoveThingOperation/MoveThingFromInventoryToGroundSubOperation.class.ts";
+import {
+    MoveThingFromInventoryToInventorySubOperation
+} from "CoreOperations/MoveThingOperation/MoveThingFromInventoryToInventorySubOperation.class.ts";
 
 import map from "Map";
 
-import { PROTOCOL_RECEIVE, THING_ID } from "Constants";
+import { MESSAGE_TYPE, PROTOCOL_RECEIVE, RETURN_MESSAGE, THING_ID } from "Constants";
 import { StaticImplements } from "Decorators";
 import { IPosition, StaticOperationCode } from "Types";
+import { SendTextMessageOperation } from "CoreSendOperations/SendTextMessageOperation.class.ts";
+import { TCP } from 'Dependencies';
 
 @StaticImplements<StaticOperationCode>()
 export class MoveThingOperation extends IncomingGameOperation {
@@ -22,6 +30,7 @@ export class MoveThingOperation extends IncomingGameOperation {
     protected _stackPos!: number;
     protected _toPosition!: IPosition;
     protected _count!: number;
+    protected _moveSuccess = true;
 
     public parseMessage() {
         this._fromPosition = this._msg.readPosition();
@@ -58,14 +67,19 @@ export class MoveThingOperation extends IncomingGameOperation {
     }
 
     protected async _networkOperations(): Promise<boolean> {
-        const msg = new OutgoingNetworkMessage(
-            SendRemoveThingFromTileOperation.messageSize +
-            SendAddThingToMapOperation.messageSize
-        );
+        if (this._moveSuccess){
+            const msg = new OutgoingNetworkMessage(
+                SendRemoveThingFromTileOperation.messageSize +
+                SendAddThingToMapOperation.messageSize
+            );
 
-        SendRemoveThingFromTileOperation.writeToNetworkMessage(this._fromPosition, this._stackPos, msg);
-        SendAddThingToMapOperation.writeToNetworkMessage(this._thingId, this._toPosition, msg);
-        await msg.sendToPlayersInAwareRange(this._fromPosition, this._toPosition);
+            SendRemoveThingFromTileOperation.writeToNetworkMessage(this._fromPosition, this._stackPos, msg);
+            SendAddThingToMapOperation.writeToNetworkMessage(this._thingId, this._toPosition, msg);
+            await msg.sendToPlayersInAwareRange(this._fromPosition, this._toPosition);
+        }else{
+            const textMsgOp = new SendTextMessageOperation(RETURN_MESSAGE.NOT_POSSIBLE, MESSAGE_TYPE.WHITE_MESSAGE_SCREEN_BOTTOM, this._msg.client as TCP.Client);
+            await textMsgOp.execute();
+        }
 
         return true;
     }
@@ -106,7 +120,8 @@ export class MoveThingOperation extends IncomingGameOperation {
         if (map.moveThing(this._fromPosition, this._stackPos, this._toPosition)) {
             return true;
         } else {
-            return false;
+            this._moveSuccess = false;
+            return true;
         }
     }
 }

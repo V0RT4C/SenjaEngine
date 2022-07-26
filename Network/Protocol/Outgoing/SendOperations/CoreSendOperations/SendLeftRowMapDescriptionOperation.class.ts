@@ -13,14 +13,14 @@ export class SendLeftRowMapDescriptionOperation implements OutgoingSendOperation
 
     public static messageSize = 2500;
 
-    public static writeToNetworkMessage(position: IPosition, msg : OutgoingNetworkMessage){
+    public static writeToNetworkMessage(position: IPosition, msg : OutgoingNetworkMessage, custom = false){
         msg.writeUint8(PROTOCOL_SEND.MAP_WEST_ROW);
 
         const { x, y, z } = position;
 
         map.getMapDescriptionAsBytes({
-                x: x - CLIENT_VIEWPORT.MAX_X,
-                y: y - CLIENT_VIEWPORT.MAX_Y,
+                x: custom ? x : x - CLIENT_VIEWPORT.MAX_X,
+                y: custom ? y : y - CLIENT_VIEWPORT.MAX_Y,
                 z
             },
             1,

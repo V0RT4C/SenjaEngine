@@ -17,6 +17,7 @@ export class CloseContainerOperation extends IncomingGameOperation {
 
     public parseMessage() {
         this._containerId = this._msg.readUint8();
+        console.log('Close container', this._containerId);
     }
 
     protected _internalOperations(): boolean {

@@ -1,9 +1,14 @@
 import { Item } from "Item";
 
 export class Container extends Item {
+    private _containerId! : number;
     private _items : Array<Item> = [];
     private _capacity = 8;
     private _parent : Container | null = null;
+
+    public get containerId() : number {
+        return this._containerId;
+    }
 
     public get items() : Array<Item> {
         return this._items;
@@ -35,6 +40,10 @@ export class Container extends Item {
         else{
             this._capacity = 40;
         }
+    }
+
+    public set containerId(id : number){
+        this._containerId = id;
     }
 
     public set parent(container : Container | null){

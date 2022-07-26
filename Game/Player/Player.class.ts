@@ -29,6 +29,7 @@ export class Player extends Creature {
     private _knownCreatures: Array<Creature> = [];
     private _inventory : Inventory = new Inventory();
     private _openContainers : Array<Container> = [];
+    private _containerIds : Array<number> = Array.from((new Array(10)).keys());
     private _sex : PLAYER_SEX = PLAYER_SEX.MALE;
     protected _thingType = THING_TYPE.PLAYER;
     protected _type = CREATURE_TYPE.CREATURE_TYPE_PLAYER;
@@ -76,6 +77,11 @@ export class Player extends Creature {
             return false;
         }
 
+        if (this._containerIds.length === 0){
+            return false;
+        }
+        console.log(this._containerIds);
+        container.containerId = this._containerIds.pop() as number;
         this._openContainers.push(container);
         return true;
     }
@@ -98,7 +104,7 @@ export class Player extends Creature {
 
         for (let i=0; i < this._openContainers.length; i++){
             if (this._openContainers[i] === container){
-                id = i;
+                id = container.containerId;
                 break;
             }
         }
@@ -115,20 +121,27 @@ export class Player extends Creature {
     }
 
     public closeContainerById(id : number) : boolean {
-        if (this._openContainers[id] === undefined){
-            return false;
+
+        for (let i=0; i < this._openContainers.length; i++){
+            if (this._openContainers[i].containerId === id){
+                this._openContainers.splice(i, 1);
+                this._containerIds.push(id);
+                return true;
+            }
         }
 
-        this._openContainers.splice(id, 1);
-        return true;
+        return false;
     }
 
-    public getContainerById(id : number) : Container | null { //ContainerId is just array index
-        if (this._openContainers[id] === undefined){
-            return null;
+    public getContainerById(id : number) : Container | null {
+
+        for (const container of this._openContainers){
+            if (container.containerId === id){
+                return container;
+            }
         }
 
-        return this._openContainers[id];
+        return null;
     }
 
     public onMove(){

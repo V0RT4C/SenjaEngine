@@ -8,6 +8,9 @@ import { MESSAGE_TYPE, PROTOCOL_RECEIVE } from "Constants";
 import { IPosition, StaticOperationCode } from "Types";
 import { TCP } from 'Dependencies';
 import { StaticImplements } from "Decorators";
+import rawItems from "RawItems";
+import map from "Map";
+import { Thing } from "Thing";
 
 @StaticImplements<StaticOperationCode>()
 export class LookAtOperation extends IncomingGameOperation {
@@ -17,6 +20,7 @@ export class LookAtOperation extends IncomingGameOperation {
     private _position! : IPosition;
     private _thingId! : number;
     private _stackPos! : number;
+    private _thing! : Thing | null;
 
     public parseMessage() {
         this._position = this._msg.readPosition();
@@ -27,6 +31,15 @@ export class LookAtOperation extends IncomingGameOperation {
     protected _internalOperations(): boolean {
         const player = players.getPlayerById(this._msg.client?.conn?.rid as number);
         this._player = player;
+
+        const tile = map.getTileAt(this._position);
+
+        if (tile !== null){
+            this._thing = tile.getRealTopThing();
+        }else{
+            this._thing = null;
+        }
+
         return true;
     }
 
@@ -36,7 +49,11 @@ export class LookAtOperation extends IncomingGameOperation {
         if (this._player !== null && this._position.x === this._player.position.x && this._player.position.y === this._position.y && this._player.position.z === this._position.z){
             message = 'You see yourself.';
         }else{
-            message = `You see a thing with id: ${this._thingId}.\nPosition { x: ${this._position.x}, y: ${this._position.y}, z: ${this._position.z} }`;
+            if (this._thing !== null){
+                message = `You see a ${this._thing.name}. Itemid: ${this._thing.thingId}`;
+            }else{
+                message = `You see a thing with id: ${this._thingId}.\nPosition { x: ${this._position.x}, y: ${this._position.y}, z: ${this._position.z} }`;
+            }
         }
         const textMessage = new SendTextMessageOperation(
             message,

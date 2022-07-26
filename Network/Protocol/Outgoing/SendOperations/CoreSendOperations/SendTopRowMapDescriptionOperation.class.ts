@@ -13,16 +13,17 @@ export class SendTopRowMapDescriptionOperation implements OutgoingSendOperation 
 
     public static messageSize = 3000;
 
-    public static writeToNetworkMessage(position: IPosition, msg : OutgoingNetworkMessage){
+    public static writeToNetworkMessage(position: IPosition, msg : OutgoingNetworkMessage, custom = false){
         msg.writeUint8(PROTOCOL_SEND.MAP_TOP_ROW);
 
-        const { x, y, z } = position;
+        let { x, y, z } = position;
 
-        map.getMapDescriptionAsBytes({
-                x: x - CLIENT_VIEWPORT.MAX_X,
-                y: y - CLIENT_VIEWPORT.MAX_Y,
-                z
-            },
+        if (!custom){
+            x = x - CLIENT_VIEWPORT.MAX_X;
+            y = y - CLIENT_VIEWPORT.MAX_Y;
+        }
+
+        map.getMapDescriptionAsBytes({ x, y, z },
             (CLIENT_VIEWPORT.MAX_X * 2) + 2,
             1,
             msg

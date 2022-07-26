@@ -10,6 +10,7 @@ import { Player } from "Game/Player/Player.class.ts";
 
 import players from "Game/Player/Players.class.ts";
 import map from "Map";
+import rawItems from "RawItems";
 
 import { IPosition, StaticOperationCode } from "Types";
 import { PROTOCOL_RECEIVE } from "Constants";
@@ -23,6 +24,7 @@ export class UseItemOperation extends IncomingGameOperation {
     private _player! : Player;
     private _position! : IPosition;
     private _itemId! : number;
+    private _rawItem! : any;
     private _stackPosition! : number;
     private _index! : number;
     private _containerId! : number;
@@ -33,6 +35,7 @@ export class UseItemOperation extends IncomingGameOperation {
     public parseMessage() {
         this._position = this._msg.readPosition();
         this._itemId = this._msg.readUint16LE();
+        this._rawItem = rawItems.getItemById(this._itemId);
         this._stackPosition = this._msg.readUint8();
         this._index = this._msg.readUint8();
         this._msg.seek(this._msg.byteLength);
@@ -67,17 +70,16 @@ export class UseItemOperation extends IncomingGameOperation {
     }
 
     protected async _networkOperations(): Promise<boolean> {
+        console.log(this._player);
         if (this._itemIsContainer){
             if (this._closeContainer){
                 const closeContainerOp = new SendCloseContainerOperation(this._containerId, this._player.client);
                 await closeContainerOp.execute();
                 console.log('Close container');
             }else{
-                const container = this._player.getLastOpenedContainer();
-                const containerId = this._player.getLastOpenedContainerId();
-
+                const container = this._player.getContainerById(this._containerId);
                 const msg = OutgoingNetworkMessage.withClient(this._msg.client as TCP.Client, SendOpenContainerOperation.messageSize);
-                SendOpenContainerOperation.writeToNetworkMessage(containerId, container, msg);
+                SendOpenContainerOperation.writeToNetworkMessage(container as Container, msg);
                 await msg.send();
             }
         }else{
@@ -88,7 +90,7 @@ export class UseItemOperation extends IncomingGameOperation {
     }
 
     protected _playerUseItemOnGround(){
-        if (this._itemId === 2854){
+        if (this._rawItem !== null && this._rawItem.group === 'container'){
             this._itemIsContainer = true;
             console.log('Open backpack');
             const tile : MapTile | null = map.getTileAt(this._position);
@@ -105,12 +107,12 @@ export class UseItemOperation extends IncomingGameOperation {
 
             const openSuccess = this._player.addOpenContainer(item as Container);
             console.log('Player opened container');
+            this._containerId = (item as Container).containerId;
 
             if (!openSuccess){
                 //If not open success then container is already open
                 //We close it
                 this._closeContainer = true;
-                this._containerId = this._player.getContainerIdByContainer(item as Container);
                 this._player.closeContainerById(this._containerId);
             }
 

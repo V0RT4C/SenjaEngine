@@ -6,18 +6,17 @@ import { Container } from "Container";
 
 export class SendOpenContainerOperation implements OutgoingSendOperation {
     constructor(
-        private readonly _containerId : number,
         private readonly _container : Container,
         private readonly _client : TCP.Client
     ){}
 
     public static messageSize = 1000;
 
-    public static writeToNetworkMessage(containerId : number, container : Container, msg : OutgoingNetworkMessage){
+    public static writeToNetworkMessage(container : Container, msg : OutgoingNetworkMessage){
         msg.writeUint8(PROTOCOL_SEND.OPEN_CONTAINER);
-        msg.writeUint8(containerId); //ContainerId
-        msg.writeUint16LE(2854); //Container item id
-        msg.writeString('Backpack');
+        msg.writeUint8(container.containerId); //ContainerId
+        msg.writeUint16LE(container.thingId); //Container item id
+        msg.writeString(container.name);
         msg.writeUint8(container.capacity); //Capacity
         msg.writeUint8(0); //Has parent 0 = false
         msg.writeUint8(container.items.length); //itemcount
@@ -28,7 +27,7 @@ export class SendOpenContainerOperation implements OutgoingSendOperation {
 
     public async execute(){
         const msg = OutgoingNetworkMessage.withClient(this._client, SendOpenContainerOperation.messageSize);
-        SendOpenContainerOperation.writeToNetworkMessage(this._containerId, this._container, msg);
+        SendOpenContainerOperation.writeToNetworkMessage(this._container, msg);
         await msg.send();
     }
 }

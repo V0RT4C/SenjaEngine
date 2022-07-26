@@ -13,6 +13,8 @@ import players from "Game/Player/Players.class.ts";
 
 import { Creature } from "Creature";
 import { IPosition } from "Types";
+import { NETWORK_MESSAGE_SIZES } from "Constants";
+import { SendPlayerFloorChangeUpOperation } from "CoreSendOperations/SendPlayerFloorChangeUpOperation.class.ts";
 
 export class SendMoveCreatureOperation implements OutgoingSendOperation {
     constructor(
@@ -27,16 +29,7 @@ export class SendMoveCreatureOperation implements OutgoingSendOperation {
         const spectators = players.getPlayersInAwareRange(this._oldPosition, this._newPosition);
 
         for (const player of spectators){
-            const msg = OutgoingNetworkMessage.withClient(player.client,
-                SendRemoveCreatureFromTileOperation.messageSize +
-                SendMoveCreatureByStackPosOperation.messageSize +
-                SendMoveCreatureByExtIdOperation.messageSize +
-                SendTopRowMapDescriptionOperation.messageSize +
-                SendBottomRowMapDescriptionOperation.messageSize +
-                SendLeftRowMapDescriptionOperation.messageSize +
-                SendRightRowMapDescriptionOperation.messageSize +
-                SendAddCreatureToMapOperation.messageSize
-            );
+            const msg = OutgoingNetworkMessage.withClient(player.client, NETWORK_MESSAGE_SIZES.BUFFER_MAXSIZE);
 
             if (player === this._creature){
                 //If teleport
@@ -59,31 +52,28 @@ export class SendMoveCreatureOperation implements OutgoingSendOperation {
                     console.log('Move down creature: TODO');
                 }
                 else if (this._newPosition.z < this._oldPosition.z){
-                    console.log('Move up creature: TODO');
+                    const op = new SendPlayerFloorChangeUpOperation(this._oldPosition, this._newPosition, player.client);
+                    await op.execute();
                 }
 
                 if (this._oldPosition.y > this._newPosition.y){
-                    const msg = OutgoingNetworkMessage.withClient(player.client);
                     const position = { x: this._oldPosition.x, y: this._newPosition.y, z: this._newPosition.z };
-                    SendTopRowMapDescriptionOperation.writeToNetworkMessage(position, msg);
-                    await msg.send();
+                    const op = new SendTopRowMapDescriptionOperation(position, player.client);
+                    await op.execute();
                 }
                 else if (this._oldPosition.y < this._newPosition.y){
-                    const msg = OutgoingNetworkMessage.withClient(player.client);
                     const position = { x: this._oldPosition.x, y: this._newPosition.y, z: this._newPosition.z };
-                    SendBottomRowMapDescriptionOperation.writeToNetworkMessage(position, msg);
-                    await msg.send();
+                    const op = new SendBottomRowMapDescriptionOperation(position, player.client);
+                    await op.execute();
                 }
 
                 if (this._oldPosition.x < this._newPosition.x){
-                    const msg = OutgoingNetworkMessage.withClient(player.client);
-                    SendRightRowMapDescriptionOperation.writeToNetworkMessage(this._newPosition, msg);
-                    await msg.send();
+                    const op = new SendRightRowMapDescriptionOperation(this._newPosition, player.client);
+                    await op.execute();
                 }
                 else if (this._oldPosition.x > this._newPosition.x){
-                    const msg = OutgoingNetworkMessage.withClient(player.client);
-                    SendLeftRowMapDescriptionOperation.writeToNetworkMessage(this._newPosition, msg);
-                    await msg.send();
+                    const op = new SendLeftRowMapDescriptionOperation(this._newPosition, player.client);
+                    await op.execute();
                 }
             }
             else if (player.canSee(this._oldPosition) && player.canSee(this._newPosition)){

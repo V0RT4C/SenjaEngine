@@ -9,6 +9,8 @@ import { MAP, VIEWPORT, SKULL, PARTY_SHIELD } from 'Constants';
 import { IPosition } from "Types";
 import { Container } from "Game/Container.class.ts";
 import npcs from 'Game/NPC/NPCS.class.ts';
+import { OTBMReader, OTBMItem, OTBMTile, OTBMTileArea } from 'Dependencies';
+import rawItems from "RawItems";
 
 class Map {
     constructor(width : number, height : number){
@@ -71,13 +73,26 @@ class Map {
     }
 
     public moveCreatureByExtId(fromPos : IPosition, toPos : IPosition, creatureExtId : number) : boolean {
-        const toTile : MapTile | null = this.getTileAt(toPos);
+        let toTile : MapTile | null = this.getTileAt(toPos);
 
         if (toTile === null){
             return false;
         }
 
         if (!toTile.isWalkable()){
+            return false;
+        }
+
+        if (toTile.isFloorChange()){
+            if (toTile.flags.floorChangeNorth){
+                toPos.y-=1;
+                toPos.z-=1;
+            }
+        }
+
+        toTile = this.getTileAt(toPos);
+
+        if (toTile === null){
             return false;
         }
 
@@ -142,10 +157,14 @@ class Map {
             return false;
         }
 
-        const item = fromTile.getThingByStackPos(stackPos);
+        const item : Item | null = fromTile.getThingByStackPos(stackPos) as Item | null;
         //const item = fromTile.downItems.shift();
 
         if (item === null){
+            return false;
+        }
+
+        if (!item.isMovable()){
             return false;
         }
 
@@ -241,6 +260,67 @@ class Map {
         }
     }
 
+    public loadMapFromOTBM(path : string){
+        const otbmBuffer = Deno.readFileSync(path);
+        const reader = new OTBMReader();
+        reader.setOTBM(otbmBuffer);
+        const nodeTree = reader.getNodeTree();
+
+        let tileArea : OTBMTileArea | null = nodeTree.children[0].firstChild as unknown as OTBMTileArea;
+
+        if (tileArea !== null){
+            while(tileArea !== null) {
+                if (tileArea.children.length > 0){
+                    let tile : OTBMTile | null = tileArea.firstChild as OTBMTile;
+
+                    if (tile !== null){
+                        while(tile !== null){
+
+                            if (tile.properties.tileId){
+                                const mapTile = new MapTile(tile.realX, tile.realY, tile.z);
+                                mapTile.setGround(new Item(tile.properties.tileId as number));
+                                if (tile.children.length > 0){
+                                    for (const item of tile.children){
+                                        const rawItem = rawItems.getItemById((item as any).id);
+                                        if (rawItem.group === 'ground' && !rawItem.flags.hasStackOrder){
+                                            if (mapTile.getGround() === null){
+                                                mapTile.setGround(new Item((item as OTBMItem).id));
+                                            }
+                                        }
+                                        else if (rawItem.group === 'container'){
+                                            mapTile.addDownThing(new Container((item as OTBMItem).id));
+                                        }else{
+                                            if (rawItem.flags.hasStackOrder){
+                                                mapTile.addTopThing(new Item((item as OTBMItem).id));
+                                            }else{
+                                                mapTile.addDownThing(new Item((item as OTBMItem).id));
+                                            }
+                                        }
+                                    }
+                                }
+                                if (!this.addTile(mapTile)){
+                                    throw new Error(`Failed to add tile x:${tile.realX}, y:${tile.realY}, z:${tile.z}`)
+                                }
+                            }else{
+                                if (tile.children.length > 0){
+                                    const mapTile = new MapTile(tile.realX, tile.realY, tile.z);
+                                    mapTile.setGround(new Item((tile.children[0] as OTBMItem).id))
+                                    if (!this.addTile(mapTile)){
+                                        throw new Error(`Failed to add tile x:${tile.realX}, y:${tile.realY}, z:${tile.z}`)
+                                    }
+                                }else{
+                                    console.log(tile);
+                                }
+                            }
+                            tile = tile.nextSibling as OTBMTile;
+                        }
+                    }
+                }
+                tileArea = tileArea.nextSibling as OTBMTileArea;
+            }
+        }
+    }
+
     public getMapDescriptionAsBytes(position : IPosition, width: number, height: number, msg : OutgoingNetworkMessage) : OutgoingNetworkMessage {
         const { x, y, z } = position;
 
@@ -258,7 +338,7 @@ class Map {
         }
 
         for (let nz = startz; nz != endz + zstep; nz+= zstep){
-            this.getFloorDescriptionAsBytes({ x, y, z:nz }, width, height, z - nz, skip, msg);
+            skip = this.getFloorDescriptionAsBytes({ x, y, z:nz }, width, height, z - nz, skip, msg);
         }
 
         if (skip >= 0) {
@@ -294,6 +374,8 @@ class Map {
                 }
             }
         }
+
+        return skip;
     }
 
     public getTileDescriptionAsBytes(tile : MapTile, buffer : OutgoingNetworkMessage) {
@@ -369,5 +451,5 @@ class Map {
     }
 }
 
-const map = new Map(30, 30);
+const map = new Map(2048, 2048);
 export default map;

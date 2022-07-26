@@ -38,10 +38,7 @@ export class OutgoingNetworkMessage extends NetworkMessage {
         const spectators = map.getPlayersInAwareRange(centerPos);
 
         let networkMsgSize = this._position;
-        const msg = this.slice(0, networkMsgSize);
-        const byteLength = msg.byteLength - 2;
-        msg[0] = (byteLength & 0xff);
-        msg[1] = (byteLength >>> 8);
+        const msg = this.getTrimmedMsg();
 
         for (const p of spectators){
             if (originPlayer === p){
@@ -63,10 +60,7 @@ export class OutgoingNetworkMessage extends NetworkMessage {
         const spectators = new Set([...spectatorsFirstPosition, ...spectatorsSecondPosition]);
 
         let networkMsgSize = this._position;
-        const msg = this.slice(0, networkMsgSize);
-        const byteLength = msg.byteLength - 2;
-        msg[0] = (byteLength & 0xff);
-        msg[1] = (byteLength >>> 8);
+        const msg = this.getTrimmedMsg();
 
         for (const p of spectators){
             if (excludePlayer === p){
@@ -77,15 +71,21 @@ export class OutgoingNetworkMessage extends NetworkMessage {
         }
     }
 
-    public async send() : Promise<void> {
+    public getTrimmedMsg() : Uint8Array {
         let networkMsgSize = this._position;
+        let msg = new Uint8Array(this);
+        msg = msg.slice(0, networkMsgSize);
+        const byteLength = msg.byteLength - 2;
+        msg[0] = (byteLength & 0xff);
+        msg[1] = (byteLength >>> 8);
+        return msg;
+    }
+
+    public async send() : Promise<void> {
+        let networkMsgSize = this._position - 2;
 
         if (this._client !== undefined){
-            const msg = this.slice(0, networkMsgSize);
-            const byteLength = msg.byteLength - 2;
-            msg[0] = (byteLength & 0xff);
-            msg[1] = (byteLength >>> 8);
-            await this._client.write(msg);
+            await this._client.write(this.getTrimmedMsg());
         }else{
             throw new Error("Can't send network message. Client is undefined.");
         }
