@@ -1,3 +1,4 @@
+import log from 'Logger';
 import { SendPingRequestOperation } from "OutgoingSendOperations/CoreSendOperations/SendPingRequestOperation.class.ts";
 
 import map from 'Map';
@@ -8,6 +9,10 @@ import { Loop } from "Game/Lib/GameLoop.class.ts";
 import { GameOperation } from "Game/GameOperation.abstract.ts";
 
 import Mutex from 'https://deno.land/x/await_mutex@v1.0.1/mod.ts';
+import { Player } from "./Player/Player.class.ts";
+import { SendMagicEffectOperation } from '../Network/Protocol/Outgoing/SendOperations/CoreSendOperations/SendMagicEffectOperation.class.ts';
+import { SendRemoveThingFromTileOperation } from '../Network/Protocol/Outgoing/SendOperations/CoreSendOperations/SendRemoveThingFromTileOperation.class.ts';
+import db from '../DB/index.ts';
 
 const mutex = new Mutex();
 
@@ -35,8 +40,16 @@ class Game {
     private async _mainloopLogic() : Promise<void> {
         if (this._ticks % 200 === 0){
             for (const playerId in this._players.list){
-                const ping = new SendPingRequestOperation(players.list[playerId].client);
-                await ping.execute();
+                const p = players.list[playerId];
+                if (p.client.isOpen){
+                    const ping = new SendPingRequestOperation(p.client);
+                    await ping.execute();
+                    p.lastPing = Date.now();
+                }else{
+                    if ((Date.now() - p.lastPing) > 60000){
+                        this.removePlayerFromGame(p);
+                    }
+                }
             }
         }
 
@@ -50,6 +63,34 @@ class Game {
         }
 
         this._ticks++;
+    }
+
+    public removePlayerFromGame(player : Player){
+        log.debug('RemovePlayerFromGame');
+        const tile = map.getTileAt(player.position);
+
+        if (tile === null){
+            log.error(`Tile at player position { x: ${player.position.x}, y: ${player.position.y}, z: ${player.position.z} } is null.`);
+            players.removePlayer(player.id);
+            return;
+        }else{
+            const playerStackPos = tile.getThingStackPos(player);
+
+            db.savePlayer(player);
+
+            if (!players.removePlayer(player.id)){
+                log.error(`Failed to remove player ${player.name} from players list`);
+            }
+
+            if (!tile.removeCreature(player.extId)){
+                log.error(`Failed to remove player ${player.name} from map`);
+            }
+
+            const removeCreatureOp = new SendRemoveThingFromTileOperation(player.position, playerStackPos);
+            removeCreatureOp.execute();
+            const magicEffectOp = new SendMagicEffectOperation(3, player.position);
+            magicEffectOp.execute();
+        }
     }
 }
 

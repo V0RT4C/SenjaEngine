@@ -44,7 +44,7 @@ export const parseLogin = async (client : TCP.Client, buffer : NetworkMessage) :
         const extendedAccount = db.getAccountExtended(accountNumber);
 
         if (extendedAccount === null){
-            return await sendError('Something went wront, please try again.', client);
+            return await sendError('Something went wrong, please try again.', client);
         }
 
         await sendCharacterList(extendedAccount, client);

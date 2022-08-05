@@ -37,7 +37,7 @@ export class LeaveGameOP extends IncomingGameOperation {
         const msg = new OutgoingNetworkMessage(SendRemoveCreatureByExtIdOperation.messageSize + SendMagicEffectOperation.messageSize);
         SendRemoveCreatureByExtIdOperation.writeToNetworkMessage(this._player.extId, msg);
         SendMagicEffectOperation.writeToNetworkMessage(3, this._player.position, msg);
-        await msg.sendToSpectators(this._player.position);
+        await msg.sendToPlayersInAwareRange(this._player.position);
         await this._player.client.close();
         return true;
     }

@@ -63,7 +63,7 @@ export class OutgoingNetworkMessage extends NetworkMessage {
         const msg = this.getTrimmedMsg();
 
         for (const p of spectators){
-            if (excludePlayer === p){
+            if (excludePlayer === p || !p.client.isOpen){
                 continue;
             }
 

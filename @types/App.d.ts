@@ -178,3 +178,7 @@ export interface IDBPlayer {
     skillFishingTries: number;
     deleted: boolean;
 }
+
+export interface TCPServerOptions extends Deno.ConnectOptions {
+    chunkSize?: number;
+}

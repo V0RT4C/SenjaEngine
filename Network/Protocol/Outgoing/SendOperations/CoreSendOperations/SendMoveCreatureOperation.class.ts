@@ -30,6 +30,8 @@ export class SendMoveCreatureOperation implements OutgoingSendOperation {
         const spectators = players.getPlayersInAwareRange(this._oldPosition, this._newPosition);
 
         for (const player of spectators){
+            if (!player.client.isOpen){ continue; }
+            
             const msg = OutgoingNetworkMessage.withClient(player.client, NETWORK_MESSAGE_SIZES.BUFFER_MAXSIZE);
 
             if (player === this._creature){

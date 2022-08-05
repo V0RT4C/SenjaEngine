@@ -19,6 +19,7 @@ export class Player extends Creature {
         this._extId = extId;
         this._client.addListener(TCP.Event.close, this._connectionListener);
         this._client.addListener(TCP.Event.error, (c : TCP.Client) => {
+            log.error(`Player ${this.name} had a TCP error.`);
             c.removeAllListeners();
         });
         this._client.addListener(TCP.Event.shutdown, () => { log.debug(`connection shutdown`)})
@@ -27,6 +28,7 @@ export class Player extends Creature {
 
     private _id : number;
     private _client! : TCP.Client;
+    private _lastPing = 0;
     private _knownCreatures: Array<Creature> = [];
     private _inventory : Inventory = new Inventory();
     private _openContainers : Array<Container> = [];
@@ -89,6 +91,14 @@ export class Player extends Creature {
 
     public get client() : TCP.Client {
         return this._client;
+    }
+
+    public get lastPing() : number {
+        return this._lastPing;
+    }
+
+    public set lastPing(value : number) {
+        this._lastPing = value;
     }
 
 

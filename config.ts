@@ -10,7 +10,7 @@ export const DEVELOPMENT_MODE = true;
  * {DEBUG|INFO|WARNING|ERROR}
  */
 
-export const LOG_LEVEL = 'INFO';
+export const LOG_LEVEL = 'DEBUG';
 
 /**
  *  Allowed client versions

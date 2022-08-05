@@ -65,8 +65,10 @@ export class EnterGameOP extends GameOperation {
             if (account.password === this._password){
                 if (players.playerIsOnline(this._name)){
                     player = players.getPlayerByName(this._name) as Player;
+                    players.removePlayer(player.id);
                     player.id = this._msg.client?.conn?.rid as number;
                     player.client = this._msg.client as TCP.Client;
+                    players.addPlayer(player);
                 }else{
                     player = players.loadPlayerFromDatabase(this._name, this._msg.client as TCP.Client);
 
@@ -133,14 +135,18 @@ export class EnterGameOP extends GameOperation {
     public async execute(): Promise<void> {
         const internalOperationsIsAsync = this._internalOperations.constructor.name === 'AsyncFunction';
 
-        if (internalOperationsIsAsync){
-            if (await this._internalOperations()){
-                await this._networkOperations();
+        try {
+            if (internalOperationsIsAsync){
+                if (await this._internalOperations()){
+                    await this._networkOperations();
+                }
+            }else{
+                if (this._internalOperations()){
+                    await this._networkOperations();
+                }
             }
-        }else{
-            if (this._internalOperations()){
-                await this._networkOperations();
-            }
+        }catch(err){
+            console.log(err);
         }
     }
 }
