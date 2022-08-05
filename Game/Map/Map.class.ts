@@ -1,3 +1,4 @@
+import log from 'Logger';
 import { OutgoingNetworkMessage } from "Network/Lib/OutgoingNetworkMessage.class.ts";
 import { QuadTree, Rect, Point } from '~/deps.ts';
 import { MapTile } from 'MapTile';
@@ -11,6 +12,7 @@ import { Container } from "Game/Container.class.ts";
 import npcs from 'Game/NPC/NPCS.class.ts';
 import { OTBMReader, OTBMItem, OTBMTile, OTBMTileArea } from 'Dependencies';
 import rawItems from "RawItems";
+import { TileArea } from 'https://deno.land/x/v0rt4c_otbm@0.1.2/mod.ts';
 
 class Map {
     constructor(width : number, height : number){
@@ -48,10 +50,12 @@ class Map {
     }*/
 
     public addTile(tile : MapTile) : boolean {
+        log.debug('Map::addTile');
         return this._floors[tile.position.z].insert(new Point(tile.position.x, tile.position.y, tile));
     }
 
     public getTileAt(position : IPosition) : MapTile | null {
+        log.debug('Map::getTileAt');
         const pointArr = this._floors[position.z].query({
             intersects: (range : Rect) => range.contains(new Point(position.x, position.y)),
             contains: (point : Point<MapTile>) => {
@@ -73,6 +77,7 @@ class Map {
     }
 
     public moveCreatureByExtId(fromPos : IPosition, toPos : IPosition, creatureExtId : number) : boolean {
+        log.debug('Map::moveCreatureByExtId');
         let toTile : MapTile | null = this.getTileAt(toPos);
 
         if (toTile === null){
@@ -118,7 +123,7 @@ class Map {
     }
 
     public moveCreatureByStackPos(fromPos : IPosition, toPos : IPosition, stackPos : number) : Creature | null {
-        console.log('Move creature by stack pos');
+        log.debug(`Map::moveCreatureByStackPos`);
         const fromTile : MapTile | null = this.getTileAt(fromPos);
 
         if (fromTile === null){
@@ -156,6 +161,7 @@ class Map {
     }
 
     public moveThing(fromPos : IPosition, stackPos : number, toPos : IPosition) : boolean {
+        log.debug('Map::moveThing');
         const fromTile : MapTile | null = map.getTileAt(fromPos);
         if (fromTile === null){
             return false;
@@ -188,6 +194,7 @@ class Map {
     }
 
     public getPlayersInAwareRange(centerPos : IPosition) : Array<Creature> {
+        log.debug('Map::getPlayersInAwareRange');
         // const startX = centerPos.x - 10;
         // const endX = centerPos.x + 10;
         // const startY = centerPos.y - 8;
@@ -213,6 +220,7 @@ class Map {
     }
 
     public generateGrassMap(){
+        log.debug('Map::generateGrassMap');
         for (let z=MAP.MAX_Z; z >= 7; z--){
             for (let x=0; x <= this._width; x++){
                 for (let y=0; y <= this._height; y++){
@@ -251,6 +259,7 @@ class Map {
     }
 
     public generateVoidMap(){
+        log.debug('Map::generateVoidMap');
         for (let z=0; z <= MAP.MAX_Z; z++){
             for (let x=0; x <= this._width; x++){
                 for (let y=0; y <= this._height; y++){
@@ -265,6 +274,7 @@ class Map {
     }
 
     public loadMapFromOTBM(path : string){
+        log.debug('Map::loadMapFromOTBM');
         const otbmBuffer = Deno.readFileSync(path);
         const reader = new OTBMReader();
         reader.setOTBM(otbmBuffer);
@@ -273,7 +283,7 @@ class Map {
         let tileArea : OTBMTileArea | null = nodeTree.children[0].firstChild as unknown as OTBMTileArea;
 
         if (tileArea !== null){
-            while(tileArea !== null) {
+            while(tileArea !== null && tileArea instanceof TileArea) {
                 if (tileArea.children.length > 0){
                     let tile : OTBMTile | null = tileArea.firstChild as OTBMTile;
 
@@ -313,7 +323,7 @@ class Map {
                                         throw new Error(`Failed to add tile x:${tile.realX}, y:${tile.realY}, z:${tile.z}`)
                                     }
                                 }else{
-                                    console.log(tile);
+                                    log.debug(`Failed to add tile x:${tile.realX}, y:${tile.realY}, z:${tile.z}`);
                                 }
                             }
                             tile = tile.nextSibling as OTBMTile;
@@ -326,6 +336,7 @@ class Map {
     }
 
     public getMapDescriptionAsBytes(position : IPosition, width: number, height: number, msg : OutgoingNetworkMessage) : OutgoingNetworkMessage {
+        log.debug('Map::getMapDescriptionAsBytes');
         const { x, y, z } = position;
 
         let skip = -1;
@@ -354,6 +365,7 @@ class Map {
     }
 
     public getFloorDescriptionAsBytes(position : IPosition, width : number, height : number, offset : number, skip: number, msg : OutgoingNetworkMessage){
+        log.debug('Map::getFloorDescriptionAsBytes');
         const { x, y, z } = position;
 
         for (let nx=0; nx < width; nx++){
@@ -383,6 +395,7 @@ class Map {
     }
 
     public getTileDescriptionAsBytes(tile : MapTile, buffer : OutgoingNetworkMessage) {
+        log.debug('Map::getTileDescriptionAsBytes');
         let count : number;
         let ground : Thing = tile.getGround() as Thing;
 

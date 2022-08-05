@@ -1,6 +1,7 @@
+import log from 'Logger';
 import { TCP } from 'Dependencies';
 import { Creature } from 'Creature';
-import { CREATURE_TYPE, PARTY_SHIELD, PLAYER_SEX, SKULL, THING_TYPE } from 'Constants';
+import { CHASE_MODE, CREATURE_TYPE, PARTY_SHIELD, PLAYER_SEX, SAFE_FIGHT_MODE, SKULL, THING_TYPE } from 'Constants';
 import { Inventory } from "Game/Player/Inventory.class.ts";
 import { Container } from "Game/Container.class.ts";
 
@@ -20,8 +21,8 @@ export class Player extends Creature {
         this._client.addListener(TCP.Event.error, (c : TCP.Client) => {
             c.removeAllListeners();
         });
-        this._client.addListener(TCP.Event.shutdown, () => { console.log('connection shutdown')})
-        console.log(`Player ${this._name} connected.`);
+        this._client.addListener(TCP.Event.shutdown, () => { log.debug(`connection shutdown`)})
+        log.debug(`Player ${this._name} connected.`);
     }
 
     private _id : number;
@@ -35,6 +36,8 @@ export class Player extends Creature {
     protected _type = CREATURE_TYPE.CREATURE_TYPE_PLAYER;
     protected _skull : SKULL = SKULL.NONE;
     protected _partyShield : PARTY_SHIELD = PARTY_SHIELD.SHIELD_NONE;
+    protected _chaseMode : CHASE_MODE = CHASE_MODE.OFF;
+    protected _safeFightMode : SAFE_FIGHT_MODE = SAFE_FIGHT_MODE.ON;
 
     public get id() : number {
         return this._id;
@@ -64,6 +67,21 @@ export class Player extends Creature {
         return this._partyShield;
     }
 
+    public get chaseMode() : CHASE_MODE {
+        return this._chaseMode;
+    }
+
+    public set chaseMode(value : CHASE_MODE) {
+        this._chaseMode = value;
+    }
+
+    public get safeFightMode() : SAFE_FIGHT_MODE {
+        return this._safeFightMode;
+    }
+
+    public set safeFightMode(value : SAFE_FIGHT_MODE) {
+        this._safeFightMode = value;
+    }
 
     public set client(value : TCP.Client) {
         this._client = value;
@@ -82,7 +100,7 @@ export class Player extends Creature {
         if (this._containerIds.length === 0){
             return false;
         }
-        console.log(this._containerIds);
+    
         container.containerId = this._containerIds.pop() as number;
         this._openContainers.push(container);
         return true;
@@ -147,14 +165,14 @@ export class Player extends Creature {
     }
 
     public onMove(){
-        console.log(`${this._name} moved.`);
+        log.debug(`${this._name} moved.`);
         //Check if need to close containers.
         //maybe by checking if container has parent and while has parent.
         //Eventually will get to top parent. If top parent does not have inventory position then close container.
     }
 
     private _connectionListener = () => {
-        console.log(`Player ${this._name} lost tcp connection.`);
+        log.debug(`Player ${this._name} lost tcp connection.`);
         //If in combat, start timer
     }
 }

@@ -20,7 +20,6 @@ export class SendPlayerFloorChangeDownOperation implements OutgoingSendOperation
         msg.writeUint8(PROTOCOL_SEND.FLOOR_CHANGE_DOWN);
 
         if (newPosition.z === (MAP.SEA_FLOOR + 1)){
-            console.log("HELLO DOWN FLOOR 8")
             let skip = -1;
 
             for (let i=0; i < 3; ++i){

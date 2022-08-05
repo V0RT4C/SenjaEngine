@@ -33,7 +33,8 @@
       "Dependencies": "./deps.ts",
       "Decorators": "./@types/Decorators.ts",
       "DB": "./DB/index.ts",
-      "Config": "./config.ts"
+      "Config": "./config.ts",
+      "Logger": "./Log/log.ts"
     }
   }
 }

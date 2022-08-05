@@ -1,4 +1,10 @@
 /**
+ * DENO STD
+ */
+
+export * as log from "https://deno.land/std@0.151.0/log/mod.ts";
+
+/**
  * TCP LIBRARY
  */
 export * as TCP from 'https://deno.land/x/tcp_socket@0.0.1/mods.ts';

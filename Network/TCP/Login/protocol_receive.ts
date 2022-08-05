@@ -1,3 +1,4 @@
+import log from 'Logger';
 import { sendError, sendCharacterList, sendMessageOfTheDay } from './protocol_send.ts';
 import { TCP } from 'Dependencies';
 import { NetworkMessage } from 'NetworkMessage';
@@ -15,7 +16,7 @@ export const parseNetworkMessage = (client: TCP.Client, data : Uint8Array) => {
             parseLogin(client, buffer);
         break;
         default:
-            console.log(`Dont have that OP code: ${op}`);
+            log.debug(`Dont have that OP code: ${op}`);
     }
 }
 

@@ -1,7 +1,7 @@
 import { Thing } from 'Thing';
 
 import map from "Map";
-import { CLIENT_VIEWPORT, CREATURE_DIRECTION, CREATURE_TYPE, DEFAULT_LOOK, MAP } from 'Constants';
+import { CLIENT_VIEWPORT, CREATURE_DIRECTION, CREATURE_TYPE, DEFAULT_LOOK, FIGHT_MODE, MAP } from 'Constants';
 import { IOutfit, IPosition } from "Types";
 import { BASE_SPEED } from "Config";
 import { Skills } from "Game/Skills.class.ts";
@@ -21,6 +21,7 @@ export abstract class Creature extends Thing {
     protected _soulPoints = 0;
     protected _hiddenHealth = false;
     protected _direction : CREATURE_DIRECTION = CREATURE_DIRECTION.SOUTH;
+    protected _fightMode : FIGHT_MODE = FIGHT_MODE.BALANCED;
     //LookType 75 is GM
     protected _outfit : IOutfit = { lookType: DEFAULT_LOOK.LOOK_TYPE, lookTypeEx: 0, lookHead: DEFAULT_LOOK.LOOK_HEAD, lookBody: DEFAULT_LOOK.LOOK_BODY, lookLegs: DEFAULT_LOOK.LOOK_LEGS, lookFeet: DEFAULT_LOOK.LOOK_FEET, lookMount: 0 };
     protected _skills : Skills = new Skills();
@@ -36,40 +37,72 @@ export abstract class Creature extends Thing {
         return this._health;
     }
 
+    public set health(value : number){
+        this._health = value;
+    }
+    
     public get maxHealth() : number {
         return this._maxHealth;
     }
 
+    public set maxHealth(value : number){
+        this._maxHealth = value;
+    }
+    
     public get freeCapacity() : number {
         return this._freeCapacity;
     }
-
+    
     public get experience() : number {
         return this._experience;
     }
 
+    public set experience(value : number){
+        this._experience = value;
+    }
+    
     public get level() : number {
         return this._level;
+    }
+
+    public set level(value : number){
+        this._level = value;
     }
 
     public get levelPercent() : number {
         return this._levelPercent;
     }
-
+    
     public get mana() : number {
         return this._mana;
     }
 
+    public set mana(value : number){
+        this._mana = value;
+    }
+    
     public get maxMana() : number {
         return this._maxMana;
     }
 
+    public set maxMana(value : number){
+        this._maxMana = value;
+    }
+    
     public get magicLevel() : number {
         return this._magicLevel;
     }
-
+    
+    public set magicLevel(value : number){
+        this._magicLevel = value;
+    }
+    
     public get magicLevelPercent() : number {
         return this._magicLevelPercent;
+    }
+
+    public set magicLevelPercent(value : number){
+        this._magicLevelPercent = value;
     }
 
     public get soulPoints() : number {
@@ -78,6 +111,10 @@ export abstract class Creature extends Thing {
 
     public get direction() : CREATURE_DIRECTION {
         return this._direction;
+    }
+
+    public set direction(value : CREATURE_DIRECTION) {
+        this._direction = value;
     }
 
     public get outfit() : IOutfit {
@@ -96,40 +133,12 @@ export abstract class Creature extends Thing {
         return this._type;
     }
 
-    public set direction(value : CREATURE_DIRECTION) {
-        this._direction = value;
+    public get fightMode() : FIGHT_MODE {
+        return this._fightMode;
     }
 
-    public set health(value : number){
-        this._health = value;
-    }
-
-    public set maxHealth(value : number){
-        this._maxHealth = value;
-    }
-
-    public set mana(value : number){
-        this._mana = value;
-    }
-
-    public set maxMana(value : number){
-        this._maxMana = value;
-    }
-
-    public set level(value : number){
-        this._level = value;
-    }
-
-    public set magicLevel(value : number){
-        this._magicLevel = value;
-    }
-
-    public set magicLevelPercent(value : number){
-        this._magicLevelPercent = value;
-    }
-
-    public set experience(value : number){
-        this._experience = value;
+    public set fightMode(value : FIGHT_MODE) {
+        this._fightMode = value;
     }
 
     public turnNorth() : CREATURE_DIRECTION {

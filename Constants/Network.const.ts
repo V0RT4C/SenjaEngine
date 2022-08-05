@@ -30,6 +30,7 @@ export enum PROTOCOL_SEND {
     CREATURE_OUTFIT                                     = 0x8E,
     PLAYER_DATA                                         = 0xA0,
     PLAYER_SKILLS                                       = 0xA1,
+    PLAYER_MODES                                        = 0xA7,
     CREATURE_SPEAK                                      = 0xAA,
     PONG                                                = 0x1D, //Not a 7.4 version OP
     REQUEST_PING_BACK_OTCLIENT                          = 0x1E,

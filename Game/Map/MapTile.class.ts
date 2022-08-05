@@ -1,3 +1,4 @@
+import log from 'Logger';
 import { Thing } from 'Thing';
 import { Creature } from 'Creature';
 import { Player } from 'Player';
@@ -47,6 +48,7 @@ export class MapTile {
     }
 
     public setGround(ground : Thing) : void {
+        log.debug(`MapTile::setGround`);
         this._ground = ground;
         if (ground instanceof Item){
             this.setFlagsFromItem(ground);
@@ -54,6 +56,7 @@ export class MapTile {
     }
 
     public addTopThing(thing : Thing){
+        log.debug(`MapTile::addTopThing`);
         thing.position = this.position;
         let idx = this._topItems.push(thing);
         thing.tileIndex = idx;
@@ -64,6 +67,7 @@ export class MapTile {
     }
 
     public addDownThing(thing : Thing){
+        log.debug(`MapTile::addDownThing`);
         thing.position = this._position;
         let idx = this._downItems.unshift(thing);
         thing.tileIndex = idx;
@@ -217,7 +221,7 @@ export class MapTile {
         }
 
         if (idx === -1){
-            console.log('Failed to remove creature');
+            log.warning('Failed to remove creature');
             return false;
         }else{
             this._creatures.splice(idx, 1);
@@ -227,7 +231,7 @@ export class MapTile {
 
     public addCreature(creature : Creature) : boolean {
         if (creature === undefined){
-            console.log('Creature was undefined');
+            log.warning('Creature was undefined');
             return false;
         }
 
@@ -242,7 +246,6 @@ export class MapTile {
     }
 
     public setFlagsFromItem(item : Item) : void {
-        console.log("Setting flags")
         if (item.flags.floorChangeDown){
             this._flags.floorChangeDown = true;
         }

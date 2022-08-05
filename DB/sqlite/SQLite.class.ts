@@ -1,3 +1,4 @@
+import log from 'Logger';
 import { Database } from "../Database.class.ts";
 import { sqliteDB } from "Dependencies";
 import { DEVELOPMENT_MODE } from "Config";
@@ -30,7 +31,7 @@ export class SQLite extends Database {
                 this._db.query(`INSERT INTO accounts (id, password) VALUES (8899, '8899')`);
             }catch(err){
                 if (err.message.includes('UNIQUE')){
-                    console.log('Default account already exists.');
+                    log.debug(`Default account already exists.`);
                 }else{
                     throw err;
                 }
@@ -41,7 +42,7 @@ export class SQLite extends Database {
                 this._db.query(`INSERT INTO characters (account_id, world_id, name) VALUES (8899, 1, 'Holy God')`);
             }catch(err){
                 if (err.message.includes('UNIQUE')){
-                    console.log('Default characters already exists.');
+                    log.debug(`Default characters already exists.`);
                     this._db.query(`UPDATE characters SET world_id = 1 WHERE world_id ISNULL`);
                 }else{
                     throw err;

@@ -43,7 +43,9 @@ class Game {
         while(this._operationsCache.length > 0){
             const id = await mutex.acquire();
             const nextOperation = this._operationsCache.pop() as GameOperation;
-            await nextOperation.execute();
+            if (nextOperation !== undefined){
+                await nextOperation.execute();
+            }
             mutex.release(id);
         }
 

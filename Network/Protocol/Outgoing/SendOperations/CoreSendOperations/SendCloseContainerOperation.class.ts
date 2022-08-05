@@ -17,7 +17,6 @@ export class SendCloseContainerOperation implements OutgoingSendOperation {
     }
 
     public async execute(){
-        console.log('Sending close container with id', this._containerId)
         const msg = OutgoingNetworkMessage.withClient(this._client, SendCloseContainerOperation.messageSize);
         SendCloseContainerOperation.writeToNetworkMessage(this._containerId, msg);
         await msg.send();

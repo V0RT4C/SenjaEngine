@@ -1,3 +1,4 @@
+import log from 'Logger';
 import { process } from "https://deno.land/std@0.104.0/node/process.ts";
 import { setImmediate } from "https://deno.land/std@0.146.0/node/timers.ts";
 
@@ -84,7 +85,7 @@ export class Loop {
                 // lets shift the target !!!! :D
 
                 if (_this._option?.logs || _this._option?.dif_log) {
-                    console.log(_this._ConvertNanoToMs(expectedLength - averageDelta));
+                    log.debug(_this._ConvertNanoToMs(expectedLength - averageDelta));
                 }
 
                 _target += expectedLength - averageDelta;
@@ -94,7 +95,7 @@ export class Loop {
             _this._update(_this._ConvertNanoToMs(delta) / 1000); // (delta in seconds)
 
             if (_this._option?.logs || _this._option?.delta_log) {
-                console.log(`${_this._ConvertNanoToMs(delta)} ms`);
+                log.debug(`${_this._ConvertNanoToMs(delta)} ms`);
             }
 
             const remaining = _target - _this._time();

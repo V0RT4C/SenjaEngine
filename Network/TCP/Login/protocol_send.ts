@@ -20,7 +20,6 @@ export const sendCharacterList = async (account : IDBAccountExtended, client : T
     msg.writeUint8(account.characters.length);
 
     for (const character of account.characters){
-        console.log(character);
         msg.writeString(character.name);
         msg.writeString(character.world.name);
         msg.writeInt32LE(ip2int(character.world.ip));

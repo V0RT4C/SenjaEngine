@@ -7,7 +7,6 @@ import { SendTopRowMapDescriptionOperation } from "CoreSendOperations/SendTopRow
 import { SendBottomRowMapDescriptionOperation } from "CoreSendOperations/SendBottomRowMapDescriptionOperation.class.ts";
 import { SendLeftRowMapDescriptionOperation } from "CoreSendOperations/SendLeftRowMapDescriptionOperation.class.ts";
 import { SendRightRowMapDescriptionOperation } from "CoreSendOperations/SendRightRowMapDescriptionOperation.class.ts";
-import { SendAddCreatureToMapOperation } from "CoreSendOperations/SendAddCreatureToMapOperation.class.ts";
 
 import players from "Game/Player/Players.class.ts";
 
@@ -16,6 +15,7 @@ import { IPosition } from "Types";
 import { NETWORK_MESSAGE_SIZES } from "Constants";
 import { SendPlayerFloorChangeUpOperation } from "CoreSendOperations/SendPlayerFloorChangeUpOperation.class.ts";
 import { SendPlayerFloorChangeDownOperation } from "./SendPlayerFloorChangeDownOperation.class.ts";
+import { AddCreatureToMapOP } from "./AddCreatureToMapOP.class.ts";
 
 export class SendMoveCreatureOperation implements OutgoingSendOperation {
     constructor(
@@ -38,16 +38,11 @@ export class SendMoveCreatureOperation implements OutgoingSendOperation {
                 //
 
                 if ((this._oldPosition.z === 7 && this._newPosition.z >= 8)){
-                    console.log(this._oldPosition);
-                    console.log(this._oldStackPosition);
-                    console.log(this._newPosition);
                     const removeOp = new SendRemoveCreatureFromTileOperation(this._oldPosition, this._oldStackPosition, this._creature);
                     removeOp.execute();
-                    //SendRemoveCreatureFromTileOperation.writeToNetworkMessage(this._oldPosition, this._oldStackPosition, this._creature, msg);
-                    //SendAddCreatureToMapOperation.writeToNetworkMessage(this._creature, msg);
                 }
                 else if (this._oldPosition.z === 8 && this._newPosition.z === 7){
-                    SendAddCreatureToMapOperation.writeToNetworkMessage(this._creature, msg);
+                    AddCreatureToMapOP.writeToNetworkMessage(this._creature, msg);
                 }
                 else{
                     if (this._oldStackPosition < 10){
@@ -91,7 +86,7 @@ export class SendMoveCreatureOperation implements OutgoingSendOperation {
             else if (player.canSee(this._oldPosition) && player.canSee(this._newPosition)){
                 if (this._oldPosition.z === 7 && this._newPosition.z >= 8){
                     SendRemoveCreatureFromTileOperation.writeToNetworkMessage(this._oldPosition, this._oldStackPosition, this._creature, msg);
-                    SendAddCreatureToMapOperation.writeToNetworkMessage(this._creature, msg);
+                    AddCreatureToMapOP.writeToNetworkMessage(this._creature, msg);
                 }else{
                     if (this._oldStackPosition < 10){
                         SendMoveCreatureByStackPosOperation.writeToNetworkMessage(this._oldPosition, this._oldStackPosition, msg);
@@ -106,7 +101,7 @@ export class SendMoveCreatureOperation implements OutgoingSendOperation {
                 SendRemoveCreatureFromTileOperation.writeToNetworkMessage(this._oldPosition, this._oldStackPosition, this._creature, msg);
             }
             else if (player.canSee(this._newPosition)){
-                SendAddCreatureToMapOperation.writeToNetworkMessage(this._creature, msg);
+                AddCreatureToMapOP.writeToNetworkMessage(this._creature, msg);
             }
 
             await msg.send();
