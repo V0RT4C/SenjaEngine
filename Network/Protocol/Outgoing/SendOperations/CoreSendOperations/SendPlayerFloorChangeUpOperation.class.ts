@@ -23,7 +23,7 @@ export class SendPlayerFloorChangeUpOperation implements OutgoingSendOperation {
         if (newPosition.z === MAP.SEA_FLOOR){
             let skip = -1;
 
-            for (let i = 5; i >= 0; i--){
+            for (let i = 5; i >= 0; --i){
                 skip = map.getFloorDescriptionAsBytes({
                     x: oldPosition.x - CLIENT_VIEWPORT.MAX_X,
                     y: oldPosition.y - CLIENT_VIEWPORT.MAX_Y,
@@ -64,9 +64,9 @@ export class SendPlayerFloorChangeUpOperation implements OutgoingSendOperation {
         }
 
         //When walking up map is out of sync
-        SendTopRowMapDescriptionOperation.writeToNetworkMessage({ x: oldPosition.x, y: newPosition.y + 1, z: oldPosition.z }, msg);
-        SendTopRowMapDescriptionOperation.writeToNetworkMessage({ x: oldPosition.x, y: newPosition.y, z: oldPosition.z }, msg);
-        SendLeftRowMapDescriptionOperation.writeToNetworkMessage({ x: oldPosition.x - 1, y: newPosition.y, z: oldPosition.z }, msg);
+        //SendTopRowMapDescriptionOperation.writeToNetworkMessage({ x: oldPosition.x, y: newPosition.y + 1, z: oldPosition.z }, msg);
+        SendLeftRowMapDescriptionOperation.writeToNetworkMessage({ x: oldPosition.x, y: newPosition.y+2, z: newPosition.z }, msg);
+        SendTopRowMapDescriptionOperation.writeToNetworkMessage({ x: oldPosition.x, y: newPosition.y+1, z: newPosition.z }, msg);
     }
 
     public async execute(){

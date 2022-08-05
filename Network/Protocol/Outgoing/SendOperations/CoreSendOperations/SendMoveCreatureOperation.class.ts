@@ -15,6 +15,7 @@ import { Creature } from "Creature";
 import { IPosition } from "Types";
 import { NETWORK_MESSAGE_SIZES } from "Constants";
 import { SendPlayerFloorChangeUpOperation } from "CoreSendOperations/SendPlayerFloorChangeUpOperation.class.ts";
+import { SendPlayerFloorChangeDownOperation } from "./SendPlayerFloorChangeDownOperation.class.ts";
 
 export class SendMoveCreatureOperation implements OutgoingSendOperation {
     constructor(
@@ -36,9 +37,19 @@ export class SendMoveCreatureOperation implements OutgoingSendOperation {
                 //  TODO
                 //
 
-                if (this._oldPosition.z === 7 && this._newPosition.z >= 8){
-                    SendRemoveCreatureFromTileOperation.writeToNetworkMessage(this._oldPosition, this._oldStackPosition, this._creature, msg);
-                }else{
+                if ((this._oldPosition.z === 7 && this._newPosition.z >= 8)){
+                    console.log(this._oldPosition);
+                    console.log(this._oldStackPosition);
+                    console.log(this._newPosition);
+                    const removeOp = new SendRemoveCreatureFromTileOperation(this._oldPosition, this._oldStackPosition, this._creature);
+                    removeOp.execute();
+                    //SendRemoveCreatureFromTileOperation.writeToNetworkMessage(this._oldPosition, this._oldStackPosition, this._creature, msg);
+                    //SendAddCreatureToMapOperation.writeToNetworkMessage(this._creature, msg);
+                }
+                else if (this._oldPosition.z === 8 && this._newPosition.z === 7){
+                    SendAddCreatureToMapOperation.writeToNetworkMessage(this._creature, msg);
+                }
+                else{
                     if (this._oldStackPosition < 10){
                         SendMoveCreatureByStackPosOperation.writeToNetworkMessage(this._oldPosition, this._oldStackPosition, msg);
                         msg.writePosition(this._newPosition);
@@ -49,7 +60,8 @@ export class SendMoveCreatureOperation implements OutgoingSendOperation {
                 }
 
                 if (this._newPosition.z > this._oldPosition.z){
-                    console.log('Move down creature: TODO');
+                    const op = new SendPlayerFloorChangeDownOperation(this._oldPosition, this._newPosition, player.client);
+                    await op.execute();
                 }
                 else if (this._newPosition.z < this._oldPosition.z){
                     const op = new SendPlayerFloorChangeUpOperation(this._oldPosition, this._newPosition, player.client);

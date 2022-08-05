@@ -3,12 +3,14 @@ import { IncomingGameOperation } from "ProtocolIncoming/Operations/IncomingGameO
 import { SendMoveCreatureOperation } from "CoreSendOperations/SendMoveCreatureOperation.class.ts";
 import { SendTextMessageOperation } from "CoreSendOperations/SendTextMessageOperation.class.ts";
 import { SendCancelWalkOperation } from "CoreSendOperations/SendCancelWalkOperation.class.ts";
+import { FloorChangeOperation } from "./FloorChangeOperation.class.ts";
 import { Player } from "Player";
 import { MapTile } from "MapTile";
 import map from "Map";
 import players from "Game/Player/Players.class.ts";
 import { MESSAGE_TYPE, RETURN_MESSAGE } from "Constants";
 import { IPosition } from "Types";
+import game from "Game";
 
 export abstract class IncomingMoveOperation extends IncomingGameOperation {
     //public static operationCode : number;
@@ -49,6 +51,15 @@ export abstract class IncomingMoveOperation extends IncomingGameOperation {
         const moveSuccess = this._doMove();
         if (moveSuccess){
             this._newPosition = this._player.position;
+
+            const newTile : MapTile | null = map.getTileAt(this._newPosition);
+            
+            if (newTile !== null){
+                if (newTile.isFloorChange()){
+                    game.addOperation(new FloorChangeOperation(this._player));
+                }
+            }
+
             return true;
         }else{
             return false;

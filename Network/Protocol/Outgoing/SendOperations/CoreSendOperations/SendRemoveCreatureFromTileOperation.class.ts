@@ -18,7 +18,7 @@ export class SendRemoveCreatureFromTileOperation implements OutgoingSendOperatio
         if (stackPosition < 10){
             SendRemoveThingFromTileOperation.writeToNetworkMessage(position, stackPosition, msg);
         }
-
+            
         SendRemoveCreatureByExtIdOperation.writeToNetworkMessage(creature.extId, msg);
     }
 

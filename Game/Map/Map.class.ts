@@ -83,12 +83,12 @@ class Map {
             return false;
         }
 
-        if (toTile.isFloorChange()){
-            if (toTile.flags.floorChangeNorth){
-                toPos.y-=1;
-                toPos.z-=1;
-            }
-        }
+        // if (toTile.isFloorChange()){
+        //     if (toTile.flags.floorChangeNorth){
+        //         toPos.y-=1;
+        //         toPos.z-=1;
+        //     }
+        // }
 
         toTile = this.getTileAt(toPos);
 
@@ -138,6 +138,10 @@ class Map {
         const toTile : MapTile | null = this.getTileAt(toPos);
 
         if (toTile === null){
+            return null;
+        }
+
+        if (!toTile.isWalkable()){
             return null;
         }
 
@@ -409,7 +413,7 @@ class Map {
                 }
                 else {
                     buffer.writeUint16LE(0x61);
-                    buffer.writeUint32LE(creature.extId); //Update this later
+                    buffer.writeUint32LE(0); //Update this later
                     buffer.writeUint32LE(creature.extId);
                     buffer.writeString(creature.name);
                 }

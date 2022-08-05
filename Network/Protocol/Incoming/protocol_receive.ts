@@ -24,7 +24,7 @@ import { PROTOCOL_RECEIVE } from "Constants";
 import { TCP } from 'Dependencies';
 
 
-export const parseNetworkMessage = async (client: TCP.Client, data : Uint8Array) => {
+export const parseNetworkMessage = (client: TCP.Client, data : Uint8Array) => {
     const buffer = new IncomingNetworkMessage(data, client);
 
     do {
@@ -35,10 +35,11 @@ export const parseNetworkMessage = async (client: TCP.Client, data : Uint8Array)
             case PingOperation.operationCode:
                 game.addOperation(new PingOperation(buffer));
                 break;
-            case EnterGameOperation.operationCode:
+            case EnterGameOperation.operationCode:{
                 const enterGameOperation = new EnterGameOperation(buffer);
                 enterGameOperation.parseMessage();
                 game.addOperation(enterGameOperation);
+            }
                 break;
             case LeaveGameOperation.operationCode:
                 game.addOperation(new LeaveGameOperation(buffer));
@@ -74,39 +75,46 @@ export const parseNetworkMessage = async (client: TCP.Client, data : Uint8Array)
             case MoveWestOperation.operationCode:
                 game.addOperation(new MoveWestOperation(buffer));
                 break;
-            case MoveThingOperation.operationCode:
+            case MoveThingOperation.operationCode:{
                 const moveThingOp = new MoveThingOperation(buffer);
                 moveThingOp.parseMessage();
                 game.addOperation(moveThingOp);
+            }
                 break;
-            case CreatureSpeakOperation.operationCode:
+            case CreatureSpeakOperation.operationCode:{
                 const speakOp = new CreatureSpeakOperation(buffer);
                 speakOp.parseMessage();
                 game.addOperation(speakOp);
+            }
                 break;
-            case LookAtOperation.operationCode:
+            case LookAtOperation.operationCode:{
                 const lookAtOp = new LookAtOperation(buffer);
                 lookAtOp.parseMessage();
                 game.addOperation(lookAtOp);
+            }
                 break;
-            case UseItemOperation.operationCode:
+            case UseItemOperation.operationCode:{
                 const useItemOp = new UseItemOperation(buffer);
                 useItemOp.parseMessage();
-                await useItemOp.execute();
+                game.addOperation(useItemOp);
+            }
                 break;
-            case CloseContainerOperation.operationCode:
+            case CloseContainerOperation.operationCode:{
                 const closeContainerOp = new CloseContainerOperation(buffer);
                 closeContainerOp.parseMessage();
-                await closeContainerOp.execute();
+                game.addOperation(closeContainerOp);
+            }
                 break;
-            case RequestChangeOutfitOperation.operationCode:
+            case RequestChangeOutfitOperation.operationCode:{
                 const requestChangeOutfitOp = new RequestChangeOutfitOperation(buffer);
-                await requestChangeOutfitOp.execute();
+                game.addOperation(requestChangeOutfitOp);
+            }
                 break
-            case RequestSetOutfitOperation.operationCode:
+            case RequestSetOutfitOperation.operationCode:{
                 const requestSetOutfitOp = new RequestSetOutfitOperation(buffer);
                 requestSetOutfitOp.parseMessage();
-                await requestSetOutfitOp.execute();
+                game.addOperation(requestSetOutfitOp);
+            }
                 break;
             case 105:
                 console.log('OP: 105. Client stop');

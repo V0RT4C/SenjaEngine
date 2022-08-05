@@ -162,6 +162,16 @@ export abstract class Creature extends Thing {
         }
     }
 
+    public moveUpNorth(){
+        let { x, y, z } = this.position;
+        if (map.moveCreatureByExtId(this.position, { x, y: --y, z: --z }, this.extId)){
+            this.direction = CREATURE_DIRECTION.NORTH;
+            return true;
+        }else{
+            return false;
+        }
+    }
+
     public moveEast(){
         let { x, y, z } = this.position;
         if (map.moveCreatureByExtId(this.position, { x: ++x, y, z }, this.extId)){
@@ -186,6 +196,16 @@ export abstract class Creature extends Thing {
         let { x, y, z } = this.position;
         if (map.moveCreatureByExtId(this.position, { x: --x, y, z }, this.extId)){
             this.direction = CREATURE_DIRECTION.WEST;
+            return true;
+        }else{
+            return false;
+        }
+    }
+
+    public moveDown(){
+        let { x, y, z } = this.position;
+        if (map.moveCreatureByExtId(this.position, { x, y: ++y, z: ++z }, this.extId)){
+            this.direction = CREATURE_DIRECTION.SOUTH;
             return true;
         }else{
             return false;

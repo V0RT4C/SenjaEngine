@@ -40,12 +40,20 @@ export class Player extends Creature {
         return this._id;
     }
 
+    public set id(value : number) {
+        this._id = value;
+    }
+    
     public get inventory() : Inventory {
         return this._inventory;
     }
 
     public get sex() : PLAYER_SEX {
         return this._sex;
+    }
+
+    public set sex(value : PLAYER_SEX){
+        this._sex = value;
     }
 
     public get skull() : SKULL {
@@ -56,9 +64,6 @@ export class Player extends Creature {
         return this._partyShield;
     }
 
-    public set id(value : number) {
-        this._id = value;
-    }
 
     public set client(value : TCP.Client) {
         this._client = value;
@@ -68,9 +73,6 @@ export class Player extends Creature {
         return this._client;
     }
 
-    public set sex(value : PLAYER_SEX){
-        this._sex = value;
-    }
 
     public addOpenContainer(container : Container){
         if (this.containerIsOpen(container)){

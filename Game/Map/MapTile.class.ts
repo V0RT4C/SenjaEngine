@@ -48,6 +48,9 @@ export class MapTile {
 
     public setGround(ground : Thing) : void {
         this._ground = ground;
+        if (ground instanceof Item){
+            this.setFlagsFromItem(ground);
+        }
     }
 
     public addTopThing(thing : Thing){
@@ -271,6 +274,10 @@ export class MapTile {
 
     public resetFlags(){
         this._flags = {};
+
+        if (this._ground instanceof Item){
+            this.setFlagsFromItem(this._ground);
+        }
 
         for (const item of this._topItems){
             if (item instanceof Item){
