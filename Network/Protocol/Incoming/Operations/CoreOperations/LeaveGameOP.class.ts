@@ -1,3 +1,4 @@
+import log from 'Logger';
 import { IncomingGameOperation } from "ProtocolIncoming/Operations/IncomingGameOperation.abstract.ts";
 import { OutgoingNetworkMessage } from "Network/Lib/OutgoingNetworkMessage.class.ts";
 import { SendRemoveCreatureByExtIdOperation } from "CoreSendOperations/SendRemoveCreatureByExtIdOperation.class.ts";
@@ -18,6 +19,7 @@ export class LeaveGameOP extends IncomingGameOperation {
     public static operationCode = PROTOCOL_RECEIVE.LEAVE_GAME;
 
     protected _internalOperations(): boolean {
+        log.debug(`LeaveGameOP`)
         const tile : MapTile | null = map.getTileAt(this._player.position);
 
         if (tile === null){
@@ -25,6 +27,7 @@ export class LeaveGameOP extends IncomingGameOperation {
         }
 
         if (tile.removeCreature(this._player.extId) && players.removePlayer(this._player.id)){
+            log.debug(`Saving player`);
             db.savePlayer(this._player);
             return true;
         }else{

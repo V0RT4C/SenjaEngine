@@ -74,7 +74,7 @@ export class MoveCreatureSubOP extends IncomingGameOperation {
 
     protected async _networkOperations(moveSuccess : boolean): Promise<boolean> {
         if (moveSuccess){
-            const moveOp = new SendMoveCreatureOperation(this._creature, this._fromPosition, this._toPosition, this._stackPos, this._stackPos);
+            const moveOp = new SendMoveCreatureOperation(this._creature, this._fromPosition, this._toPosition, this._stackPos);
             await moveOp.execute();
         }else{
             const msg = OutgoingNetworkMessage

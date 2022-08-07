@@ -66,7 +66,7 @@ export class FloorChangeOP extends GameOperation {
 
     protected async _networkOperations(walkSuccess = true): Promise<boolean> {
         if (walkSuccess){
-            const moveOp = new SendMoveCreatureOperation(this._player, this._fromTile.position, this._toTile.position, this._oldStackPosition, this._oldStackPosition);
+            const moveOp = new SendMoveCreatureOperation(this._player, this._fromTile.position, this._toTile.position, this._oldStackPosition);
             await moveOp.execute();
             const posMsgOp = new SendTextMessageOperation(`Position: { x: ${this._player.position.x}, y: ${this._player.position.y}, z: ${this._player.position.z} }`, MESSAGE_TYPE.PURPLE_MESSAGE_CONSOLE, this._player.client);
             await posMsgOp.execute();

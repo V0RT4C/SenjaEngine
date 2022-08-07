@@ -1,3 +1,4 @@
+import log from 'Logger';
 import { OutgoingNetworkMessage } from "Network/Lib/OutgoingNetworkMessage.class.ts";
 import { SendFirstGameOperation } from "CoreSendOperations/SendFirstGameOperation.class.ts";
 import { SendLoginOrPendingOperation } from "CoreSendOperations/SendLoginOrPendingOperation.class.ts";
@@ -15,13 +16,13 @@ import map from "Map";
 import game from "Game/Game.class.ts";
 import db from "DB";
 
-import { CLIENT_VERSION_MAX, CLIENT_VERSION_MIN } from "Config";
+import { CLIENT_VERSION_MAX, CLIENT_VERSION_MIN, WELCOME_MESSAGE } from "Config";
 import { MESSAGE_TYPE, PROTOCOL_RECEIVE } from "Constants";
 import { StaticImplements } from "Decorators";
 import { StaticOperationCode } from "Types";
 import { TCP } from 'Dependencies';
-import { GameOperation } from "../../../../../Game/GameOperation.abstract.ts";
-import { IncomingNetworkMessage } from "../../../../Lib/IncomingNetworkMessage.class.ts";
+import { GameOperation } from "Game/GameOperation.abstract.ts";
+import { IncomingNetworkMessage } from "Network/Lib/IncomingNetworkMessage.class.ts";
 import { AddCreatureToMapOP } from "CoreSendOperations/AddCreatureToMapOP.class.ts";
 
 @StaticImplements<StaticOperationCode>()
@@ -52,6 +53,7 @@ export class EnterGameOP extends GameOperation {
     }
 
     protected _internalOperations(): boolean {
+        log.debug('EnterGameOP');
         if (this._version < CLIENT_VERSION_MIN || this._version > CLIENT_VERSION_MAX){
             return false;
         }else{
@@ -112,7 +114,7 @@ export class EnterGameOP extends GameOperation {
             SendPlayerStatsOperation.writeToNetworkMessage(this._player, msg);
             SendWorldLightOperation.writeToNetworkMessage(game.worldLight.level, game.worldLight.color, msg);
             SendFullInventoryOperation.writeToNetworkMessage(this._player, msg);
-            SendTextMessageOperation.writeToNetworkMessage('Welcome to Senja Engine V.0.0.1', MESSAGE_TYPE.RED_MESSAGE_CONSOLE, msg);
+            SendTextMessageOperation.writeToNetworkMessage(WELCOME_MESSAGE, MESSAGE_TYPE.RED_MESSAGE_CONSOLE, msg);
             SendFullMapDescriptionOperation.writeToNetworkMessage(this._player.position, msg);
             await msg.send();
 

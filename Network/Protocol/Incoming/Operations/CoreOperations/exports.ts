@@ -6,6 +6,7 @@ import { LookAtOP } from './LookAtOP.class.ts';
 import { MoveThingOP } from './MoveThingOperation/MoveThingOP.class.ts';
 import { PingOP } from './PingOP.class.ts';
 import { PlayerModesOP } from './PlayerModesOP.class.ts';
+import { MouseClickMoveOP } from './PlayerMovementOperations/MouseClickMoveOP.class.ts';
 import { MoveEastOP } from './PlayerMovementOperations/MoveEastOP.class.ts';
 import { MoveNorthOP } from './PlayerMovementOperations/MoveNorthOP.class.ts';
 import { MoveSouthOP } from './PlayerMovementOperations/MoveSouthOP.class.ts';
@@ -37,5 +38,6 @@ export default {
     [PlayerModesOP.operationCode]: PlayerModesOP,
     [RequestChangeOutfitOP.operationCode]: RequestChangeOutfitOP,
     [RequestSetOutfitOP.operationCode]: RequestSetOutfitOP,
-    [UseItemOP.operationCode]: UseItemOP
+    [UseItemOP.operationCode]: UseItemOP,
+    [MouseClickMoveOP.operationCode]: MouseClickMoveOP
 }

@@ -58,7 +58,7 @@ export abstract class IncomingMoveOP extends IncomingGameOperation {
 
     protected async _networkOperations(walkSuccess : boolean): Promise<boolean> {
         if (walkSuccess){
-            const moveOp = new SendMoveCreatureOperation(this._player, this._oldPosition, this._newPosition, this._oldStackPosition, this._oldStackPosition);
+            const moveOp = new SendMoveCreatureOperation(this._player, this._oldPosition, this._newPosition, this._oldStackPosition);
             await moveOp.execute();
             const posMsgOp = new SendTextMessageOperation(`Position: { x: ${this._player.position.x}, y: ${this._player.position.y}, z: ${this._player.position.z} }`, MESSAGE_TYPE.PURPLE_MESSAGE_CONSOLE, this._player.client);
             await posMsgOp.execute();

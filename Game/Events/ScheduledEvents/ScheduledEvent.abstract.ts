@@ -1,6 +1,7 @@
-export abstract class GameOperation {
-    protected abstract _internalOperations(...args : any[]): boolean | Promise<boolean>;
-    protected abstract _networkOperations(...args : any[]): boolean | Promise<boolean>;
+import { GameOperation } from "~/Game/GameOperation.abstract.ts";
+
+export abstract class ScheduledEvent extends GameOperation {
+    protected _createdAt : number = Date.now(); 
 
     public async execute(): Promise<void | boolean> {
         const internalOperationsIsAsync = this._internalOperations.constructor.name === 'AsyncFunction';
@@ -8,11 +9,15 @@ export abstract class GameOperation {
         try {
             if (internalOperationsIsAsync){
                 if (await this._internalOperations()){
-                    await this._networkOperations();
+                    return await this._networkOperations();
+                }else{
+                    return false;
                 }
             }else{
                 if (this._internalOperations()){
-                    await this._networkOperations();
+                    return await this._networkOperations();
+                }else{
+                    return false;
                 }
             }
         }catch(err){

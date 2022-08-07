@@ -4,6 +4,7 @@ import { Creature } from 'Creature';
 import { Player } from 'Player';
 import { IPosition } from "Types";
 import { Item } from "Item";
+import { GAME_BEAT_MS } from '../../Constants/Game.const.ts';
 
 export class MapTile {
     constructor(x: number, y: number, z: number){
@@ -18,6 +19,7 @@ export class MapTile {
     private _downItems : Array<Thing> = []; //Downitems are unshifted to array
     private _position : IPosition = {} as IPosition;
     private _flags : any = {};
+    private _friction = 150;
 
     public get position() : IPosition {
         return this._position;
@@ -52,6 +54,10 @@ export class MapTile {
         this._ground = ground;
         if (ground instanceof Item){
             this.setFlagsFromItem(ground);
+
+            if (ground.attributes.speed){
+                this._friction = ground.attributes.speed;
+            }
         }
     }
 
@@ -63,6 +69,10 @@ export class MapTile {
 
         if (thing instanceof Item){
             this.setFlagsFromItem(thing);
+
+            if (thing.attributes.speed){
+                this._friction = thing.attributes.speed;
+            }
         }
     }
 
@@ -305,5 +315,21 @@ export class MapTile {
 
     public isWalkable() : boolean {
         return !this._flags.unpassable;
+    }
+
+    public getMovementSpeedMS(creatureSpeed : number) : number {
+        const friction = this._friction ? this._friction : 150;
+        
+        let interval = 1000;
+
+        if (friction > 0 && creatureSpeed > 0){
+            interval = 1000 * friction;
+        }
+
+        interval /= creatureSpeed;
+        const serverBeat = GAME_BEAT_MS; //ms
+
+        interval = Math.max(interval, serverBeat);
+        return interval;
     }
 }

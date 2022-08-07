@@ -18,6 +18,10 @@ export class Item extends Thing {
         return this._rawItem !== null && this._rawItem.flags ? this._rawItem.flags : {};
     }
 
+    public get attributes() : any {
+        return this._rawItem !== null && this._rawItem.attributes ? this._rawItem.attributes : {};
+    }
+
     public isContainer(){
         return this._rawItem.group === 'container';
     }

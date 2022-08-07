@@ -13,6 +13,9 @@ import { Player } from "./Player/Player.class.ts";
 import { SendMagicEffectOperation } from '../Network/Protocol/Outgoing/SendOperations/CoreSendOperations/SendMagicEffectOperation.class.ts';
 import { SendRemoveThingFromTileOperation } from '../Network/Protocol/Outgoing/SendOperations/CoreSendOperations/SendRemoveThingFromTileOperation.class.ts';
 import db from '../DB/index.ts';
+import { GAME_BEAT_MS } from 'Constants/Game.const.ts';
+import { ScheduledEvent } from './Events/ScheduledEvents/ScheduledEvent.abstract.ts';
+import { ScheduledWalkEvent } from './Events/ScheduledEvents/ScheduledWalkEvent.class.ts';
 
 const mutex = new Mutex();
 
@@ -21,15 +24,29 @@ class Game {
     private _players = players;
     private _worldLight : ILightInfo = { color: 0xD7, level: 40 };
     private _operationsCache : Array<GameOperation> = [];
-    private _loop : Loop = new Loop(this._mainloopLogic.bind(this), 20);
-    private _ticks : number = 0;
+    private _scheduledEventsCache : Array<ScheduledEvent> = [];
+    private _loop : Loop = new Loop(this._mainloopLogic.bind(this), 1000 / GAME_BEAT_MS);
+    private _ticks = 0;
+    private _gameBeatMs = GAME_BEAT_MS;
 
     public get loop() : Loop {
         return this._loop;
     }
 
+    public get ticks() : number {
+        return this._ticks;
+    }
+
+    public get gameBeatMS() : number {
+        return this._gameBeatMs;
+    }
+
     public addOperation(op : GameOperation) : void {
         this._operationsCache.unshift(op);
+    }
+
+    public addScheduledEvent(event : ScheduledEvent) : void {
+        this._scheduledEventsCache.unshift(event);
     }
 
     public get worldLight() : ILightInfo {
@@ -60,6 +77,18 @@ class Game {
                 await nextOperation.execute();
             }
             mutex.release(id);
+        }
+
+        while(this._scheduledEventsCache.length > 0){
+            const nextEvent = this._scheduledEventsCache.pop() as ScheduledEvent;
+
+            if (nextEvent !== undefined){
+                const success = await nextEvent.execute();
+                if (!success){
+                    log.debug(`Scheduled event failed`);
+                    this._scheduledEventsCache.push(nextEvent);
+                }
+            }
         }
 
         this._ticks++;

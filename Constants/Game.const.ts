@@ -1,3 +1,5 @@
+export const GAME_BEAT_MS = 50;
+
 export enum CREATURE_ID_RANGE {
     PLAYER_START_ID                       = 0x10000000,
     PLAYER_END_ID                         = 0x40000000,
@@ -58,8 +60,4 @@ export enum RETURN_MESSAGE {
     YOU_MUST_LEARN_SPELL_FIRST = 'You must learn this spell first.',
     CANNOT_LOGOUT_HERE = 'You can not logout here.',
     NOT_POSSIBLE = 'Sorry, not possible.'
-
-
-
-
 }

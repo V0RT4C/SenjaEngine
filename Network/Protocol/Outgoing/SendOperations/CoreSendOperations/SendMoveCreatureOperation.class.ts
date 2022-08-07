@@ -22,8 +22,7 @@ export class SendMoveCreatureOperation implements OutgoingSendOperation {
         private readonly _creature : Creature,
         private readonly _oldPosition : IPosition,
         private readonly _newPosition : IPosition,
-        private readonly _oldStackPosition : number,
-        private readonly _newStackPosition : number
+        private readonly _oldStackPosition : number
     ){}
 
     public async execute(){

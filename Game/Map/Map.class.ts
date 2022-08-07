@@ -55,7 +55,7 @@ class Map {
     }
 
     public getTileAt(position : IPosition) : MapTile | null {
-        log.debug('Map::getTileAt');
+        //log.debug('Map::getTileAt');
         const pointArr = this._floors[position.z].query({
             intersects: (range : Rect) => range.contains(new Point(position.x, position.y)),
             contains: (point : Point<MapTile>) => {
@@ -275,11 +275,12 @@ class Map {
 
     public loadMapFromOTBM(path : string){
         log.debug('Map::loadMapFromOTBM');
+        log.info(`[MAP] - Loading map from .OTBM...`);
         const otbmBuffer = Deno.readFileSync(path);
         const reader = new OTBMReader();
         reader.setOTBM(otbmBuffer);
         const nodeTree = reader.getNodeTree();
-
+        log.info(`[MAP] - Map size ${nodeTree.width}x${nodeTree.height}...`);
         let tileArea : OTBMTileArea | null = nodeTree.children[0].firstChild as unknown as OTBMTileArea;
 
         if (tileArea !== null){
@@ -333,10 +334,12 @@ class Map {
                 tileArea = tileArea.nextSibling as OTBMTileArea;
             }
         }
+
+        log.info(`[MAP] - Map loaded...`);
     }
 
     public getMapDescriptionAsBytes(position : IPosition, width: number, height: number, msg : OutgoingNetworkMessage) : OutgoingNetworkMessage {
-        log.debug('Map::getMapDescriptionAsBytes');
+        //log.debug('Map::getMapDescriptionAsBytes');
         const { x, y, z } = position;
 
         let skip = -1;
@@ -365,7 +368,7 @@ class Map {
     }
 
     public getFloorDescriptionAsBytes(position : IPosition, width : number, height : number, offset : number, skip: number, msg : OutgoingNetworkMessage){
-        log.debug('Map::getFloorDescriptionAsBytes');
+        //log.debug('Map::getFloorDescriptionAsBytes');
         const { x, y, z } = position;
 
         for (let nx=0; nx < width; nx++){
@@ -395,7 +398,7 @@ class Map {
     }
 
     public getTileDescriptionAsBytes(tile : MapTile, buffer : OutgoingNetworkMessage) {
-        log.debug('Map::getTileDescriptionAsBytes');
+        //log.debug('Map::getTileDescriptionAsBytes');
         let count : number;
         let ground : Thing = tile.getGround() as Thing;
 

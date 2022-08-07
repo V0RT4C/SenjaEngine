@@ -1,3 +1,4 @@
+import log from 'Logger';
 import { Thing } from 'Thing';
 
 import map from "Map";
@@ -5,6 +6,8 @@ import { CLIENT_VIEWPORT, CREATURE_DIRECTION, CREATURE_TYPE, DEFAULT_LOOK, FIGHT
 import { IOutfit, IPosition } from "Types";
 import { BASE_SPEED } from "Config";
 import { Skills } from "Game/Skills.class.ts";
+import { MapTile } from './Map/MapTile.class.ts';
+import { GAME_BEAT_MS } from '../Constants/Game.const.ts';
 
 export abstract class Creature extends Thing {
     protected _extId! : number;
@@ -25,7 +28,7 @@ export abstract class Creature extends Thing {
     //LookType 75 is GM
     protected _outfit : IOutfit = { lookType: DEFAULT_LOOK.LOOK_TYPE, lookTypeEx: 0, lookHead: DEFAULT_LOOK.LOOK_HEAD, lookBody: DEFAULT_LOOK.LOOK_BODY, lookLegs: DEFAULT_LOOK.LOOK_LEGS, lookFeet: DEFAULT_LOOK.LOOK_FEET, lookMount: 0 };
     protected _skills : Skills = new Skills();
-    protected _varSpeed : number = 0;
+    protected _lastWalkTimeMS = 0;
 
     protected abstract _type : CREATURE_TYPE;
 
@@ -126,11 +129,15 @@ export abstract class Creature extends Thing {
     }
 
     public get speed() : number {
-        return BASE_SPEED ? BASE_SPEED + this._varSpeed : 220;
+        return BASE_SPEED ? (BASE_SPEED + (2*(this._level - 1))) : 220;
     }
 
     public get type() : CREATURE_TYPE {
         return this._type;
+    }
+
+    public get lastWalkTimeMS() : number {
+        return this._lastWalkTimeMS;
     }
 
     public get fightMode() : FIGHT_MODE {
@@ -165,6 +172,7 @@ export abstract class Creature extends Thing {
         let { x, y, z } = this.position;
         if (map.moveCreatureByExtId(this.position, { x, y: --y, z }, this.extId)){
             this.direction = CREATURE_DIRECTION.NORTH;
+            this.onMove();
             return true;
         }else{
             return false;
@@ -175,6 +183,7 @@ export abstract class Creature extends Thing {
         let { x, y, z } = this.position;
         if (map.moveCreatureByExtId(this.position, { x, y: --y, z: --z }, this.extId)){
             this.direction = CREATURE_DIRECTION.NORTH;
+            this.onMove();
             return true;
         }else{
             return false;
@@ -185,6 +194,7 @@ export abstract class Creature extends Thing {
         let { x, y, z } = this.position;
         if (map.moveCreatureByExtId(this.position, { x: ++x, y, z }, this.extId)){
             this.direction = CREATURE_DIRECTION.EAST;
+            this.onMove();
             return true;
         }else{
             return false;
@@ -195,6 +205,7 @@ export abstract class Creature extends Thing {
         let { x, y, z } = this.position;
         if (map.moveCreatureByExtId(this.position, { x, y: ++y, z }, this.extId)){
             this.direction = CREATURE_DIRECTION.SOUTH;
+            this.onMove();
             return true;
         }else{
             return false;
@@ -205,6 +216,7 @@ export abstract class Creature extends Thing {
         let { x, y, z } = this.position;
         if (map.moveCreatureByExtId(this.position, { x: --x, y, z }, this.extId)){
             this.direction = CREATURE_DIRECTION.WEST;
+            this.onMove();
             return true;
         }else{
             return false;
@@ -215,10 +227,18 @@ export abstract class Creature extends Thing {
         let { x, y, z } = this.position;
         if (map.moveCreatureByExtId(this.position, { x, y: ++y, z: ++z }, this.extId)){
             this.direction = CREATURE_DIRECTION.SOUTH;
+            this.onMove();
             return true;
         }else{
             return false;
         }
+    }
+
+    public onMove(): void {
+        log.debug(`Speed over tile: ${this.getCurrentTileStepTimeMS()} ms`);
+        log.debug(`Speed over tile: ${this.getCurrentTileStepTimeGameTicks()} ticks`);
+        log.debug(`Can walk: ${this.canWalk()}`);
+        this._lastWalkTimeMS = Date.now();
     }
 
     public isHealthHidden() : boolean {
@@ -278,5 +298,27 @@ export abstract class Creature extends Thing {
         }else{
             this._direction = CREATURE_DIRECTION.WEST;
         }
+    }
+
+    public getCurrentTileStepTimeMS() : number {
+        const tile : MapTile | null = map.getTileAt(this._pos);
+
+        if (tile === null){
+            return 681.81;
+        }
+
+        return tile.getMovementSpeedMS(this.speed);
+    }
+
+    public getCurrentTileStepTimeGameTicks() : number {
+        return Math.max(Math.floor(this.getCurrentTileStepTimeMS() / GAME_BEAT_MS), 1);
+    }
+
+    public canWalk() : boolean {
+        if (this._lastWalkTimeMS === 0){
+            return true;
+        }
+
+        return (Date.now() - this._lastWalkTimeMS) >= this.getCurrentTileStepTimeMS();
     }
 }

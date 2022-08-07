@@ -174,12 +174,12 @@ export class Player extends Creature {
         return null;
     }
 
-    public onMove(){
-        log.debug(`${this._name} moved.`);
-        //Check if need to close containers.
-        //maybe by checking if container has parent and while has parent.
-        //Eventually will get to top parent. If top parent does not have inventory position then close container.
-    }
+    // public onMove(){
+    //     log.debug(`${this._name} moved.`);
+    //     //Check if need to close containers.
+    //     //maybe by checking if container has parent and while has parent.
+    //     //Eventually will get to top parent. If top parent does not have inventory position then close container.
+    // }
 
     private _connectionListener = () => {
         log.debug(`Player ${this._name} lost tcp connection.`);
