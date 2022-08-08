@@ -35,5 +35,7 @@ export enum WALK_DIRECTION {
     WEST,
     SOUTH_WEST,
     SOUTH,
-    SOUTH_EAST
+    SOUTH_EAST,
+    FLOOR_UP_NORTH,
+    FLOOR_DOWN
 }

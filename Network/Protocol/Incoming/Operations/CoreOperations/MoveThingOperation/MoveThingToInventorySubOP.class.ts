@@ -1,3 +1,4 @@
+import log from 'Logger';
 import map from "Map";
 import { IncomingGameOperation } from "ProtocolIncoming/Operations/IncomingGameOperation.abstract.ts";
 import { IncomingNetworkMessage } from "Network/Lib/IncomingNetworkMessage.class.ts";
@@ -32,6 +33,7 @@ export class MoveThingToInventorySubOP extends IncomingGameOperation {
     private _itemAddToGroundId : number | undefined;
 
     protected _internalOperations() : boolean {
+        log.debug(`MoveThingToInventorySubOP`);
         if (this._toPosition.x === 0xFFFF && this._fromPosition.x !== 0xFFFF) {
 
             if (0x40 & this._toPosition.y){

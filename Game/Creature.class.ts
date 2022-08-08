@@ -8,6 +8,7 @@ import { BASE_SPEED } from "Config";
 import { Skills } from "Game/Skills.class.ts";
 import { MapTile } from './Map/MapTile.class.ts';
 import { GAME_BEAT_MS } from '../Constants/Game.const.ts';
+import game from './Game.class.ts';
 
 export abstract class Creature extends Thing {
     protected _extId! : number;
@@ -29,6 +30,9 @@ export abstract class Creature extends Thing {
     protected _outfit : IOutfit = { lookType: DEFAULT_LOOK.LOOK_TYPE, lookTypeEx: 0, lookHead: DEFAULT_LOOK.LOOK_HEAD, lookBody: DEFAULT_LOOK.LOOK_BODY, lookLegs: DEFAULT_LOOK.LOOK_LEGS, lookFeet: DEFAULT_LOOK.LOOK_FEET, lookMount: 0 };
     protected _skills : Skills = new Skills();
     protected _lastWalkTimeMS = 0;
+    protected _lastWalkTimeGameTicks = 0;
+    protected _isAutoWalking = false;
+    protected _autoWalkId = -1;
 
     protected abstract _type : CREATURE_TYPE;
 
@@ -144,8 +148,24 @@ export abstract class Creature extends Thing {
         return this._fightMode;
     }
 
+    public get autoWalkId() : number {
+        return this._autoWalkId;
+    }
+
+    public set autoWalkId(value : number) {
+        this._autoWalkId = value;
+    }
+
     public set fightMode(value : FIGHT_MODE) {
         this._fightMode = value;
+    }
+
+    public set isAutoWalking(value : boolean) {
+        this._isAutoWalking = value;
+    }
+
+    public get isAutoWalking() : boolean {
+        return this._isAutoWalking;
     }
 
     public turnNorth() : CREATURE_DIRECTION {
@@ -169,10 +189,35 @@ export abstract class Creature extends Thing {
     }
 
     public moveNorth(){
+        this.onMove();
         let { x, y, z } = this.position;
         if (map.moveCreatureByExtId(this.position, { x, y: --y, z }, this.extId)){
             this.direction = CREATURE_DIRECTION.NORTH;
-            this.onMove();
+            return true;
+        }else{
+            return false;
+        }
+    }
+
+    public moveNorthEast(){
+        this.onMove();
+        let { x, y, z } = this.position;
+        if (map.moveCreatureByExtId(this.position, { x: ++x, y: --y, z }, this.extId)){
+            this.direction = CREATURE_DIRECTION.EAST;
+            return true;
+        }else{
+            return false;
+        }
+    }
+
+    public moveNorthWest(){
+        if (!this.isAllowedToWalk()){
+            return false;
+        }
+        this.onMove();
+        let { x, y, z } = this.position;
+        if (map.moveCreatureByExtId(this.position, { x: --x, y: --y, z }, this.extId)){
+            this.direction = CREATURE_DIRECTION.WEST;
             return true;
         }else{
             return false;
@@ -180,10 +225,11 @@ export abstract class Creature extends Thing {
     }
 
     public moveUpNorth(){
+        //this.onMove();
+        this._previousPos = this.position;
         let { x, y, z } = this.position;
         if (map.moveCreatureByExtId(this.position, { x, y: --y, z: --z }, this.extId)){
             this.direction = CREATURE_DIRECTION.NORTH;
-            this.onMove();
             return true;
         }else{
             return false;
@@ -191,10 +237,10 @@ export abstract class Creature extends Thing {
     }
 
     public moveEast(){
+        this.onMove();
         let { x, y, z } = this.position;
         if (map.moveCreatureByExtId(this.position, { x: ++x, y, z }, this.extId)){
             this.direction = CREATURE_DIRECTION.EAST;
-            this.onMove();
             return true;
         }else{
             return false;
@@ -202,10 +248,32 @@ export abstract class Creature extends Thing {
     }
 
     public moveSouth(){
+        this.onMove();
         let { x, y, z } = this.position;
         if (map.moveCreatureByExtId(this.position, { x, y: ++y, z }, this.extId)){
             this.direction = CREATURE_DIRECTION.SOUTH;
-            this.onMove();
+            return true;
+        }else{
+            return false;
+        }
+    }
+
+    public moveSouthEast(){
+        this.onMove();
+        let { x, y, z } = this.position;
+        if (map.moveCreatureByExtId(this.position, { x: ++x, y: ++y, z }, this.extId)){
+            this.direction = CREATURE_DIRECTION.EAST;
+            return true;
+        }else{
+            return false;
+        }
+    }
+
+    public moveSouthWest(){
+        this.onMove();
+        let { x, y, z } = this.position;
+        if (map.moveCreatureByExtId(this.position, { x: --x, y: ++y, z }, this.extId)){
+            this.direction = CREATURE_DIRECTION.EAST;
             return true;
         }else{
             return false;
@@ -213,10 +281,10 @@ export abstract class Creature extends Thing {
     }
 
     public moveWest(){
+        this.onMove();
         let { x, y, z } = this.position;
         if (map.moveCreatureByExtId(this.position, { x: --x, y, z }, this.extId)){
             this.direction = CREATURE_DIRECTION.WEST;
-            this.onMove();
             return true;
         }else{
             return false;
@@ -224,10 +292,11 @@ export abstract class Creature extends Thing {
     }
 
     public moveDown(){
+        //this.onMove();
+        this._previousPos = this.position;
         let { x, y, z } = this.position;
         if (map.moveCreatureByExtId(this.position, { x, y: ++y, z: ++z }, this.extId)){
             this.direction = CREATURE_DIRECTION.SOUTH;
-            this.onMove();
             return true;
         }else{
             return false;
@@ -235,10 +304,9 @@ export abstract class Creature extends Thing {
     }
 
     public onMove(): void {
-        log.debug(`Speed over tile: ${this.getCurrentTileStepTimeMS()} ms`);
-        log.debug(`Speed over tile: ${this.getCurrentTileStepTimeGameTicks()} ticks`);
-        log.debug(`Can walk: ${this.canWalk()}`);
         this._lastWalkTimeMS = Date.now();
+        this._lastWalkTimeGameTicks = game.ticks;
+        this._previousPos = this.position;
     }
 
     public isHealthHidden() : boolean {
@@ -307,18 +375,46 @@ export abstract class Creature extends Thing {
             return 681.81;
         }
 
-        return tile.getMovementSpeedMS(this.speed);
+        if (this.getLastMoveCost() === 2){
+            return tile.getMovementSpeedMS(220) * 2;
+        }else{
+            return tile.getMovementSpeedMS(this.speed);
+        }
     }
 
     public getCurrentTileStepTimeGameTicks() : number {
         return Math.max(Math.floor(this.getCurrentTileStepTimeMS() / GAME_BEAT_MS), 1);
     }
 
-    public canWalk() : boolean {
-        if (this._lastWalkTimeMS === 0){
+    public getNextAllowedWalkInGameTicks() : number {
+        return Math.floor(this.getCurrentTileStepTimeGameTicks()) + game.ticks;
+    }
+
+    public getLastMoveCost() : number {
+        // if (this._previousPos.z !== this.position.z){
+        //     return 2;
+        // }
+
+        if (this._previousPos.x !== this.position.x && (this._previousPos.y > this.position.y || this._previousPos.y < this.position.y)){
+            return 2;
+        }
+
+        return 1;
+    }
+
+    public isAllowedToWalk() : boolean {
+        if (this._lastWalkTimeGameTicks === 0){
             return true;
         }
 
-        return (Date.now() - this._lastWalkTimeMS) >= this.getCurrentTileStepTimeMS();
+        return (game.ticks - this._lastWalkTimeGameTicks) >= this.getCurrentTileStepTimeGameTicks();
+    }
+
+    public stopAutoWalk() : boolean {
+        return game.removeScheduledTaskById(this._autoWalkId);
+    }
+
+    public getCurrentTile() : MapTile | null {
+        return map.getTileAt(this.position);
     }
 }

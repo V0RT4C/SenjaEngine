@@ -13,7 +13,7 @@ export const WELCOME_MESSAGE = 'Welcome to Senja Engine V.0.0.2\nYour last visit
  * {DEBUG|INFO|WARNING|ERROR}
  */
 
-export const LOG_LEVEL = 'INFO';
+export const LOG_LEVEL = 'DEBUG';
 
 /**
  *  Allowed client versions

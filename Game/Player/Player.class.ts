@@ -4,6 +4,7 @@ import { Creature } from 'Creature';
 import { CHASE_MODE, CREATURE_TYPE, PARTY_SHIELD, PLAYER_SEX, SAFE_FIGHT_MODE, SKULL, THING_TYPE } from 'Constants';
 import { Inventory } from "Game/Player/Inventory.class.ts";
 import { Container } from "Game/Container.class.ts";
+import game from '../Game.class.ts';
 
 export class Player extends Creature {
     constructor(name : string, extId: number, client : TCP.Client){
@@ -172,6 +173,10 @@ export class Player extends Creature {
         }
 
         return null;
+    }
+
+    public hasActiveWalkTask() : boolean {
+        return game.playerHasActiveWalkTask(this);
     }
 
     // public onMove(){

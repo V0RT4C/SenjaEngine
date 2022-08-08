@@ -37,7 +37,7 @@ export class MoveThingFromInventoryToInventorySubOP extends IncomingGameOperatio
     private _moveFromInventoryToInventory = false;
 
     protected _internalOperations() : boolean {
-        log.debug('MoveThingFromInventoryToInventory');
+        log.debug('MoveThingFromInventoryToInventorySubOP');
         if (0x40 & this._fromPosition.y){
             this._fromContainerId = this._fromPosition.y & 0x0F;
         }else{

@@ -1,3 +1,4 @@
+import log from 'Logger';
 import { OutgoingNetworkMessage } from "Network/Lib/OutgoingNetworkMessage.class.ts";
 import { IncomingGameOperation } from "ProtocolIncoming/Operations/IncomingGameOperation.abstract.ts";
 import { SendMoveCreatureOperation } from "CoreSendOperations/SendMoveCreatureOperation.class.ts";
@@ -27,6 +28,8 @@ export abstract class IncomingMoveOP extends IncomingGameOperation {
     protected abstract _doMove() : boolean;
 
     protected _internalOperations() : boolean {
+        log.debug(`IncomingMoveOP`);
+
         this._oldPosition = this._player.position;
         const oldTile : MapTile | null = map.getTileAt(this._oldPosition);
         if (oldTile === null){
@@ -57,23 +60,24 @@ export abstract class IncomingMoveOP extends IncomingGameOperation {
     }
 
     protected async _networkOperations(walkSuccess : boolean): Promise<boolean> {
-        if (walkSuccess){
-            const moveOp = new SendMoveCreatureOperation(this._player, this._oldPosition, this._newPosition, this._oldStackPosition);
-            await moveOp.execute();
-            const posMsgOp = new SendTextMessageOperation(`Position: { x: ${this._player.position.x}, y: ${this._player.position.y}, z: ${this._player.position.z} }`, MESSAGE_TYPE.PURPLE_MESSAGE_CONSOLE, this._player.client);
-            await posMsgOp.execute();
-            return true;
-        }else{
-            const msg = OutgoingNetworkMessage
-                            .withClient(this._player.client,
-                                SendCancelWalkOperation.messageSize +
-                                SendTextMessageOperation.messageSize
-                            );
+        // if (walkSuccess){
+        //     const moveOp = new SendMoveCreatureOperation(this._player, this._oldPosition, this._newPosition, this._oldStackPosition);
+        //     await moveOp.execute();
+        //     const posMsgOp = new SendTextMessageOperation(`Position: { x: ${this._player.position.x}, y: ${this._player.position.y}, z: ${this._player.position.z} }`, MESSAGE_TYPE.PURPLE_MESSAGE_CONSOLE, this._player.client);
+        //     await posMsgOp.execute();
+        //     return true;
+        // }else{
+        //     const msg = OutgoingNetworkMessage
+        //                     .withClient(this._player.client,
+        //                         SendCancelWalkOperation.messageSize +
+        //                         SendTextMessageOperation.messageSize
+        //                     );
 
-            SendCancelWalkOperation.writeToNetworkMessage(this._player.direction, msg);
-            SendTextMessageOperation.writeToNetworkMessage(RETURN_MESSAGE.NOT_POSSIBLE, MESSAGE_TYPE.WHITE_MESSAGE_SCREEN_BOTTOM_AND_CONSOLE, msg);
-            await msg.send();
-            return false;
-        }
+        //     SendCancelWalkOperation.writeToNetworkMessage(this._player.direction, msg);
+        //     SendTextMessageOperation.writeToNetworkMessage(RETURN_MESSAGE.NOT_POSSIBLE, MESSAGE_TYPE.WHITE_MESSAGE_SCREEN_BOTTOM_AND_CONSOLE, msg);
+        //     await msg.send();
+        //     return false;
+        // }
+        return true;
     }
 }

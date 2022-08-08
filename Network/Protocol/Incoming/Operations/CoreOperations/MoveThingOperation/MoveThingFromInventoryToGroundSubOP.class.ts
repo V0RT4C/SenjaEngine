@@ -30,7 +30,7 @@ export class MoveThingFromInventoryToGroundSubOP extends IncomingGameOperation {
     private _fromInventory = false;
 
     protected _internalOperations() : boolean {
-        log.debug('MoveThingFromInventoryToGround');
+        log.debug('MoveThingFromInventoryToGroundSubOP');
         if (this._fromPosition.x === 0xFFFF && this._toPosition.x !== 0xFFFF){
 
             if(0x40 & this._fromPosition.y) {

@@ -11,6 +11,7 @@ export abstract class Thing {
     protected _thingId! : number;
     protected _tileIndex : number = -1;
     protected _pos : IPosition = { x: -1, y: -1, z: -1 };
+    protected _previousPos : IPosition = { x: -1, y: -1, z: -1 };
     protected _lightInfo : ILightInfo = { color: 0xD7, level: 5 };
     protected abstract _thingType : THING_TYPE;
 

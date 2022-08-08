@@ -11,6 +11,7 @@ import { MoveEastOP } from './PlayerMovementOperations/MoveEastOP.class.ts';
 import { MoveNorthOP } from './PlayerMovementOperations/MoveNorthOP.class.ts';
 import { MoveSouthOP } from './PlayerMovementOperations/MoveSouthOP.class.ts';
 import { MoveWestOP } from './PlayerMovementOperations/MoveWestOP.class.ts';
+import { StopAutoWalkOP } from './PlayerMovementOperations/StopAutoWalkOP.class.ts';
 import { TurnCreatureEastOP } from './PlayerMovementOperations/TurnCreatureEastOP.class.ts';
 import { TurnCreatureNorthOP } from './PlayerMovementOperations/TurnCreatureNorthOP.class.ts';
 import { TurnCreatureSouthOP } from './PlayerMovementOperations/TurnCreatureSouthOP.class.ts';
@@ -39,5 +40,6 @@ export default {
     [RequestChangeOutfitOP.operationCode]: RequestChangeOutfitOP,
     [RequestSetOutfitOP.operationCode]: RequestSetOutfitOP,
     [UseItemOP.operationCode]: UseItemOP,
-    [MouseClickMoveOP.operationCode]: MouseClickMoveOP
+    [MouseClickMoveOP.operationCode]: MouseClickMoveOP,
+    [StopAutoWalkOP.operationCode]: StopAutoWalkOP
 }

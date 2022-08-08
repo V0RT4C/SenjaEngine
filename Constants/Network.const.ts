@@ -54,7 +54,7 @@ export enum PROTOCOL_RECEIVE {
     MOVE_EAST                                           = 0x66,
     MOVE_SOUTH                                          = 0x67,
     MOVE_WEST                                           = 0x68,
-    STOP_WALK                                           = 0x69,
+    STOP_AUTO_WALK                                      = 0x69,
     MOVE_NORTH_EAST                                     = 0x6A,
     MOVE_SOUTH_EAST                                     = 0x6B,
     MOVE_SOUTH_WEST                                     = 0x6C,

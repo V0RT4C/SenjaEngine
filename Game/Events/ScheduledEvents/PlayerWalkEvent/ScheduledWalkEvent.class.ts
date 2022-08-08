@@ -1,10 +1,10 @@
 import { WALK_DIRECTION } from "Constants/Map.const.ts";
-import { IPosition } from "../../../@types/App.d.ts";
-import { SendMoveCreatureOperation } from "../../../Network/Protocol/Outgoing/SendOperations/CoreSendOperations/SendMoveCreatureOperation.class.ts";
-import map from "../../Map/Map.class.ts";
-import { MapTile } from "../../Map/MapTile.class.ts";
-import { Player } from "../../Player/Player.class.ts";
-import { ScheduledEvent } from "./ScheduledEvent.abstract.ts";
+import { IPosition } from "../../../../@types/App.d.ts";
+import { SendMoveCreatureOperation } from "../../../../Network/Protocol/Outgoing/SendOperations/CoreSendOperations/SendMoveCreatureOperation.class.ts";
+import map from "../../../Map/Map.class.ts";
+import { MapTile } from "../../../Map/MapTile.class.ts";
+import { Player } from "../../../Player/Player.class.ts";
+import { ScheduledEvent } from "./../ScheduledEvent.abstract.ts";
 
 export class ScheduledWalkEvent extends ScheduledEvent {
     constructor(
@@ -20,7 +20,7 @@ export class ScheduledWalkEvent extends ScheduledEvent {
     }
 
     protected _internalOperations(): boolean {
-        if (!this._player.canWalk()){
+        if (!this._player.isAllowedToWalk()){
             return false;
         }
 

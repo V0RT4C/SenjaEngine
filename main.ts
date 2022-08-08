@@ -1,8 +1,8 @@
+import game from 'Game';
 import log from 'Logger';
 log.info('[GAME] - Starting game...');
 import { startServer as startTCPLoginServer } from 'TCPLoginServer';
 import { startServer as startTCPGameServer } from 'TCPGameServer';
-import game from 'Game';
 import map from 'Map';
 import rawItems from 'RawItems';
 

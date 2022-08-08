@@ -14,8 +14,9 @@ import { SendMagicEffectOperation } from '../Network/Protocol/Outgoing/SendOpera
 import { SendRemoveThingFromTileOperation } from '../Network/Protocol/Outgoing/SendOperations/CoreSendOperations/SendRemoveThingFromTileOperation.class.ts';
 import db from '../DB/index.ts';
 import { GAME_BEAT_MS } from 'Constants/Game.const.ts';
-import { ScheduledEvent } from './Events/ScheduledEvents/ScheduledEvent.abstract.ts';
-import { ScheduledWalkEvent } from './Events/ScheduledEvents/ScheduledWalkEvent.class.ts';
+import { ScheduledTask } from './Tasks/ScheduledTasks/ScheduledTask.abstract.ts';
+import { ScheduledTaskGroup } from './Tasks/ScheduledTasks/ScheduledTaskGroup.abstract.ts';
+import { ScheduledPlayerWalkTask } from './Tasks/ScheduledTasks/PlayerAutoWalkTask/ScheduledPlayerWalkTask.class.ts';
 
 const mutex = new Mutex();
 
@@ -24,7 +25,7 @@ class Game {
     private _players = players;
     private _worldLight : ILightInfo = { color: 0xD7, level: 40 };
     private _operationsCache : Array<GameOperation> = [];
-    private _scheduledEventsCache : Array<ScheduledEvent> = [];
+    private _scheduledTasksCache : Array<ScheduledTask | ScheduledTaskGroup> = [];
     private _loop : Loop = new Loop(this._mainloopLogic.bind(this), 1000 / GAME_BEAT_MS);
     private _ticks = 0;
     private _gameBeatMs = GAME_BEAT_MS;
@@ -45,8 +46,32 @@ class Game {
         this._operationsCache.unshift(op);
     }
 
-    public addScheduledEvent(event : ScheduledEvent) : void {
-        this._scheduledEventsCache.unshift(event);
+    public addScheduledTask(task : ScheduledTask | ScheduledTaskGroup) : void {
+        this._scheduledTasksCache.unshift(task);
+    }
+
+    public removeScheduledTaskById(id : number) : boolean {
+        let idx = -1;
+
+        for (let i=0; i < this._scheduledTasksCache.length; i++){
+            if (this._scheduledTasksCache[i].id === id){
+                idx = i;
+                break;
+            }
+        }
+
+        if (idx !== -1){
+            const task = this._scheduledTasksCache[idx];
+
+            if (task instanceof ScheduledTaskGroup){
+                task.onAbort();
+            }
+            
+            this._scheduledTasksCache.splice(idx, 1);
+            return true;
+        }else{
+            return false;
+        }
     }
 
     public get worldLight() : ILightInfo {
@@ -79,14 +104,27 @@ class Game {
             mutex.release(id);
         }
 
-        while(this._scheduledEventsCache.length > 0){
-            const nextEvent = this._scheduledEventsCache.pop() as ScheduledEvent;
-
-            if (nextEvent !== undefined){
-                const success = await nextEvent.execute();
-                if (!success){
-                    log.debug(`Scheduled event failed`);
-                    this._scheduledEventsCache.push(nextEvent);
+        if(this._scheduledTasksCache.length > 0){
+            for (let i=this._scheduledTasksCache.length - 1; i >= 0; i--){
+                const nextTask = this._scheduledTasksCache[i];
+    
+                if (nextTask !== undefined){
+                    if (nextTask instanceof ScheduledTaskGroup){    
+                        const next = await nextTask.executeNextTask();
+                        if (next === false){
+                            this._scheduledTasksCache.splice(i, 1);
+                        }
+                    }else{
+                        if (game.ticks >= nextTask.scheduledAtGameTick){
+                            const success = await nextTask.execute();
+                            if (!success){
+                                log.debug(`Scheduled event failed`);
+                                this._scheduledTasksCache.pop();
+                            }else{
+                                this._scheduledTasksCache.pop();
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -120,6 +158,18 @@ class Game {
             const magicEffectOp = new SendMagicEffectOperation(3, player.position);
             magicEffectOp.execute();
         }
+    }
+
+    public playerHasActiveWalkTask(player : Player){
+        for (const task of this._scheduledTasksCache){
+            if (task instanceof ScheduledPlayerWalkTask){
+                if (task.player === player){
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
 }
 
