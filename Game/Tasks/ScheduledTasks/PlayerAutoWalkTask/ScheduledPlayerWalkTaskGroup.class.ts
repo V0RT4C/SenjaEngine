@@ -1,5 +1,4 @@
 import { Player } from "~/Game/Player/Player.class.ts";
-import { ScheduledTask } from "../ScheduledTask.abstract.ts";
 import { ScheduledTaskGroup } from "../ScheduledTaskGroup.abstract.ts";
 import { ScheduledPlayerWalkTask } from "./ScheduledPlayerWalkTask.class.ts";
 
@@ -22,27 +21,38 @@ export class ScheduledPlayerWalkTaskGroup extends ScheduledTaskGroup {
         this._player.isAutoWalking = false;
     }
 
+    public canExecuteNextTask(): boolean {
+        if (this._list[this._list.length - 1] !== undefined){
+            return (this._list[this._list.length - 1] as ScheduledPlayerWalkTask).player.isAllowedToWalk();
+        }else{
+            return true;
+        }
+    }
+
     public async executeNextTask(): Promise<boolean> {
+        if (!this.canExecuteNextTask()){
+            return false;
+        }
+
         if (!this._hasStarted){
             this._hasStarted = true;
             this.onStart();
         }
 
-        const nextTask : ScheduledTask | undefined = this._list[this._list.length - 1];
+        const nextTask : ScheduledPlayerWalkTask | undefined = this._list[this._list.length - 1] as ScheduledPlayerWalkTask;
         
         if (nextTask === undefined){
             this.onFinish();
             return false;
         }
 
+        if (!nextTask.player.isAllowedToWalk()){
+            return false;
+        }
+
         const walkSuccess = await nextTask.execute();
         if (!walkSuccess){
-            if (!(nextTask as ScheduledPlayerWalkTask).isAllowedToWalk){
-                return true;
-            }else{
-                this.onAbort();
-                return false;
-            }
+            return false;
         }
 
         this._list.pop();

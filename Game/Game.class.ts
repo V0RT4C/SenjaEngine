@@ -109,10 +109,12 @@ class Game {
                 const nextTask = this._scheduledTasksCache[i];
     
                 if (nextTask !== undefined){
-                    if (nextTask instanceof ScheduledTaskGroup){    
-                        const next = await nextTask.executeNextTask();
-                        if (next === false){
-                            this._scheduledTasksCache.splice(i, 1);
+                    if (nextTask instanceof ScheduledTaskGroup){
+                        if (nextTask.canExecuteNextTask()){
+                            const next = await nextTask.executeNextTask();
+                            if (next === false){
+                                this._scheduledTasksCache.splice(i, 1);
+                            }
                         }
                     }else{
                         if (game.ticks >= nextTask.scheduledAtGameTick){

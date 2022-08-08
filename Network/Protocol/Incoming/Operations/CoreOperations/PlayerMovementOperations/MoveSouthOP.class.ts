@@ -5,8 +5,6 @@ import { StaticOperationCode } from "Types";
 import game from "../../../../../../Game/Game.class.ts";
 import { ScheduledPlayerWalkTask } from "../../../../../../Game/Tasks/ScheduledTasks/PlayerAutoWalkTask/ScheduledPlayerWalkTask.class.ts";
 import { WALK_DIRECTION } from "../../../../../../Constants/Map.const.ts";
-import { SendCancelWalkOperation } from "../../../../Outgoing/SendOperations/CoreSendOperations/SendCancelWalkOperation.class.ts";
-import { MapTile } from "../../../../../../Game/Map/MapTile.class.ts";
 
 @StaticImplements<StaticOperationCode>()
 export class MoveSouthOP extends IncomingMoveOP {
@@ -14,20 +12,7 @@ export class MoveSouthOP extends IncomingMoveOP {
     public static operationCode = PROTOCOL_RECEIVE.MOVE_SOUTH;
 
     protected _doMove(): boolean {
-        if ((this._player.getCurrentTile() as MapTile).isFloorChange()){
-            const cancelOp = new SendCancelWalkOperation(this._player);
-            cancelOp.execute();
-        }
-
-        if (this._player.hasActiveWalkTask()){
-            console.log('Active walk scheduled');
-            return false;
-        }
-
-        //if (!this._player.isAllowedToWalk()){
-            game.addScheduledTask(new ScheduledPlayerWalkTask(this._player, WALK_DIRECTION.SOUTH, this._player.getNextAllowedWalkInGameTicks()));
-            return false;
-        //}
-        //return this._player.moveSouth();
+        game.addScheduledTask(new ScheduledPlayerWalkTask(this._player, WALK_DIRECTION.SOUTH, this._player.getNextAllowedWalkInGameTicks()));
+        return true;
     }
 }

@@ -9,6 +9,7 @@ import { OutgoingNetworkMessage } from "../../../../../Lib/OutgoingNetworkMessag
 import { SendCancelWalkOperation } from "../../../../Outgoing/SendOperations/CoreSendOperations/SendCancelWalkOperation.class.ts";
 import { RETURN_MESSAGE } from "../../../../../../Constants/Game.const.ts";
 import { MESSAGE_TYPE } from "../../../../../../Constants/Network.const.ts";
+import { SendWaitWalkOP } from '../../../../Outgoing/SendOperations/CoreSendOperations/SendWaitWalkOP.class.ts';
 
 export class FloorChangeOP extends GameOperation {
     constructor(private readonly _player : Player){

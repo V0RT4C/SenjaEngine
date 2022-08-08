@@ -1,3 +1,4 @@
+import log from 'Logger';
 import { IncomingGameOperation } from "../../IncomingGameOperation.abstract.ts";
 import { StaticImplements } from "Decorators";
 import { StaticOperationCode } from "Types";
@@ -25,6 +26,7 @@ export class MouseClickMoveOP extends IncomingGameOperation {
     }
 
     protected _internalOperations(): boolean {
+        log.debug(`MouseClickMove`);
         if (this._player.isAutoWalking){
             const stopAutoWalkSucceeded = this._player.stopAutoWalk();
 

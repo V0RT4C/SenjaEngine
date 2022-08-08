@@ -36,6 +36,7 @@ export enum PROTOCOL_SEND {
     REQUEST_PING_BACK_OTCLIENT                          = 0x1E,
     TEXT_MESSAGE                                        = 0xB4,
     CANCEL_WALK                                         = 0xB5,
+    WAIT_WALK                                           = 0xB6,
     FLOOR_CHANGE_UP                                     = 0xBE,
     FLOOR_CHANGE_DOWN                                   = 0xBF,
     EDIT_OUTFIT                                         = 0xC8

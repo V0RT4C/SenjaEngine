@@ -16,6 +16,7 @@ import { NETWORK_MESSAGE_SIZES } from "Constants";
 import { SendPlayerFloorChangeUpOperation } from "CoreSendOperations/SendPlayerFloorChangeUpOperation.class.ts";
 import { SendPlayerFloorChangeDownOperation } from "./SendPlayerFloorChangeDownOperation.class.ts";
 import { AddCreatureToMapOP } from "./AddCreatureToMapOP.class.ts";
+import { SendWaitWalkOP } from "./SendWaitWalkOP.class.ts";
 
 export class SendMoveCreatureOperation implements OutgoingSendOperation {
     constructor(
@@ -82,6 +83,11 @@ export class SendMoveCreatureOperation implements OutgoingSendOperation {
                 else if (this._oldPosition.x > this._newPosition.x){
                     const op = new SendLeftRowMapDescriptionOperation(this._newPosition, player.client);
                     await op.execute();
+                }
+
+                if (player.lastMoveWasDiagonal() || player.lastMoveWasFloorChange()){
+                    const ops = new SendWaitWalkOP(player.getCurrentTileStepTimeWithCostsMS(), player.client);
+                    await ops.execute();
                 }
             }
             else if (player.canSee(this._oldPosition) && player.canSee(this._newPosition)){

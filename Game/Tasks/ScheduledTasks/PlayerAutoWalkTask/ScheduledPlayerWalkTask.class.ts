@@ -19,22 +19,16 @@ export class ScheduledPlayerWalkTask extends ScheduledTask {
 
     private _oldPosition! : IPosition;
     private _oldStackPosition! : number;
-    private _isAllowedToWalk = true;
 
     public get player() : Player {
         return this._player;
     }
 
-    public get isAllowedToWalk() : boolean {
-        return this._isAllowedToWalk;
-    }
 
     protected _internalOperations(): boolean {
         if (!this._player.isAllowedToWalk()){
-            this._isAllowedToWalk = false;
             return false;
         }
-
         this._oldPosition = this._player.position;
 
         const oldTile : MapTile | null = map.getTileAt(this._oldPosition);
