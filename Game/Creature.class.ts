@@ -9,6 +9,7 @@ import { Skills } from "Game/Skills.class.ts";
 import { MapTile } from './Map/MapTile.class.ts';
 import { GAME_BEAT_MS } from '../Constants/Game.const.ts';
 import game from './Game.class.ts';
+import { WALK_DIRECTION } from '../Constants/Map.const.ts';
 
 export abstract class Creature extends Thing {
     protected _extId! : number;
@@ -32,8 +33,9 @@ export abstract class Creature extends Thing {
     protected _lastWalkTimeMS = 0;
     protected _lastWalkTimeGameTicks = 0;
     protected _nextAllowableWalkTimeGameTicks = 0;
-    protected _isAutoWalking = false;
+    protected _nextAllowableWalkTimeMS = 0;
     protected _autoWalkId = -1;
+    protected _scheduledWalkTasks : WALK_DIRECTION[] = [];
 
     protected abstract _type : CREATURE_TYPE;
 
@@ -161,12 +163,8 @@ export abstract class Creature extends Thing {
         this._fightMode = value;
     }
 
-    public set isAutoWalking(value : boolean) {
-        this._isAutoWalking = value;
-    }
-
-    public get isAutoWalking() : boolean {
-        return this._isAutoWalking;
+    public get scheduledWalkTasks() : WALK_DIRECTION[] {
+        return this._scheduledWalkTasks;
     }
 
     public turnNorth() : CREATURE_DIRECTION {
@@ -347,6 +345,7 @@ export abstract class Creature extends Thing {
         this._lastWalkTimeMS = Date.now();
         this._lastWalkTimeGameTicks = game.ticks;
         this._nextAllowableWalkTimeGameTicks = this._lastWalkTimeGameTicks + this.getCurrentTileStepTickTimeWithCosts();
+        this._nextAllowableWalkTimeMS = this._lastWalkTimeMS + this.getCurrentTileStepTimeWithCostsMS();
     }
 
     public isHealthHidden() : boolean {
@@ -482,10 +481,21 @@ export abstract class Creature extends Thing {
 
     public isAllowedToWalk() : boolean {
         return game.ticks >= this._nextAllowableWalkTimeGameTicks;
+        //return Date.now() >= this._nextAllowableWalkTimeMS;
     }
 
-    public stopAutoWalk() : boolean {
-        return game.removeScheduledTaskById(this._autoWalkId);
+    public addWalkTask(direction : WALK_DIRECTION) : void {
+        this._scheduledWalkTasks.unshift(direction);
+    }
+
+    public stopAutoWalk() : void {
+        //return game.removeScheduledTaskById(this._autoWalkId);
+        this._scheduledWalkTasks.length = 0;
+        this._scheduledWalkTasks = [];
+    }
+
+    public isAutoWalking() : boolean {
+        return this._scheduledWalkTasks.length > 1;
     }
 
     public getCurrentTile() : MapTile | null {

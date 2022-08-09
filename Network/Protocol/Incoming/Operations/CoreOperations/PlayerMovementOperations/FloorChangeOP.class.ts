@@ -3,13 +3,12 @@ import { GameOperation } from "Game/GameOperation.abstract.ts";
 import { Player } from "Player";
 import { MapTile } from "MapTile";
 import map from "Map";
-import { SendMoveCreatureOperation } from "../../../../Outgoing/SendOperations/CoreSendOperations/SendMoveCreatureOperation.class.ts";
-import { SendTextMessageOperation } from "../../../../Outgoing/SendOperations/CoreSendOperations/SendTextMessageOperation.class.ts";
-import { OutgoingNetworkMessage } from "../../../../../Lib/OutgoingNetworkMessage.class.ts";
-import { SendCancelWalkOperation } from "../../../../Outgoing/SendOperations/CoreSendOperations/SendCancelWalkOperation.class.ts";
-import { RETURN_MESSAGE } from "../../../../../../Constants/Game.const.ts";
-import { MESSAGE_TYPE } from "../../../../../../Constants/Network.const.ts";
-import { SendWaitWalkOP } from '../../../../Outgoing/SendOperations/CoreSendOperations/SendWaitWalkOP.class.ts';
+import { SendMoveCreatureOperation } from "CoreSendOperations/SendMoveCreatureOperation.class.ts";
+import { SendTextMessageOperation } from "CoreSendOperations/SendTextMessageOperation.class.ts";
+import { OutgoingNetworkMessage } from "Network/Lib/OutgoingNetworkMessage.class.ts";
+import { SendCancelWalkOperation } from "CoreSendOperations/SendCancelWalkOperation.class.ts";
+import { RETURN_MESSAGE } from "Constants/Game.const.ts";
+import { MESSAGE_TYPE } from "Constants/Network.const.ts";
 
 export class FloorChangeOP extends GameOperation {
     constructor(private readonly _player : Player){

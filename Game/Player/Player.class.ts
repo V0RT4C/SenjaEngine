@@ -175,10 +175,6 @@ export class Player extends Creature {
         return null;
     }
 
-    public hasActiveWalkTask() : boolean {
-        return game.playerHasActiveWalkTask(this);
-    }
-
     // public onMove(){
     //     log.debug(`${this._name} moved.`);
     //     //Check if need to close containers.
@@ -193,6 +189,10 @@ export class Player extends Creature {
             this._knownCreatures.add(extId);
             return false;
         }
+    }
+
+    public hasActiveWalkTask() : boolean {
+        return this._scheduledWalkTasks.length > 0;
     }
 
     private _connectionListener = () => {

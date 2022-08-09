@@ -12,7 +12,8 @@ export class StopAutoWalkOP extends IncomingGameOperation {
             return false;
         }
 
-        return this._player.stopAutoWalk();
+        this._player.stopAutoWalk();
+        return true;
     }
 
     protected _networkOperations(): boolean {

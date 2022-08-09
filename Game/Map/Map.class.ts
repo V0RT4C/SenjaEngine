@@ -13,7 +13,6 @@ import npcs from 'Game/NPC/NPCS.class.ts';
 import { OTBMReader, OTBMItem, OTBMTile, OTBMTileArea } from 'Dependencies';
 import rawItems from "RawItems";
 import { TileArea } from 'https://deno.land/x/v0rt4c_otbm@0.1.2/mod.ts';
-import game from '../Game.class.ts';
 import { Player } from '../Player/Player.class.ts';
 
 class Map {
@@ -276,11 +275,14 @@ class Map {
 
     public loadMapFromOTBM(path : string){
         log.debug('Map::loadMapFromOTBM');
-        log.info(`[MAP] - Loading map from .OTBM...`);
+        log.info(`[MAP] - Loading map from ${path}...`);
         const otbmBuffer = Deno.readFileSync(path);
         const reader = new OTBMReader();
         reader.setOTBM(otbmBuffer);
         const nodeTree = reader.getNodeTree();
+        if (nodeTree.firstChild?.properties?.description){
+            log.info(`[MAP] - ${nodeTree.firstChild?.properties.description.join(', ')}`)
+        }
         log.info(`[MAP] - Map size ${nodeTree.width}x${nodeTree.height}...`);
         let tileArea : OTBMTileArea | null = nodeTree.children[0].firstChild as unknown as OTBMTileArea;
 

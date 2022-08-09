@@ -3,9 +3,7 @@ import { IncomingGameOperation } from "../../IncomingGameOperation.abstract.ts";
 import { StaticImplements } from "Decorators";
 import { StaticOperationCode } from "Types";
 import { PROTOCOL_RECEIVE } from "Constants";
-import game from "../../../../../../Game/Game.class.ts";
-import { ScheduledPlayerWalkTaskGroup } from "../../../../../../Game/Tasks/ScheduledTasks/PlayerAutoWalkTask/ScheduledPlayerWalkTaskGroup.class.ts";
-import { ScheduledPlayerWalkTask } from "../../../../../../Game/Tasks/ScheduledTasks/PlayerAutoWalkTask/ScheduledPlayerWalkTask.class.ts";
+import { WALK_DIRECTION } from '~/Constants/Map.const.ts';
 
 @StaticImplements<StaticOperationCode>()
 export class MouseClickMoveOP extends IncomingGameOperation {
@@ -27,21 +25,14 @@ export class MouseClickMoveOP extends IncomingGameOperation {
 
     protected _internalOperations(): boolean {
         log.debug(`MouseClickMove`);
-        if (this._player.isAutoWalking){
-            const stopAutoWalkSucceeded = this._player.stopAutoWalk();
-
-            if (!stopAutoWalkSucceeded){
-                return false;
-            }
+        if (this._player.isAutoWalking()){
+            this._player.stopAutoWalk();
         }
-
-        const scheduledWalkGroup = new ScheduledPlayerWalkTaskGroup(this._player);
 
         while(this._directions.length > 0){
-            scheduledWalkGroup.addScheduledTask(new ScheduledPlayerWalkTask(this._player, this._directions.pop() as number));
+            this._player.addWalkTask(this._directions.pop() as WALK_DIRECTION)
         }
 
-        game.addScheduledTask(scheduledWalkGroup);
         return true;
     }
 

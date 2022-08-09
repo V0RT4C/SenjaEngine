@@ -34,6 +34,10 @@ export abstract class Thing {
         return this._pos;
     }
 
+    public get previousPosition() : IPosition {
+        return this._previousPos;
+    }
+
     public get thingType() : THING_TYPE {
         return this._thingType;
     }
@@ -48,6 +52,15 @@ export abstract class Thing {
 
     public getTile() : MapTile | null {
         return map.getTileAt(this._pos);
+    }
+
+    public getStackPosition() : number {
+        const tile = this.getTile();
+        if (tile === null){
+            return -1;
+        }
+
+        return tile.getThingStackPos(this);
     }
 
     public set name(value : string) {

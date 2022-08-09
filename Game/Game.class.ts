@@ -14,10 +14,8 @@ import { SendMagicEffectOperation } from '../Network/Protocol/Outgoing/SendOpera
 import { SendRemoveThingFromTileOperation } from '../Network/Protocol/Outgoing/SendOperations/CoreSendOperations/SendRemoveThingFromTileOperation.class.ts';
 import db from '../DB/index.ts';
 import { GAME_BEAT_MS } from 'Constants/Game.const.ts';
-import { ScheduledTask } from './Tasks/ScheduledTasks/ScheduledTask.abstract.ts';
-import { ScheduledTaskGroup } from './Tasks/ScheduledTasks/ScheduledTaskGroup.abstract.ts';
-import { ScheduledPlayerWalkTask } from './Tasks/ScheduledTasks/PlayerAutoWalkTask/ScheduledPlayerWalkTask.class.ts';
-import { SendCancelWalkOperation } from '../Network/Protocol/Outgoing/SendOperations/CoreSendOperations/SendCancelWalkOperation.class.ts';
+import { CreatureMovementTasks } from './Tasks/CreatureMovementTasks.class.ts';
+import { PingTask } from './Tasks/PingTask.class.ts';
 
 const mutex = new Mutex();
 const mutex2 = new Mutex();
@@ -28,7 +26,6 @@ class Game {
     private _worldLight : ILightInfo = { color: 0xD7, level: 40 };
     private _knownCreatures : Set<number> = new Set();
     private _operationsCache : Array<GameOperation> = [];
-    private _scheduledTasksCache : Array<ScheduledTask | ScheduledTaskGroup> = [];
     private _loop : Loop = new Loop(this._mainloopLogic.bind(this), 1000 / GAME_BEAT_MS);
     private _ticks = 0;
     private _gameBeatMs = GAME_BEAT_MS;
@@ -49,55 +46,12 @@ class Game {
         this._operationsCache.unshift(op);
     }
 
-    public addScheduledTask(task : ScheduledTask | ScheduledTaskGroup) : void {
-        this._scheduledTasksCache.unshift(task);
-    }
-
-    public removeScheduledTaskById(id : number) : boolean {
-        let idx = -1;
-
-        for (let i=0; i < this._scheduledTasksCache.length; i++){
-            if (this._scheduledTasksCache[i].id === id){
-                idx = i;
-                break;
-            }
-        }
-
-        if (idx !== -1){
-            const task = this._scheduledTasksCache[idx];
-
-            if (task instanceof ScheduledTaskGroup){
-                task.onAbort();
-            }
-            
-            this._scheduledTasksCache.splice(idx, 1);
-            return true;
-        }else{
-            return false;
-        }
-    }
-
     public get worldLight() : ILightInfo {
         return this._worldLight;
     }
 
 
     private async _mainloopLogic() : Promise<void> {
-        if (this._ticks % 200 === 0){
-            for (const playerId in this._players.list){
-                const p = players.list[playerId];
-                if (p.client.isOpen){
-                    const ping = new SendPingRequestOperation(p.client);
-                    await ping.execute();
-                    p.lastPing = Date.now();
-                }else{
-                    if ((Date.now() - p.lastPing) > 60000){
-                        this.removePlayerFromGame(p);
-                    }
-                }
-            }
-        }
-
         while(this._operationsCache.length > 0){
             const id = await mutex.acquire();
             const nextOperation = this._operationsCache.pop() as GameOperation;
@@ -107,34 +61,11 @@ class Game {
             mutex.release(id);
         }
 
-        if(this._scheduledTasksCache.length > 0){
-            for (let i=this._scheduledTasksCache.length - 1; i >= 0; i--){
-                const id = await mutex2.acquire();
-                const nextTask = this._scheduledTasksCache[i];
-    
-                if (nextTask !== undefined){
-                    if (nextTask instanceof ScheduledTaskGroup){
-                        if (nextTask.canExecuteNextTask()){
-                            const next = await nextTask.executeNextTask();
-                            if (next === false){
-                                this._scheduledTasksCache.splice(i, 1);
-                            }
-                        }
-                    }else{
-                        if (game.ticks >= nextTask.scheduledAtGameTick){
-                            const success = await nextTask.execute();
-                            if (!success){
-                                log.debug(`Scheduled event failed`);
-                                const cancel = new SendCancelWalkOperation((nextTask as ScheduledPlayerWalkTask).player);
-                                await cancel.execute();
-                                this._scheduledTasksCache.pop();
-                            }else{
-                                this._scheduledTasksCache.pop();
-                            }
-                        }
-                    }
-                }
-                mutex2.release(id);
+        for (const key in players.list){
+            CreatureMovementTasks.processPlayerWalk(players.list[key]);
+
+            if (this._ticks % 200 === 0){
+                PingTask.processPlayerPing(players.list[key]);
             }
         }
 
@@ -167,18 +98,6 @@ class Game {
             const magicEffectOp = new SendMagicEffectOperation(3, player.position);
             magicEffectOp.execute();
         }
-    }
-
-    public playerHasActiveWalkTask(player : Player){
-        for (const task of this._scheduledTasksCache){
-            if (task instanceof ScheduledPlayerWalkTask){
-                if (task.player === player){
-                    return true;
-                }
-            }
-        }
-
-        return false;
     }
 
     public addKnownCreature(extId : number){

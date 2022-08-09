@@ -34,8 +34,6 @@ export class SendMoveCreatureOperation implements OutgoingSendOperation {
             
             if (player.extId === this._creature.extId){
                 const msg = OutgoingNetworkMessage.withClient(player.client, NETWORK_MESSAGE_SIZES.BUFFER_MAXSIZE);
-                console.log(player.name + ' Is player.');
-                console.log(this._creature.name + ' Is creature')
                 //If teleport
                 //  TODO
                 //
@@ -43,11 +41,8 @@ export class SendMoveCreatureOperation implements OutgoingSendOperation {
                 if ((this._oldPosition.z === 7 && this._newPosition.z >= 8)){
                     const removeOp = new SendRemoveCreatureFromTileOperation(this._oldPosition, this._oldStackPosition, this._creature, player);
                     await removeOp.execute();
-                    //AddCreatureToMapOP.writeToNetworkMessage(this._creature, player, msg);
                 }
                 else if (this._oldPosition.z >= 8 && this._newPosition.z === 7){
-                    // const removeOp = new SendRemoveCreatureFromTileOperation(this._oldPosition, this._oldStackPosition, this._creature, player);
-                    // await removeOp.execute();
                     AddCreatureToMapOP.writeToNetworkMessage(this._creature, player, msg);
                 }
                 else{
@@ -99,7 +94,6 @@ export class SendMoveCreatureOperation implements OutgoingSendOperation {
             else {
                 const msg = OutgoingNetworkMessage.withClient(player.client, NETWORK_MESSAGE_SIZES.BUFFER_MAXSIZE);
                 if (player.canSee(this._oldPosition) && player.canSee(this._newPosition)){
-                    console.log(player.name + ' Can see old position and new position')
                     if (this._oldPosition.z === 7 && this._newPosition.z >= 8){
                         const removeOp = new SendRemoveCreatureFromTileOperation(this._oldPosition, this._oldStackPosition, this._creature, player);
                         removeOp.execute();
@@ -116,16 +110,12 @@ export class SendMoveCreatureOperation implements OutgoingSendOperation {
                     }
                 }
                 else if (player.canSee(this._oldPosition)) {
-                    console.log(player.name + ' Can see old position')
                     const removeOp = new SendRemoveCreatureFromTileOperation(this._oldPosition, this._oldStackPosition, this._creature, player);
                     removeOp.execute();
-                    //SendRemoveCreatureFromTileOperation.writeToNetworkMessage(this._oldPosition, this._oldStackPosition, this._creature, msg);
                 }
                 else if (player.canSee(this._newPosition)){
-                    console.log(player.name + ' Can see new position');
                     const addOp = new AddCreatureToMapOP(this._creature, player);
                     await addOp.execute();
-                    //AddCreatureToMapOP.writeToNetworkMessage(this._creature, player, msg);
                 }
 
                 await msg.send();
