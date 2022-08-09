@@ -6,17 +6,18 @@ import { TCP } from 'Dependencies';
 import { CLIENT_VIEWPORT, MAP, NETWORK_MESSAGE_SIZES, PROTOCOL_SEND } from "Constants";
 import { IPosition } from "Types";
 import map from "Map";
+import { Player } from "../../../../../Game/Player/Player.class.ts";
 
 export class SendPlayerFloorChangeUpOperation implements OutgoingSendOperation {
     constructor(
         private readonly _oldPosition : IPosition,
         private readonly _newPosition : IPosition,
-        private readonly _client : TCP.Client
+        private readonly _player : Player
     ){}
 
     public static messageSize = NETWORK_MESSAGE_SIZES.BUFFER_MAXSIZE;
 
-    public static writeToNetworkMessage(oldPosition : IPosition, newPosition : IPosition, msg : OutgoingNetworkMessage){
+    public static writeToNetworkMessage(oldPosition : IPosition, newPosition : IPosition, player : Player, msg : OutgoingNetworkMessage){
         msg.writeUint8(PROTOCOL_SEND.FLOOR_CHANGE_UP);
 
         //Above surface, going up
@@ -33,6 +34,7 @@ export class SendPlayerFloorChangeUpOperation implements OutgoingSendOperation {
                     (CLIENT_VIEWPORT.MAX_Y * 2) + 2,
                     8 - i,
                     skip,
+                    player,
                     msg
                 );
             }
@@ -54,6 +56,7 @@ export class SendPlayerFloorChangeUpOperation implements OutgoingSendOperation {
                 (CLIENT_VIEWPORT.MAX_Y * 2) + 2,
                 3,
                 skip,
+                player,
                 msg
             );
 
@@ -65,13 +68,13 @@ export class SendPlayerFloorChangeUpOperation implements OutgoingSendOperation {
 
         //When walking up map is out of sync
         //SendTopRowMapDescriptionOperation.writeToNetworkMessage({ x: oldPosition.x, y: newPosition.y + 1, z: oldPosition.z }, msg);
-        SendLeftRowMapDescriptionOperation.writeToNetworkMessage({ x: oldPosition.x, y: newPosition.y+2, z: newPosition.z }, msg);
-        SendTopRowMapDescriptionOperation.writeToNetworkMessage({ x: oldPosition.x, y: newPosition.y+1, z: newPosition.z }, msg);
+        SendLeftRowMapDescriptionOperation.writeToNetworkMessage({ x: oldPosition.x, y: newPosition.y+2, z: newPosition.z }, player, msg);
+        SendTopRowMapDescriptionOperation.writeToNetworkMessage({ x: oldPosition.x, y: newPosition.y+1, z: newPosition.z }, player, msg);
     }
 
     public async execute(){
-        const msg = OutgoingNetworkMessage.withClient(this._client, SendPlayerFloorChangeUpOperation.messageSize);
-        SendPlayerFloorChangeUpOperation.writeToNetworkMessage(this._oldPosition, this._newPosition, msg);
+        const msg = OutgoingNetworkMessage.withClient(this._player.client, SendPlayerFloorChangeUpOperation.messageSize);
+        SendPlayerFloorChangeUpOperation.writeToNetworkMessage(this._oldPosition, this._newPosition, this._player, msg);
         await msg.send();
     }
 }

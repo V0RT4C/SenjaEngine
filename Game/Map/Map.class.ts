@@ -13,6 +13,8 @@ import npcs from 'Game/NPC/NPCS.class.ts';
 import { OTBMReader, OTBMItem, OTBMTile, OTBMTileArea } from 'Dependencies';
 import rawItems from "RawItems";
 import { TileArea } from 'https://deno.land/x/v0rt4c_otbm@0.1.2/mod.ts';
+import game from '../Game.class.ts';
+import { Player } from '../Player/Player.class.ts';
 
 class Map {
     constructor(width : number, height : number){
@@ -79,14 +81,16 @@ class Map {
     public moveCreatureByExtId(fromPos : IPosition, toPos : IPosition, creatureExtId : number) : boolean {
         log.debug('Map::moveCreatureByExtId');
         let toTile : MapTile | null = this.getTileAt(toPos);
-
+        log.debug('ToTile')
         if (toTile === null){
             return false;
         }
 
-        if (!toTile.isWalkable()){
+        if (fromPos.z === toPos.z && !toTile.isWalkable()){
+            log.debug('Is not walkable')
             return false;
         }
+        log.debug('IsWalkable')
 
         // if (toTile.isFloorChange()){
         //     if (toTile.flags.floorChangeNorth){
@@ -95,27 +99,24 @@ class Map {
         //     }
         // }
 
-        toTile = this.getTileAt(toPos);
-
-        if (toTile === null){
-            return false;
-        }
-
         const fromTile : MapTile | null = this.getTileAt(fromPos);
 
         if (fromTile === null){
+            log.debug('FromTile is null')
             return false;
         }
 
         const creature : Creature | null = fromTile.getCreatureByExtId(creatureExtId);
 
         if (creature === null || creature === undefined){
+            log.debug('Creature is null');
             return false;
         }
 
         const removeSuccess : boolean = fromTile.removeCreature(creature.extId);
 
         if (!removeSuccess){
+            console.log('Failed to remove creature from tile')
             return false;
         }
 
@@ -338,7 +339,7 @@ class Map {
         log.info(`[MAP] - Map loaded...`);
     }
 
-    public getMapDescriptionAsBytes(position : IPosition, width: number, height: number, msg : OutgoingNetworkMessage) : OutgoingNetworkMessage {
+    public getMapDescriptionAsBytes(position : IPosition, width: number, height: number, player : Player, msg : OutgoingNetworkMessage) : OutgoingNetworkMessage {
         //log.debug('Map::getMapDescriptionAsBytes');
         const { x, y, z } = position;
 
@@ -356,7 +357,7 @@ class Map {
         }
 
         for (let nz = startz; nz != endz + zstep; nz+= zstep){
-            skip = this.getFloorDescriptionAsBytes({ x, y, z:nz }, width, height, z - nz, skip, msg);
+            skip = this.getFloorDescriptionAsBytes({ x, y, z:nz }, width, height, z - nz, skip, player, msg);
         }
 
         if (skip >= 0) {
@@ -367,7 +368,7 @@ class Map {
         return msg;
     }
 
-    public getFloorDescriptionAsBytes(position : IPosition, width : number, height : number, offset : number, skip: number, msg : OutgoingNetworkMessage){
+    public getFloorDescriptionAsBytes(position : IPosition, width : number, height : number, offset : number, skip: number, player : Player, msg : OutgoingNetworkMessage){
         //log.debug('Map::getFloorDescriptionAsBytes');
         const { x, y, z } = position;
 
@@ -381,7 +382,7 @@ class Map {
                     }
 
                     skip=0;
-                    this.getTileDescriptionAsBytes(tile, msg);
+                    this.getTileDescriptionAsBytes(tile, player, msg);
                 }
                 else if (skip == 0xFE){
                     msg.writeUint8(0xFF);
@@ -397,7 +398,7 @@ class Map {
         return skip;
     }
 
-    public getTileDescriptionAsBytes(tile : MapTile, buffer : OutgoingNetworkMessage) {
+    public getTileDescriptionAsBytes(tile : MapTile, player : Player, buffer : OutgoingNetworkMessage) {
         //log.debug('Map::getTileDescriptionAsBytes');
         let count : number;
         let ground : Thing = tile.getGround() as Thing;
@@ -422,6 +423,7 @@ class Map {
         const creatures = tile.creatures;
         if (creatures.length > 0){
             for (const creature of creatures){
+                //const known = player.checkCreatureAsKnown(creature.extId);
                 const known = false;
                 if (known){
                     buffer.writeUint16LE(0x62);
@@ -429,7 +431,7 @@ class Map {
                 }
                 else {
                     buffer.writeUint16LE(0x61);
-                    buffer.writeUint32LE(0); //Update this later
+                    buffer.writeUint32LE(creature.extId); //Update this later
                     buffer.writeUint32LE(creature.extId);
                     buffer.writeString(creature.name);
                 }

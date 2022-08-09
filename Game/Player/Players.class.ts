@@ -53,7 +53,7 @@ class Players {
     }
 
     public createPlayer(name : string, client : TCP.Client) : Player {
-        return new Player(name, this._currId++, client);
+        return new Player(name, ++this._currId, client);
     }
 
     public loadPlayerFromDatabase(name : string, client : TCP.Client) : Player | null {

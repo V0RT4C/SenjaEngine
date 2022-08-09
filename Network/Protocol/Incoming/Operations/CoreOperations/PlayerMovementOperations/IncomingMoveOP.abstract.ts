@@ -25,7 +25,7 @@ export abstract class IncomingMoveOP extends IncomingGameOperation {
     protected _internalOperations() : boolean {
         log.debug(`IncomingMoveOP`);
 
-        if (!this._player.isAllowedToWalk()){
+        if (this._player.hasActiveWalkTask()){
             return false;
         }
 

@@ -2,18 +2,22 @@ import { OutgoingSendOperation } from "OutgoingSendOperations/OutgoingSendOperat
 import { OutgoingNetworkMessage } from "Network/Lib/OutgoingNetworkMessage.class.ts";
 import { PARTY_SHIELD, PROTOCOL_SEND, SKULL, THING_ID } from "Constants";
 import { Creature } from "Creature";
+import game from "../../../../../Game/Game.class.ts";
+import { Player } from "../../../../../Game/Player/Player.class.ts";
 
 export class AddCreatureToMapOP implements OutgoingSendOperation {
     constructor(
-        private readonly _creature : Creature
+        private readonly _creature : Creature,
+        private readonly _player : Player
     ){}
 
     public static messageSize = 200;
 
-    public static writeToNetworkMessage(creature: Creature, msg : OutgoingNetworkMessage){
+    public static writeToNetworkMessage(creature: Creature, player : Player, msg : OutgoingNetworkMessage){
         msg.writeUint8(PROTOCOL_SEND.MAP_ADD_THING);
         msg.writePosition(creature.position);
 
+        //const known = player.checkCreatureAsKnown(creature.extId);
         const known = false;
         if (known){
             msg.writeUint16LE(THING_ID.KNOWN_CREATURE);
@@ -49,8 +53,8 @@ export class AddCreatureToMapOP implements OutgoingSendOperation {
     }
 
     async execute(): Promise<void> {
-        const msg = new OutgoingNetworkMessage(AddCreatureToMapOP.messageSize);
-        AddCreatureToMapOP.writeToNetworkMessage(this._creature, msg);
-        await msg.sendToPlayersInAwareRange(this._creature.position);
+        const msg = OutgoingNetworkMessage.withClient(this._player.client, AddCreatureToMapOP.messageSize);
+        AddCreatureToMapOP.writeToNetworkMessage(this._creature, this._player, msg);
+        await msg.send();
     }
 }

@@ -30,7 +30,7 @@ export class Player extends Creature {
     private _id : number;
     private _client! : TCP.Client;
     private _lastPing = 0;
-    private _knownCreatures: Array<Creature> = [];
+    private _knownCreatures: Set<number> = new Set();
     private _inventory : Inventory = new Inventory();
     private _openContainers : Array<Container> = [];
     private _containerIds : Array<number> = Array.from((new Array(10)).keys());
@@ -185,6 +185,15 @@ export class Player extends Creature {
     //     //maybe by checking if container has parent and while has parent.
     //     //Eventually will get to top parent. If top parent does not have inventory position then close container.
     // }
+
+    public checkCreatureAsKnown(extId : number) : boolean {
+        if (this._knownCreatures.has(extId)){
+            return true;
+        }else{
+            this._knownCreatures.add(extId);
+            return false;
+        }
+    }
 
     private _connectionListener = () => {
         log.debug(`Player ${this._name} lost tcp connection.`);

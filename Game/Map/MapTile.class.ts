@@ -210,10 +210,9 @@ export class MapTile {
     }
 
     public getCreatureByExtId(creatureExtId : number) : Creature | null {
-
         for (let i=0; i < this._creatures.length; i++){
             if (this._creatures[i].extId === creatureExtId){
-                return this._creatures.slice(i, 1)[0];
+                return this._creatures[i];
             }
         }
 
@@ -314,7 +313,7 @@ export class MapTile {
     }
 
     public isWalkable() : boolean {
-        return !this._flags.unpassable;
+        return !this._flags.unpassable && this._creatures.length === 0;
     }
 
     public getMovementSpeedMS(creatureSpeed : number) : number {

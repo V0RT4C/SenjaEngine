@@ -115,7 +115,7 @@ export class EnterGameOP extends GameOperation {
             SendWorldLightOperation.writeToNetworkMessage(game.worldLight.level, game.worldLight.color, msg);
             SendFullInventoryOperation.writeToNetworkMessage(this._player, msg);
             SendTextMessageOperation.writeToNetworkMessage(WELCOME_MESSAGE, MESSAGE_TYPE.RED_MESSAGE_CONSOLE, msg);
-            SendFullMapDescriptionOperation.writeToNetworkMessage(this._player.position, msg);
+            SendFullMapDescriptionOperation.writeToNetworkMessage(this._player.position, this._player, msg);
             await msg.send();
 
             //Send to spectators & player
@@ -125,7 +125,7 @@ export class EnterGameOP extends GameOperation {
 
             //Send only to spectators
             const msg3 = new OutgoingNetworkMessage(AddCreatureToMapOP.messageSize);
-            AddCreatureToMapOP.writeToNetworkMessage(this._player, msg3);
+            AddCreatureToMapOP.writeToNetworkMessage(this._player, this._player, msg3);
             await msg3.sendToPlayersInAwareRange(this._player.position, undefined, this._player);
 
             return true;
