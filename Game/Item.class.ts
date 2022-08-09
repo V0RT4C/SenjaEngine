@@ -22,6 +22,10 @@ export class Item extends Thing {
         return this._rawItem !== null && this._rawItem.attributes ? this._rawItem.attributes : {};
     }
 
+    public get rawItem(){
+        return this._rawItem;
+    }
+
     public isContainer(){
         return this._rawItem.group === 'container';
     }

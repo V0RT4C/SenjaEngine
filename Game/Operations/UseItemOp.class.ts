@@ -1,5 +1,7 @@
 import log from 'Logger';
-import { IncomingGameOperation } from "ProtocolIncoming/Operations/IncomingGameOperation.abstract.ts";
+import map from "Map";
+import rawItems from "RawItems";
+import { GameOperation } from '../GameOperation.abstract.ts';
 import { OutgoingNetworkMessage } from "Network/Lib/OutgoingNetworkMessage.class.ts";
 import { SendCloseContainerOperation } from "CoreSendOperations/SendCloseContainerOperation.class.ts";
 import { SendOpenContainerOperation } from "CoreSendOperations/SendOpenContainerOperation.class.ts";
@@ -7,40 +9,39 @@ import { SendCancelMessageOperation } from "CoreSendOperations/SendCancelMessage
 import { MapTile } from "MapTile";
 import { Thing } from "Thing";
 import { Container } from "Game/Container.class.ts";
-import map from "Map";
-import rawItems from "RawItems";
-
-import { IPosition, StaticOperationCode } from "Types";
-import { PROTOCOL_RECEIVE } from "Constants";
+import { IPosition } from "Types";
 import { TCP } from 'Dependencies';
-import { StaticImplements } from "Decorators";
+import { Player } from '../Player/Player.class.ts';
+import { Item } from 'Game/Item.class.ts';
+import { RETURN_MESSAGE } from '../../Constants/Game.const.ts';
 
-@StaticImplements<StaticOperationCode>()
-export class UseItemOP extends IncomingGameOperation {
-    public static operationCode = PROTOCOL_RECEIVE.USE_ITEM;
+export class UseItemOP extends GameOperation {
+    constructor(protected readonly _player : Player, item : Item){
+        super();
 
-    private _position! : IPosition;
-    private _itemId! : number;
-    private _rawItem! : any;
-    private _stackPosition! : number;
-    private _index! : number;
-    private _containerId! : number;
-    private _useItemInInventory = false;
-    private _itemIsContainer = false;
-    private _closeContainer = false;
-
-    public parseMessage() {
-        this._position = this._msg.readPosition();
-        this._itemId = this._msg.readUint16LE();
-        this._rawItem = rawItems.getItemById(this._itemId);
-        this._stackPosition = this._msg.readUint8();
-        this._index = this._msg.readUint8();
-        this._msg.seek(this._msg.byteLength);
-        log.debug({ pos: this._position, itemId: this._itemId, stackPos: this._stackPosition, index: this._index });
+        if (item !== undefined){
+            this._position = item.position;
+            this._itemId = item.thingId;
+            this._stackPosition = item.getStackPosition();
+        }
     }
+
+    protected _position! : IPosition;
+    protected _itemId! : number;
+    protected _rawItem! : any;
+    protected _stackPosition! : number;
+    protected _index! : number;
+    protected _containerId! : number;
+    protected _useItemInInventory = false;
+    protected _itemIsContainer = false;
+    protected _closeContainer = false;
+    protected _cancelMessage = RETURN_MESSAGE.NOT_POSSIBLE;
+
 
     protected _internalOperations(): boolean {
         log.debug('UseItemOP');
+        log.debug({ pos: this._position, itemId: this._itemId, stackPos: this._stackPosition, index: this._index });
+        this._rawItem = rawItems.getItemById(this._itemId);
         const { x, y, z } = this._position;
 
         if (x === 0xFFFF){
@@ -68,18 +69,28 @@ export class UseItemOP extends IncomingGameOperation {
                 log.debug('Close container');
             }else{
                 const container = this._player.getContainerById(this._containerId);
-                const msg = OutgoingNetworkMessage.withClient(this._msg.client as TCP.Client, SendOpenContainerOperation.messageSize);
+                const msg = OutgoingNetworkMessage.withClient(this._player.client as TCP.Client, SendOpenContainerOperation.messageSize);
                 SendOpenContainerOperation.writeToNetworkMessage(container as Container, msg);
                 await msg.send();
             }
         }else{
-            const cancelMsg = new SendCancelMessageOperation('You cannot use that item.', this._player.client);
+            const cancelMsg = new SendCancelMessageOperation(this._cancelMessage, this._player.client);
             await cancelMsg.execute();
         }
         return true;
     }
 
     protected _playerUseItemOnGround(){
+        if (
+            Math.abs(this._player.position.x - this._position.x) > 1 ||
+            Math.abs(this._player.position.y - this._position.y) > 1 ||
+            this._player.position.z !== this._position.z
+        ){
+            log.debug(`Player is too far away.`);
+            this._cancelMessage = RETURN_MESSAGE.TOO_FAR_AWAY;
+            return true;
+        }
+
         if (this._rawItem !== null && this._rawItem.group === 'container'){
             this._itemIsContainer = true;
             log.debug('Open container');
@@ -108,6 +119,7 @@ export class UseItemOP extends IncomingGameOperation {
 
             return true;
         }else{
+            this._cancelMessage = RETURN_MESSAGE.CANNOT_USE_THIS_OBJECT;
             return false;
         }
     }

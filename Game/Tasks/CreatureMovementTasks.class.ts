@@ -1,8 +1,10 @@
 import log from 'Logger';
 import { WALK_DIRECTION } from "../../Constants/Map.const.ts";
+import { MESSAGE_TYPE } from '../../Constants/Network.const.ts';
 import { FloorChangeOP } from '../../Network/Protocol/Incoming/Operations/CoreOperations/PlayerMovementOperations/FloorChangeOP.class.ts';
 import { SendCancelWalkOperation } from '../../Network/Protocol/Outgoing/SendOperations/CoreSendOperations/SendCancelWalkOperation.class.ts';
 import { SendMoveCreatureOperation } from "../../Network/Protocol/Outgoing/SendOperations/CoreSendOperations/SendMoveCreatureOperation.class.ts";
+import { SendTextMessageOperation } from '../../Network/Protocol/Outgoing/SendOperations/CoreSendOperations/SendTextMessageOperation.class.ts';
 import game from '../Game.class.ts';
 import map from '../Map/Map.class.ts';
 import { MapTile } from '../Map/MapTile.class.ts';
@@ -59,6 +61,8 @@ export class CreatureMovementTasks {
             if (walkSuccess){
                 const moveOp = new SendMoveCreatureOperation(player, player.previousPosition, player.position, oldStackPosition);
                 await moveOp.execute();
+                const posMsgOp = new SendTextMessageOperation(`Position: { x: ${player.position.x}, y: ${player.position.y}, z: ${player.position.z} }`, MESSAGE_TYPE.PURPLE_MESSAGE_CONSOLE, player.client);
+                await posMsgOp.execute();
             }else{
                 log.debug(`Failed to move player`);
                 const cancelWalk = new SendCancelWalkOperation(player);

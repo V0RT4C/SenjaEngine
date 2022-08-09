@@ -1,22 +1,19 @@
 import log from 'Logger';
-import { IncomingGameOperation } from "ProtocolIncoming/Operations/IncomingGameOperation.abstract.ts";
-import { OutgoingNetworkMessage } from "Network/Lib/OutgoingNetworkMessage.class.ts";
-import { SendRemoveCreatureByExtIdOperation } from "CoreSendOperations/SendRemoveCreatureByExtIdOperation.class.ts";
-import { SendMagicEffectOperation } from "CoreSendOperations/SendMagicEffectOperation.class.ts";
-
-import { MapTile } from "MapTile";
-
 import players from "Players";
 import map from "Map";
 import db from "DB";
 
-import { StaticImplements } from "Decorators";
-import { PROTOCOL_RECEIVE } from "Constants";
-import { StaticOperationCode } from "Types";
+import { OutgoingNetworkMessage } from "Network/Lib/OutgoingNetworkMessage.class.ts";
+import { SendRemoveCreatureByExtIdOperation } from "CoreSendOperations/SendRemoveCreatureByExtIdOperation.class.ts";
+import { SendMagicEffectOperation } from "CoreSendOperations/SendMagicEffectOperation.class.ts";
+import { Player } from '../Player/Player.class.ts';
+import { MapTile } from "MapTile";
+import { GameOperation } from '../GameOperation.abstract.ts';
 
-@StaticImplements<StaticOperationCode>()
-export class LeaveGameOP extends IncomingGameOperation {
-    public static operationCode = PROTOCOL_RECEIVE.LEAVE_GAME;
+
+
+export class LeaveGameOp extends GameOperation {
+    constructor(protected readonly _player : Player){ super(); }
 
     protected _internalOperations(): boolean {
         log.debug(`LeaveGameOP`)

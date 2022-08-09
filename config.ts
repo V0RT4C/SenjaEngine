@@ -32,6 +32,11 @@ export const TCP_LOGINSERVER_PORT = 7171;
 export const TCP_GAMESERVER_HOST = '0.0.0.0';
 export const TCP_GAMESERVER_PORT = 7373;
 
+/**
+ * General game settings
+ */
+
+export const BASE_SPEED = 220;
 
 /**
  * Player settings
@@ -52,5 +57,16 @@ export const DEFAULT_LOOKBODY = 87;
 export const DEFAULT_LOOKLEGS = 58;
 export const DEFAULT_LOOKFEET = 76;
 
+//Default player inventory items {itemId|null}
 
-export const BASE_SPEED = 220;
+export const INVENTORY_SLOT_HELMET          = null;
+export const INVENTORY_SLOT_AMULET          = null;
+export const INVENTORY_SLOT_BACKPACK        = null;
+export const INVENTORY_SLOT_ARMOR           = null;
+export const INVENTORY_SLOT_SHIELD          = null;
+export const INVENTORY_SLOT_WEAPON          = null;
+export const INVENTORY_SLOT_LEGS            = null;
+export const INVENTORY_SLOT_BOOTS           = null;
+export const INVENTORY_SLOT_RING            = null;
+export const INVENTORY_SLOT_AMMUNITION      = null;
+

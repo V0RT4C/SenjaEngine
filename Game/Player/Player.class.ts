@@ -4,7 +4,9 @@ import { Creature } from 'Creature';
 import { CHASE_MODE, CREATURE_TYPE, PARTY_SHIELD, PLAYER_SEX, SAFE_FIGHT_MODE, SKULL, THING_TYPE } from 'Constants';
 import { Inventory } from "Game/Player/Inventory.class.ts";
 import { Container } from "Game/Container.class.ts";
+import { SendCloseContainerOperation } from '../../Network/Protocol/Outgoing/SendOperations/CoreSendOperations/SendCloseContainerOperation.class.ts';
 import game from '../Game.class.ts';
+import { CloseContainerOp } from '../Operations/CloseContainerOp.class.ts';
 
 export class Player extends Creature {
     constructor(name : string, extId: number, client : TCP.Client){
@@ -175,12 +177,27 @@ export class Player extends Creature {
         return null;
     }
 
-    // public onMove(){
-    //     log.debug(`${this._name} moved.`);
-    //     //Check if need to close containers.
-    //     //maybe by checking if container has parent and while has parent.
-    //     //Eventually will get to top parent. If top parent does not have inventory position then close container.
-    // }
+    public onMove(){
+        super.onMove();
+        log.debug(`${this._name} moved.`);
+        this.closeDistantContainers();
+        //Check if need to close containers.
+        //maybe by checking if container has parent and while has parent.
+        //Eventually will get to top parent. If top parent does not have inventory position then close container.
+    }
+
+    public closeDistantContainers(){
+        for (const container of this._openContainers){
+            if (
+                (Math.abs(container.position.x - this.position.x) > 1 || 
+                Math.abs(container.position.y - this.position.y) > 1 ||
+                container.position.z !== this.position.z)
+                && container.position.x !== -1
+                ){
+                    game.addOperation(new CloseContainerOp(this, container.containerId));
+                }
+        }
+    }
 
     public checkCreatureAsKnown(extId : number) : boolean {
         if (this._knownCreatures.has(extId)){

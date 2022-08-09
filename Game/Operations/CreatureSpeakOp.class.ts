@@ -1,39 +1,48 @@
-import { IncomingGameOperation } from "ProtocolIncoming/Operations/IncomingGameOperation.abstract.ts";
+import log from 'Logger';
+import map from "Map";
 import { AddThingToMapOP } from "CoreSendOperations/AddThingToMapOP.class.ts";
 import { SendCreatureLightOperation } from "CoreSendOperations/SendCreatureLightOperation.class.ts";
 import { SendCreatureSpeakOperation } from "CoreSendOperations/SendCreatureSpeakOperation.class.ts";
 import { Creature } from "Creature";
 import { MapTile } from "MapTile";
 import { Item } from "Item";
+import { SPEAK_TYPE } from "Constants";
+import { GameOperation } from "../GameOperation.abstract.ts";
 
-import players from "Players";
-import map from "Map";
-
-import { StaticImplements } from "Decorators";
-import { PROTOCOL_RECEIVE, SPEAK_TYPE } from "Constants";
-import { StaticOperationCode } from "Types";
-
-@StaticImplements<StaticOperationCode>()
-export class CreatureSpeakOP extends IncomingGameOperation {
-    public static operationCode = PROTOCOL_RECEIVE.SPEAK;
-
-    private _speakingCreature! : Creature;
-    private _speakType! : SPEAK_TYPE;
-    private _speakMessage! : string;
-
-    public parseMessage() : void {
-        this._speakType = this._msg.readUint8();
-        this._speakMessage = this._msg.readString();
-    }
-
-    public _internalOperations(): boolean {
-        const speakingCreature = players.getPlayerById(this._msg.client?.conn?.rid as number);
-
-        if (speakingCreature === null){
-            return false;
-        }
+export class CreatureSpeakOp extends GameOperation {
+    constructor(private readonly speakingCreature : Creature, speakType? : SPEAK_TYPE, speakMessage? : string){
+        super();
 
         this._speakingCreature = speakingCreature;
+        
+        if (speakType){
+            this._speakType = speakType;
+        }
+
+        if (speakMessage){
+            this._speakMessage = speakMessage;
+        }
+    }
+
+    protected _speakingCreature! : Creature;
+    protected _speakType! : SPEAK_TYPE;
+    protected _speakMessage! : string;
+
+
+    public _internalOperations(): boolean {
+        log.debug('CreatureSpeakOp');
+        if (this._speakingCreature === undefined){
+            throw new Error('No speaking creature defined');
+        }
+
+        if (this._speakType === undefined){
+            throw new Error('No speakType defined');
+        }
+
+        if (this._speakMessage === undefined){
+            throw new Error('No speakMessage defined');
+        }
+
         return true;
     }
 

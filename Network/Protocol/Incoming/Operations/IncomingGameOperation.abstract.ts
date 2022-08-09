@@ -2,6 +2,7 @@ import { IncomingNetworkMessage } from "Network/Lib/IncomingNetworkMessage.class
 import { GameOperation } from "Game/GameOperation.abstract.ts";
 import { Player } from 'Player';
 import players from "Players";
+import { PROTOCOL_RECEIVE } from "../../../../Constants/Network.const.ts";
 
 export abstract class IncomingGameOperation extends GameOperation {
     constructor(msg : IncomingNetworkMessage){
@@ -16,6 +17,7 @@ export abstract class IncomingGameOperation extends GameOperation {
         this._player = player;
     }
 
+    static operationCode : PROTOCOL_RECEIVE;
     protected _msg : IncomingNetworkMessage;
     protected _player : Player;
 

@@ -1,3 +1,5 @@
+import { IncomingNetworkMessage } from "../Network/Lib/IncomingNetworkMessage.class.ts";
+
 export interface IGameOperation {
     execute() : Promise<void>,
     _internalOperations(...args : any) : boolean | Promise<boolean>,
@@ -181,4 +183,8 @@ export interface IDBPlayer {
 
 export interface TCPServerOptions extends Deno.ConnectOptions {
     chunkSize?: number;
+}
+
+export interface IIncomingGameOperation {
+    _msg: IncomingNetworkMessage
 }

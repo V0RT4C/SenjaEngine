@@ -6,7 +6,7 @@ import { StaticImplements } from "Decorators";
 import { PROTOCOL_RECEIVE } from "Constants";
 
 @StaticImplements<StaticOperationCode>()
-export class RequestChangeOutfitOP extends IncomingGameOperation {
+export class IncomingChangeOutfitRequestOp extends IncomingGameOperation {
     public static operationCode = PROTOCOL_RECEIVE.REQUEST_CHANGE_OUTFIT;
 
     protected _internalOperations(): boolean {
