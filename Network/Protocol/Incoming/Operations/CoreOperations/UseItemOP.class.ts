@@ -40,6 +40,7 @@ export class UseItemOP extends IncomingGameOperation {
     }
 
     protected _internalOperations(): boolean {
+        log.debug('UseItemOP');
         const { x, y, z } = this._position;
 
         if (x === 0xFFFF){
@@ -51,7 +52,7 @@ export class UseItemOP extends IncomingGameOperation {
                 this._containerId = y;
                 this._useItemInInventory = true;
                 log.debug(`Use item in inventory. Slot: ${this._containerId}.`);
-                return false;
+                return this._playerUseItemInInventory();
             }
         }else{
             log.debug(`Use item on ground.`);
@@ -81,7 +82,7 @@ export class UseItemOP extends IncomingGameOperation {
     protected _playerUseItemOnGround(){
         if (this._rawItem !== null && this._rawItem.group === 'container'){
             this._itemIsContainer = true;
-            log.debug('Open backpack');
+            log.debug('Open container');
             const tile : MapTile | null = map.getTileAt(this._position);
 
             if (tile === null){
@@ -112,7 +113,23 @@ export class UseItemOP extends IncomingGameOperation {
     }
 
     protected _playerUseItemInInventory(){
-        return true;
+        if (this._rawItem !== null && this._rawItem.group === 'container'){
+            log.debug('Item being used is a container.');
+            this._itemIsContainer = true;
+            const item = this._player.inventory.getItemReferenceFromInventory(this._containerId);
+            const openSuccess = this._player.addOpenContainer(item as Container);
+            this._containerId = (item as Container).containerId;
+
+            if (!openSuccess){
+                this._closeContainer = true;
+                this._player.closeContainerById(this._containerId);
+            }
+
+            return true;
+        }else{
+            log.debug('Item being used is not a container.');
+        }
+        return false;
     }
 
     protected _playerUseItemInContainer(){

@@ -15,7 +15,7 @@ export class Container extends Item {
     }
 
     public get capacity() : number {
-        return this._capacity;
+        return this._rawItem?.attributes?.capacity ? this._rawItem?.attributes?.capacity : this._capacity;
     }
 
     public isFull() : boolean {
