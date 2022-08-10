@@ -6,8 +6,11 @@ import { SendCreatureSpeakOperation } from "CoreSendOperations/SendCreatureSpeak
 import { Creature } from "Creature";
 import { MapTile } from "MapTile";
 import { Item } from "Item";
-import { SPEAK_TYPE } from "Constants";
+import { MESSAGE_TYPE, SPEAK_TYPE } from "Constants";
 import { GameOperation } from "../GameOperation.abstract.ts";
+import { SendTextMessageOperation } from '../../Network/Protocol/Outgoing/SendOperations/CoreSendOperations/SendTextMessageOperation.class.ts';
+import game from '../Game.class.ts';
+import { Player } from '../Player/Player.class.ts';
 
 export class CreatureSpeakOp extends GameOperation {
     constructor(private readonly speakingCreature : Creature, speakType? : SPEAK_TYPE, speakMessage? : string){
@@ -78,6 +81,11 @@ export class CreatureSpeakOp extends GameOperation {
                         const creatureLifeSendOp = new SendCreatureLightOperation(this._speakingCreature);
                         await creatureLifeSendOp.execute();
                     }
+                }
+                break;
+                case '!time': {
+                    const timeMsg = new SendTextMessageOperation(`Game world time: ${game.getHumanReadableTime()}`, MESSAGE_TYPE.RED_MESSAGE_CONSOLE, (this._speakingCreature as Player).client);
+                    await timeMsg.execute();
                 }
                 break;
             }

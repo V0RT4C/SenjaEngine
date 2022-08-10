@@ -1,4 +1,9 @@
 export const GAME_BEAT_MS = 50;
+export const GAME_TICKS_PER_MINUTE = (1000 / GAME_BEAT_MS) * 60;
+
+export const MAX_LIGHT_LEVEL = 250;
+export const MIN_LIGHT_LEVEL = 40;
+export const ONE_DAY_IN_MINUTES = 1440;
 
 export enum CREATURE_ID_RANGE {
     PLAYER_START_ID                       = 0x10000000,

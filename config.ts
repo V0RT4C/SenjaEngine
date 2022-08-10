@@ -36,6 +36,19 @@ export const TCP_GAMESERVER_PORT = 7373;
  * General game settings
  */
 
+//Day/night settings
+export const WORLD_DYNAMIC_LIGHT_ENABLED = true;
+export const WORLD_TIME_AT_STARTUP = 360; // 6AM
+export const WORLD_TIME_SPEED_INCREASE_X = 24;
+
+export const LIGHT_LEVEL_DAY = 250;
+export const LIGHT_LEVEL_NIGHT = 40;
+export const SUNRISE_START = 360; // 6AM
+export const SUNRISE_STOP = 540; // 9AM
+export const SUNSET_START = 1020; // 5PM
+export const SUNSET_END = 1140; // 7PM
+
+//Creature base speed
 export const BASE_SPEED = 220;
 
 /**

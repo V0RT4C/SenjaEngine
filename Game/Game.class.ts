@@ -1,29 +1,23 @@
 import log from 'Logger';
-import { SendPingRequestOperation } from "OutgoingSendOperations/CoreSendOperations/SendPingRequestOperation.class.ts";
-
 import map from 'Map';
 import players from 'Players';
-
-import { ILightInfo, IPosition } from "Types";
+import worldTime from './WorldTime.class.ts';
+import db from '../DB/index.ts';
+import { ILightInfo } from "Types";
 import { Loop } from "Game/Lib/GameLoop.class.ts";
 import { GameOperation } from "Game/GameOperation.abstract.ts";
-
-import Mutex from 'https://deno.land/x/await_mutex@v1.0.1/mod.ts';
 import { Player } from "./Player/Player.class.ts";
 import { SendMagicEffectOperation } from '../Network/Protocol/Outgoing/SendOperations/CoreSendOperations/SendMagicEffectOperation.class.ts';
 import { SendRemoveThingFromTileOperation } from '../Network/Protocol/Outgoing/SendOperations/CoreSendOperations/SendRemoveThingFromTileOperation.class.ts';
-import db from '../DB/index.ts';
 import { GAME_BEAT_MS } from 'Constants/Game.const.ts';
 import { CreatureMovementTasks } from './Tasks/CreatureMovementTasks.class.ts';
 import { PingTask } from './Tasks/PingTask.class.ts';
 
-const mutex = new Mutex();
-const mutex2 = new Mutex();
 
 class Game {
     private _map = map;
     private _players = players;
-    private _worldLight : ILightInfo = { color: 0xD7, level: 40 };
+    private _worldTime = worldTime;
     private _knownCreatures : Set<number> = new Set();
     private _operationsCache : Array<GameOperation> = [];
     private _loop : Loop = new Loop(this._mainloopLogic.bind(this), 1000 / GAME_BEAT_MS);
@@ -47,27 +41,28 @@ class Game {
     }
 
     public get worldLight() : ILightInfo {
-        return this._worldLight;
+        return this._worldTime.worldLight;
     }
 
+    public getHumanReadableTime() : string {
+        return this._worldTime.getHumanReadableTime();
+    }
 
     private async _mainloopLogic() : Promise<void> {
         while(this._operationsCache.length > 0){
-            const id = await mutex.acquire();
             const nextOperation = this._operationsCache.pop() as GameOperation;
             if (nextOperation !== undefined){
                 await nextOperation.execute();
             }
-            mutex.release(id);
         }
 
         for (const key in players.list){
             CreatureMovementTasks.processPlayerWalk(players.list[key]);
-
-            if (this._ticks % 200 === 0){
-                PingTask.processPlayerPing(players.list[key]);
-            }
+            PingTask.processPlayerPing(players.list[key], this._ticks);
+            worldTime.updatePlayer(players.list[key], this._ticks);
         }
+
+        worldTime.processWorldTime(this._ticks);
 
         this._ticks++;
     }
