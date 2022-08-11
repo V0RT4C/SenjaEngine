@@ -1,3 +1,4 @@
+import log from 'Logger';
 import { Item } from "Item";
 import { INVENTORY_SLOT } from "Constants";
 import { Container } from "Game/Container.class.ts";
@@ -198,6 +199,8 @@ export class Inventory {
                 return false;
         }
 
+        item.position.x = -1;
+        log.debug(`Item position now: { x:${item.position.x}, y:${item.position.y}, z:${item.position.z} }`);
         return true;
     }
 }

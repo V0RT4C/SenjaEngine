@@ -63,12 +63,10 @@ export class MoveThingFromInventoryToGroundSubOP extends IncomingGameOperation {
     }
 
     protected async _networkOperations() : Promise<boolean> {
-        const addThingToMapOp = new AddThingToMapOP(this._thingId, this._toPosition);
-        await addThingToMapOp.execute();
 
-        const msg = OutgoingNetworkMessage.withClient(this._msg.client as TCP.Client, Math.max(SendDeleteFromInventoryOperation.messageSize, SendDeleteFromContainerOperation.messageSize));
         if (this._fromInventory){
-            SendDeleteFromInventoryOperation.writeToNetworkMessage(this._containerId, msg);
+            const sendDeleteFromInventoryOp = new SendDeleteFromInventoryOperation(this._containerId, this._player.client);
+            await sendDeleteFromInventoryOp.execute();
         }else{
             //From container
             const fromContainerSpectators = players.getPlayersFromIds(this._container.getPlayerSpectatorIds());
@@ -81,7 +79,9 @@ export class MoveThingFromInventoryToGroundSubOP extends IncomingGameOperation {
                 }
             }
         }
-        await msg.send();
+
+        const addThingToMapOp = new AddThingToMapOP(this._thingId, this._toPosition);
+        await addThingToMapOp.execute();
         return true;
     }
 

@@ -37,6 +37,7 @@ export class MoveCreatureSubOP extends IncomingGameOperation {
 
     protected _internalOperations(): boolean {
         log.debug(`MoveCreatureSubOP`);
+
         if (this._thingId !== THING_ID.CREATURE) {
             return false;
         }

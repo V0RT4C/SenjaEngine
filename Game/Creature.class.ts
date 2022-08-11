@@ -186,11 +186,12 @@ export abstract class Creature extends Thing {
         if (!this.isAllowedToWalk()){
             return false;
         }
-        const previousPos = this.position;
+        const previousPos = { ...this.position };
+
         let { x, y, z } = this.position;
         if (map.moveCreatureByExtId(this.position, { x, y: --y, z }, this.extId)){
             this.direction = CREATURE_DIRECTION.NORTH;
-            this._previousPos = previousPos;
+            this.setPreviousPosition(previousPos);
             this.onMove();
             return true;
         }else{
@@ -202,7 +203,9 @@ export abstract class Creature extends Thing {
         if (!this.isAllowedToWalk()){
             return false;
         }
-        const previousPos = this.position;
+
+        const previousPos = { ...this.position };
+
         let { x, y, z } = this.position;
         if (map.moveCreatureByExtId(this.position, { x: ++x, y: --y, z }, this.extId)){
             this.direction = CREATURE_DIRECTION.EAST;
@@ -218,7 +221,7 @@ export abstract class Creature extends Thing {
         if (!this.isAllowedToWalk()){
             return false;
         }
-        const previousPos = this.position;
+        const previousPos = { ...this.position };
         let { x, y, z } = this.position;
         if (map.moveCreatureByExtId(this.position, { x: --x, y: --y, z }, this.extId)){
             this.direction = CREATURE_DIRECTION.WEST;
@@ -231,7 +234,7 @@ export abstract class Creature extends Thing {
     }
 
     public moveUpNorth(){
-        const previousPos = this.position;
+        const previousPos = { ...this.position };
         let { x, y, z } = this.position;
         if (map.moveCreatureByExtId(this.position, { x, y: --y, z: --z }, this.extId)){
             this.direction = CREATURE_DIRECTION.NORTH;
@@ -247,7 +250,7 @@ export abstract class Creature extends Thing {
         if (!this.isAllowedToWalk()){
             return false;
         }
-        const previousPos = this.position;
+        const previousPos = { ...this.position };
         let { x, y, z } = this.position;
         if (map.moveCreatureByExtId(this.position, { x: ++x, y, z }, this.extId)){
             this.direction = CREATURE_DIRECTION.EAST;
@@ -263,7 +266,7 @@ export abstract class Creature extends Thing {
         if (!this.isAllowedToWalk()){
             return false;
         }
-        const previousPos = this.position;
+        const previousPos = { ...this.position };
         let { x, y, z } = this.position;
         if (map.moveCreatureByExtId(this.position, { x, y: ++y, z }, this.extId)){
             this.direction = CREATURE_DIRECTION.SOUTH;
@@ -279,7 +282,7 @@ export abstract class Creature extends Thing {
         if (!this.isAllowedToWalk()){
             return false;
         }
-        const previousPos = this.position;
+        const previousPos = { ...this.position };
         let { x, y, z } = this.position;
         if (map.moveCreatureByExtId(this.position, { x: ++x, y: ++y, z }, this.extId)){
             this.direction = CREATURE_DIRECTION.EAST;
@@ -295,7 +298,7 @@ export abstract class Creature extends Thing {
         if (!this.isAllowedToWalk()){
             return false;
         }
-        const previousPos = this.position;
+        const previousPos = { ...this.position };
         let { x, y, z } = this.position;
         if (map.moveCreatureByExtId(this.position, { x: --x, y: ++y, z }, this.extId)){
             this.direction = CREATURE_DIRECTION.EAST;
@@ -311,7 +314,7 @@ export abstract class Creature extends Thing {
         if (!this.isAllowedToWalk()){
             return false;
         }
-        const previousPos = this.position;
+        const previousPos = { ...this.position };
         let { x, y, z } = this.position;
         if (map.moveCreatureByExtId(this.position, { x: --x, y, z }, this.extId)){
             this.direction = CREATURE_DIRECTION.WEST;
@@ -324,7 +327,7 @@ export abstract class Creature extends Thing {
     }
 
     public moveDown(){
-        const previousPos = this.position;
+        const previousPos = { ...this.position };
         let { x, y, z } = this.position;
         if (map.moveCreatureByExtId(this.position, { x, y: ++y, z: ++z }, this.extId)){
             this.direction = CREATURE_DIRECTION.SOUTH;

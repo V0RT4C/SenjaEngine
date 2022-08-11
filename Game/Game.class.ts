@@ -71,8 +71,8 @@ class Game {
         const end = Date.now();
         this._averageExecutionTime += (end - start);
 
-        if (this._ticks % 10000 === 0){
-            log.info(`Average execution time: ${this._averageExecutionTime / 10000}ms.`);
+        if (this._ticks % 100 === 0){
+            log.info(`Average execution time: ${this._averageExecutionTime / 100}ms.`);
             this._averageExecutionTime = 0;
         }
     }

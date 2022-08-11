@@ -12,6 +12,9 @@ export class MapTile {
         this._position.x = x;
         this._position.y = y;
         this._position.z = z;
+        if (this._position.x === -1){
+            throw new Error('Maptile cant have -1 as x position')
+        }
     }
 
     private _ground! : Thing;
@@ -52,7 +55,9 @@ export class MapTile {
 
     public setGround(ground : Thing) : void {
         log.debug(`MapTile::setGround`);
-        ground.position = this.position;
+
+        ground.setPosition(this.position);
+
         this._ground = ground;
         if (ground instanceof Item){
             this.setFlagsFromItem(ground);
@@ -65,7 +70,8 @@ export class MapTile {
 
     public addTopThing(thing : Thing){
         log.debug(`MapTile::addTopThing`);
-        thing.position = this.position;
+        thing.setPosition(this.position);
+        
         this._topItems.push(thing);
 
         if (thing instanceof Item){
@@ -79,7 +85,10 @@ export class MapTile {
 
     public addDownThing(thing : Thing){
         log.debug(`MapTile::addDownThing`);
-        thing.position = this._position;
+        
+        thing.setPosition(this.position);
+        log.debug(`Thing position now: { x:${thing.position.x}, y:${thing.position.y}, z:${thing.position.z} }`);
+
         this._downItems.unshift(thing);
 
         if (thing instanceof Item){
@@ -252,7 +261,7 @@ export class MapTile {
             return false;
         }
 
-        creature.position = this.position;
+        creature.setPosition(this.position);
         this._creatures.unshift(creature);
         return true;
     }

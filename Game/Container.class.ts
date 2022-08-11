@@ -56,17 +56,30 @@ export class Container extends Item {
         }
     }
 
+    public getChildContainers(){
+        const childContainers = [];
+
+        for (const item of this._items){
+            if (item.isContainer()){
+                childContainers.push(item);
+            }
+        }
+
+        return childContainers;
+    }
+
     public addItem(item : Item) : boolean {
         const oldLength = this._items.length;
 
         if (this._items.length < this._capacity){
-            if (item instanceof Container){
-                item.parent = this;
+            if (item.isContainer()){
+                (item as Container).parent = this;
             }
 
             const newLength = this._items.unshift(item);
 
             if ((newLength - oldLength) === 1){
+                item.setPosition(this.position);
                 return true;
             }else{
                 return false;
@@ -85,8 +98,8 @@ export class Container extends Item {
             if (item === undefined){
                 return null;
             }else{
-                if (item instanceof Container){
-                    item.parent = null;
+                if (item.isContainer()){
+                    (item as Container).parent = null;
                 }
                 return item;
             }
@@ -134,7 +147,7 @@ export class Container extends Item {
 
     public onMove(): void {
         for (const item of this._items){
-            item.position = this.position;
+            item.setPosition(this.position);
         }
     }
 }

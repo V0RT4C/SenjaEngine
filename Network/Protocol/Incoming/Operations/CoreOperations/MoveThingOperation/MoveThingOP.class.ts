@@ -5,7 +5,6 @@ import { OutgoingNetworkMessage } from "Network/Lib/OutgoingNetworkMessage.class
 import { SendRemoveThingFromTileOperation } from "CoreSendOperations/SendRemoveThingFromTileOperation.class.ts";
 import { AddThingToMapOP } from "CoreSendOperations/AddThingToMapOP.class.ts";
 import { MoveCreatureSubOP } from "CoreOperations/MoveThingOperation/MoveCreatureSubOP.class.ts";
-import { MoveThingToInventorySubOP } from "CoreOperations/MoveThingOperation/MoveThingToInventorySubOP.class.ts";
 import { MoveThingFromInventoryToGroundSubOP} from "CoreOperations/MoveThingOperation/MoveThingFromInventoryToGroundSubOP.class.ts";
 import { MoveThingFromInventoryToInventorySubOP } from "CoreOperations/MoveThingOperation/MoveThingFromInventoryToInventorySubOP.class.ts";
 import { SendTextMessageOperation } from "CoreSendOperations/SendTextMessageOperation.class.ts";
@@ -15,6 +14,8 @@ import { IPosition, StaticOperationCode } from "Types";
 import { TCP } from 'Dependencies';
 import { Thing } from 'Game/Thing.class.ts';
 import { MapTile } from 'Game/Map/MapTile.class.ts';
+import { MoveItemFromGroundToContainerOp } from 'Game/Operations/Movement/ItemMovement/MoveItemFromGroundToContainerOp.class.ts';
+import { MoveItemFromGroundToInventorySlot } from '../../../../../../Game/Operations/Movement/ItemMovement/MoveItemFromGroundToInventorySlotOp.class.ts';
 
 
 
@@ -46,8 +47,19 @@ export class MoveThingOP extends IncomingGameOperation {
             return false;
         }
         else if (this._checkIsGroundToInventoryMove()){
-            const groundToInventoryMove = new MoveThingToInventorySubOP(this._msg, this._fromPosition, this._toPosition, this._stackPos, this._thingId, this._count)
-            await groundToInventoryMove.execute();
+            if (this._toPosition.x === 0xFFFF && this._fromPosition.x !== 0xFFFF) {
+
+                if (0x40 & this._toPosition.y){
+                    const containerId = this._toPosition.y & 0x0F;
+                    const _containerSlotId = this._toPosition.z;
+                    const op = new MoveItemFromGroundToContainerOp(this._player, this._fromPosition, this._stackPos, containerId);
+                    await op.execute();
+                }else{
+                    const inventorySlotId = this._toPosition.y;
+                    const op = new MoveItemFromGroundToInventorySlot(this._player, this._fromPosition, this._stackPos, inventorySlotId);
+                    await op.execute();
+                }
+            }
             return false;
         }
         else if (this._checkIsInventoryToGroundMove()){

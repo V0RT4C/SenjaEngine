@@ -1,7 +1,7 @@
 import log from 'Logger';
 import { TCP } from 'Dependencies';
 import { Creature } from 'Creature';
-import { CHASE_MODE, CREATURE_TYPE, PARTY_SHIELD, PLAYER_SEX, SAFE_FIGHT_MODE, SKULL, THING_TYPE } from 'Constants';
+import { CHASE_MODE, PARTY_SHIELD, PLAYER_SEX, SAFE_FIGHT_MODE, SKULL, THING_TYPE } from 'Constants';
 import { Inventory } from "Game/Player/Inventory.class.ts";
 import { Container } from "Game/Container.class.ts";
 import { SendCloseContainerOperation } from '../../Network/Protocol/Outgoing/SendOperations/CoreSendOperations/SendCloseContainerOperation.class.ts';
@@ -103,6 +103,10 @@ export class Player extends Creature {
         this._lastPing = value;
     }
 
+    public get openContainers() : Container[] {
+        return this._openContainers;
+    }
+
 
     public addOpenContainer(container : Container){
         if (this.containerIsOpen(container)){
@@ -144,14 +148,6 @@ export class Player extends Creature {
         return id;
     }
 
-    public getLastOpenedContainer() : Container {
-        return this._openContainers[this._openContainers.length - 1];
-    }
-
-    public getLastOpenedContainerId() : number {
-        return this._openContainers.length ? this._openContainers.length - 1 : 0;
-    }
-
     public closeContainerById(id : number) : boolean {
 
         for (let i=0; i < this._openContainers.length; i++){
@@ -187,12 +183,13 @@ export class Player extends Creature {
     }
 
     public closeDistantContainers(){
+        log.debug(`CloseDistantContainers`);
         for (const container of this._openContainers){
             if (
                 (Math.abs(container.position.x - this.position.x) > 1 || 
                 Math.abs(container.position.y - this.position.y) > 1 ||
-                container.position.z !== this.position.z)
-                && (container.position.x !== -1)
+                container.position.z !== this.position.z) && 
+                (container.position.x !== -1)
                 ){
                     const containerId = container.getContainerId(this);
                     game.addOperation(new CloseContainerOp(this, containerId));

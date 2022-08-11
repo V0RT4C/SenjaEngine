@@ -3,15 +3,12 @@ import { GameOperation } from "../GameOperation.abstract.ts";
 import { Player } from "../Player/Player.class.ts";
 
 export class FollowCreatureOp extends GameOperation {
-    constructor(private readonly player : Player, creatureExtId? : number){
+    constructor(
+        protected readonly player : Player, 
+        protected readonly creatureExtId : number
+        ){
         super();
-
-        if (creatureExtId){
-            this._creatureExtId = creatureExtId;
-        }
     }
-
-    protected _creatureExtId! : number;
 
     protected _internalOperations(): boolean {
         log.debug(`FollowCreatureOp`);

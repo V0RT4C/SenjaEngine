@@ -64,5 +64,7 @@ export enum RETURN_MESSAGE {
     CANNOT_ATTACK_THIS_PERSON = 'You may not attack this person.',
     YOU_MUST_LEARN_SPELL_FIRST = 'You must learn this spell first.',
     CANNOT_LOGOUT_HERE = 'You can not logout here.',
-    NOT_POSSIBLE = 'Sorry, not possible.'
+    NOT_POSSIBLE = 'Sorry, not possible.',
+    UNKNOWN_ERROR = 'Sorry, action aborted due to a bug on the server.',
+    FEATURE_NOT_IMPLEMENTED = 'Sorry, this feature is not implemented yet.'
 }

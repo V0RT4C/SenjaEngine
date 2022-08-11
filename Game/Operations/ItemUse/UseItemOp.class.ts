@@ -1,7 +1,7 @@
 import log from 'Logger';
 import map from "Map";
 import rawItems from "RawItems";
-import { GameOperation } from '../GameOperation.abstract.ts';
+import { GameOperation } from '../../GameOperation.abstract.ts';
 import { OutgoingNetworkMessage } from "Network/Lib/OutgoingNetworkMessage.class.ts";
 import { SendCloseContainerOperation } from "CoreSendOperations/SendCloseContainerOperation.class.ts";
 import { SendOpenContainerOperation } from "CoreSendOperations/SendOpenContainerOperation.class.ts";
@@ -10,10 +10,9 @@ import { MapTile } from "MapTile";
 import { Thing } from "Thing";
 import { Container } from "Game/Container.class.ts";
 import { IPosition } from "Types";
-import { TCP } from 'Dependencies';
-import { Player } from '../Player/Player.class.ts';
+import { Player } from '../../Player/Player.class.ts';
 import { Item } from 'Game/Item.class.ts';
-import { RETURN_MESSAGE } from '../../Constants/Game.const.ts';
+import { RETURN_MESSAGE } from 'Constants/Game.const.ts';
 
 export class UseItemOP extends GameOperation {
     constructor(protected readonly _player : Player, item : Item){
@@ -69,7 +68,7 @@ export class UseItemOP extends GameOperation {
                 log.debug('Close container');
             }else{
                 const container = this._player.getContainerById(this._containerId);
-                const msg = OutgoingNetworkMessage.withClient(this._player.client as TCP.Client, SendOpenContainerOperation.messageSize);
+                const msg = OutgoingNetworkMessage.withClient(this._player.client, SendOpenContainerOperation.messageSize);
                 SendOpenContainerOperation.writeToNetworkMessage(container as Container, this._player, msg);
                 await msg.send();
             }

@@ -1,19 +1,15 @@
 import log from 'Logger';
-import { IncomingGameOperation } from "ProtocolIncoming/Operations/IncomingGameOperation.abstract.ts";
 import { PROTOCOL_RECEIVE } from "Constants";
 import { StaticImplements } from "Decorators";
 import { StaticOperationCode } from "Types";
+import { IncomingGameOp } from '../IncomingGameOp.abstract.ts';
 
 @StaticImplements<StaticOperationCode>()
-export class IncomingPingOp extends IncomingGameOperation {
+export class IncomingPingOp extends IncomingGameOp {
     public static operationCode = PROTOCOL_RECEIVE.PING;
 
-    protected _internalOperations(): boolean {
+    public execute(): void {
         log.debug('IncomingPingOp');
-        return true;
-    }
-
-    protected _networkOperations(): boolean {
-        return true;
+        return;
     }
 }

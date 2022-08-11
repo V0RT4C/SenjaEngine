@@ -35,6 +35,7 @@ export class MoveThingFromInventoryToInventorySubOP extends IncomingGameOperatio
     private _itemIdAtInventorySpot : number | undefined;
 
     private _moveFromContainerToContainer = false;
+    private _moveFromContainerToContainerInContainer = false;
     private _moveFromContainerToInventory = false;
     private _moveFromInventoryToContainer = false;
     private _moveFromInventoryToInventory = false;
@@ -180,22 +181,38 @@ export class MoveThingFromInventoryToInventorySubOP extends IncomingGameOperatio
             }
 
             this._fromContainer = container;
+            this._toContainer = container;
 
             if (container.isFull() || (this._toSlotId < this._fromSlotId)){
                 return false;
             }
 
-            //const item : Item | null = container.removeItemBySlotId(this._fromSlotId);
             const item : Item | null = container.getItemBySlotId(this._fromSlotId);
 
             if (item === null || item === container){
                 return false;
             }
 
+            //Check if toSlotId is container
+            const toSlotItem : Item | null = container.getItemBySlotId(this._toSlotId);
+
             const removeItem : Item | null = container.removeItemBySlotId(this._fromSlotId);
 
             if (removeItem !== item){
                 return false;
+            }
+
+            if (toSlotItem !== null && toSlotItem.isContainer()){
+                log.warning(`Move item to container when dragging item to container in a slot. Not yet implemented.`);
+                if ((toSlotItem as Container).isFull()){
+                    return false;
+                }else{
+                    this._toContainer = toSlotItem as Container;
+                    (toSlotItem as Container).addItem(item);
+                    item.onMove();
+                    this._moveFromContainerToContainerInContainer = true;
+                    return true;
+                }
             }
 
             if (container.addItem(item)){

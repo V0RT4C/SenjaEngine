@@ -9,7 +9,6 @@ export abstract class Thing {
 
     protected _name! : string;
     protected _thingId! : number;
-    protected _tileIndex : number = -1;
     protected _pos : IPosition = { x: -1, y: -1, z: -1 };
     protected _previousPos : IPosition = { x: -1, y: -1, z: -1 };
     protected _lightInfo : ILightInfo = { color: 0xD7, level: 5 };
@@ -22,16 +21,26 @@ export abstract class Thing {
         return this._name;
     }
 
+    public set name(value : string) {
+        this._name = value;
+    }
+
     public get thingId() : number {
         return this._thingId;
     }
 
-    public get tileIndex() : number {
-        return this._tileIndex;
+    public set thingId(value : number) {
+        this._thingId = value;
     }
 
     public get position() : IPosition {
         return this._pos;
+    }
+
+    public set position(position : IPosition) {
+        this._pos.x = position.x;
+        this._pos.y = position.y;
+        this._pos.z = position.z;
     }
 
     public get previousPosition() : IPosition {
@@ -47,7 +56,7 @@ export abstract class Thing {
     }
 
     public set lightInfo(info : ILightInfo) {
-        this._lightInfo = info;
+        this._lightInfo = { ...info };
     } 
 
     public getTile() : MapTile | null {
@@ -77,26 +86,16 @@ export abstract class Thing {
         }
     }
 
-    public set name(value : string) {
-        this._name = value;
-    }
-    
-    public set thingId(value : number) {
-        this._thingId = value;
+    public setPosition(position : IPosition) : void {
+        this._pos.x = position.x;
+        this._pos.y = position.y;
+        this._pos.z = position.z;
     }
 
-    public set tileIndex(value : number) {
-        this._tileIndex = value;
-    }
-
-    public setPosition(x : number, y : number, z : number) : void {
-        this._pos.x = x;
-        this._pos.y = y;
-        this._pos.z = z;
-    }
-
-    public set position(pos : IPosition) {
-        this._pos = pos;
+    public setPreviousPosition(position : IPosition) : void {
+        this._previousPos.x = position.x;
+        this._previousPos.y = position.y;
+        this._previousPos.z = position.z;
     }
 
     public isItem() : boolean {

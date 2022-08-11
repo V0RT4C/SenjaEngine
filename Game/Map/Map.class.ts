@@ -99,6 +99,9 @@ class Map {
         //     }
         // }
 
+        if (fromPos.x === -1 || toPos.x === -1){
+            throw new Error('Maptile posx is -1 ');
+        }
         const fromTile : MapTile | null = this.getTileAt(fromPos);
 
         if (fromTile === null){
@@ -119,7 +122,7 @@ class Map {
             log.debug('Failed to remove creature from tile')
             return false;
         }
-
+        
         return toTile.addCreature(creature);
     }
 

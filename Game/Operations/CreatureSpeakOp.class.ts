@@ -1,51 +1,29 @@
 import log from 'Logger';
 import map from "Map";
+import game from '../Game.class.ts';
+import { GameOperation } from "../GameOperation.abstract.ts";
 import { AddThingToMapOP } from "CoreSendOperations/AddThingToMapOP.class.ts";
 import { SendCreatureLightOperation } from "CoreSendOperations/SendCreatureLightOperation.class.ts";
 import { SendCreatureSpeakOperation } from "CoreSendOperations/SendCreatureSpeakOperation.class.ts";
+import { SendTextMessageOperation } from 'CoreSendOperations/SendTextMessageOperation.class.ts';
 import { Creature } from "Creature";
 import { MapTile } from "MapTile";
 import { Item } from "Item";
 import { MESSAGE_TYPE, SPEAK_TYPE } from "Constants";
-import { GameOperation } from "../GameOperation.abstract.ts";
-import { SendTextMessageOperation } from '../../Network/Protocol/Outgoing/SendOperations/CoreSendOperations/SendTextMessageOperation.class.ts';
-import game from '../Game.class.ts';
 import { Player } from '../Player/Player.class.ts';
 
 export class CreatureSpeakOp extends GameOperation {
-    constructor(private readonly speakingCreature : Creature, speakType? : SPEAK_TYPE, speakMessage? : string){
+    constructor(
+        protected readonly _speakingCreature : Creature, 
+        protected readonly _speakType : SPEAK_TYPE, 
+        protected readonly _speakMessage : string
+        ){
         super();
-
-        this._speakingCreature = speakingCreature;
-        
-        if (speakType){
-            this._speakType = speakType;
-        }
-
-        if (speakMessage){
-            this._speakMessage = speakMessage;
-        }
     }
-
-    protected _speakingCreature! : Creature;
-    protected _speakType! : SPEAK_TYPE;
-    protected _speakMessage! : string;
 
 
     public _internalOperations(): boolean {
         log.debug('CreatureSpeakOp');
-        if (this._speakingCreature === undefined){
-            throw new Error('No speaking creature defined');
-        }
-
-        if (this._speakType === undefined){
-            throw new Error('No speakType defined');
-        }
-
-        if (this._speakMessage === undefined){
-            throw new Error('No speakMessage defined');
-        }
-
         return true;
     }
 
