@@ -22,6 +22,18 @@ class Players {
         return this.getPlayerByName(name) !== null;
     }
 
+    public getPlayersFromIds(ids : number[]){
+        const players = [];
+
+        for (const id of ids){
+            if (this._list[id]){
+                players.push(this._list[id]);
+            }
+        }
+
+        return players;
+    }
+
     public getPlayerById(id : number) : Player | null {
         if (this._list[id]){
             return this._list[id];

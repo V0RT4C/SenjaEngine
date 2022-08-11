@@ -63,6 +63,20 @@ export abstract class Thing {
         return tile.getThingStackPos(this);
     }
 
+    public move(toPosition : IPosition, stackPosition? : number) : boolean {
+        stackPosition = stackPosition !== undefined ? stackPosition : this.getStackPosition();
+        if (stackPosition === -1){
+            return false;
+        }else{
+            const moveSuccess = map.moveThing(this.position, stackPosition, toPosition);
+            if (moveSuccess){
+                return moveSuccess;
+            }else{
+                return false;
+            }
+        }
+    }
+
     public set name(value : string) {
         this._name = value;
     }

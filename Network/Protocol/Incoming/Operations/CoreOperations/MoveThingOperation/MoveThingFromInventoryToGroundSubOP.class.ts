@@ -12,6 +12,7 @@ import { Item } from "Item";
 import { TCP } from 'Dependencies';
 import { INVENTORY_SLOT } from "Constants";
 import { IPosition } from "Types";
+import players from '../../../../../../Game/Player/Players.class.ts';
 
 
 
@@ -26,6 +27,7 @@ export class MoveThingFromInventoryToGroundSubOP extends IncomingGameOperation {
     ) { super(_msg); }
 
     private _containerId! : INVENTORY_SLOT;
+    private _container! : Container;
     private _slotId! : number;
     private _fromInventory = false;
 
@@ -69,7 +71,15 @@ export class MoveThingFromInventoryToGroundSubOP extends IncomingGameOperation {
             SendDeleteFromInventoryOperation.writeToNetworkMessage(this._containerId, msg);
         }else{
             //From container
-            SendDeleteFromContainerOperation.writeToNetworkMessage(this._containerId, this._slotId, msg);
+            const fromContainerSpectators = players.getPlayersFromIds(this._container.getPlayerSpectatorIds());
+
+            for (const p of fromContainerSpectators){
+                if (p.containerIsOpen(this._container)){
+                    const containerId = p.getContainerIdByContainer(this._container);
+                    const deleteFromContainerOp = new SendDeleteFromContainerOperation(containerId, this._slotId, p.client);
+                    await deleteFromContainerOp.execute();
+                }
+            }
         }
         await msg.send();
         return true;
@@ -89,6 +99,8 @@ export class MoveThingFromInventoryToGroundSubOP extends IncomingGameOperation {
                 return false;
             }
 
+            this._container = container;
+
             item = container.removeItemBySlotId(this._slotId);
         }
 
@@ -102,6 +114,8 @@ export class MoveThingFromInventoryToGroundSubOP extends IncomingGameOperation {
         }
 
         toTile.addDownThing(item);
+        item.onMove();
+        this._player.closeDistantContainers();
         return true;
     }
 }

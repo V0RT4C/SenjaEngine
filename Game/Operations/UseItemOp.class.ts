@@ -48,7 +48,7 @@ export class UseItemOP extends GameOperation {
             if (y & 0x40){
                 this._containerId = (y & 0x0F);
                 log.debug(`Use item in container id: ${this._containerId}. Slot: ${z}`);
-                return false;
+                return this._playerUseItemInContainer();
             }else{
                 this._containerId = y;
                 this._useItemInInventory = true;
@@ -70,7 +70,7 @@ export class UseItemOP extends GameOperation {
             }else{
                 const container = this._player.getContainerById(this._containerId);
                 const msg = OutgoingNetworkMessage.withClient(this._player.client as TCP.Client, SendOpenContainerOperation.messageSize);
-                SendOpenContainerOperation.writeToNetworkMessage(container as Container, msg);
+                SendOpenContainerOperation.writeToNetworkMessage(container as Container, this._player, msg);
                 await msg.send();
             }
         }else{
@@ -108,7 +108,7 @@ export class UseItemOP extends GameOperation {
 
             const openSuccess = this._player.addOpenContainer(item as Container);
             log.debug('Player opened container');
-            this._containerId = (item as Container).containerId;
+            this._containerId = (item as Container).getContainerId(this._player);
 
             if (!openSuccess){
                 //If not open success then container is already open
@@ -130,7 +130,7 @@ export class UseItemOP extends GameOperation {
             this._itemIsContainer = true;
             const item = this._player.inventory.getItemReferenceFromInventory(this._containerId);
             const openSuccess = this._player.addOpenContainer(item as Container);
-            this._containerId = (item as Container).containerId;
+            this._containerId = (item as Container).getContainerId(this._player);
 
             if (!openSuccess){
                 this._closeContainer = true;
@@ -145,6 +145,44 @@ export class UseItemOP extends GameOperation {
     }
 
     protected _playerUseItemInContainer(){
+        if (this._rawItem !== null && this._rawItem.group === 'container'){
+            const container : Container | null = this._player.getContainerById(this._containerId);
+            
+            if (container === null){
+                log.debug(`Container not found`);
+                this._cancelMessage = RETURN_MESSAGE.NOT_POSSIBLE;
+                return true;
+            }
+            
+            const itemBeingUsed : Item | null = container.getItemBySlotId(this._position.z);
+            
+            if (itemBeingUsed === null){
+                log.debug(`No item found at container id ${this._containerId}, slot ${this._position.z}`);
+                this._cancelMessage = RETURN_MESSAGE.NOT_POSSIBLE;
+                return true;
+            }
+            
+            if (itemBeingUsed.rawItem !== null && itemBeingUsed.rawItem.group === 'container'){
+                log.debug('Item being used is a container.');
+                this._itemIsContainer = true;
+                const openSuccess = this._player.addOpenContainer(itemBeingUsed as Container);
+                this._containerId = (itemBeingUsed as Container).getContainerId(this._player);
+                console.log(this._containerId);
+                console.log(openSuccess);
+                if (!openSuccess){
+                    this._closeContainer = true;
+                    this._player.closeContainerById(this._containerId);
+                }
 
+                return true;
+            }else{
+                log.debug('Item being used is not a container.');
+            }
+
+            return false;
+        }else{
+            log.debug('Item being used is not a container.');
+            return false;
+        }
     }
 }

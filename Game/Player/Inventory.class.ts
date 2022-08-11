@@ -162,6 +162,7 @@ export class Inventory {
             return false;
         }
 
+
         switch(inventorySlot){
             case INVENTORY_SLOT.HELMET:
                 this._helmet = item;
@@ -197,7 +198,6 @@ export class Inventory {
                 return false;
         }
 
-        item.position = { x: 65535, y: inventorySlot, z: 0 };
         return true;
     }
 }

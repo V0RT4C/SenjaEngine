@@ -115,7 +115,7 @@ class Map {
         const removeSuccess : boolean = fromTile.removeCreature(creature.extId);
 
         if (!removeSuccess){
-            console.log('Failed to remove creature from tile')
+            log.debug('Failed to remove creature from tile')
             return false;
         }
 

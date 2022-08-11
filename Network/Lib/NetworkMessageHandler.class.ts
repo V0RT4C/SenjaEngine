@@ -27,7 +27,7 @@ export class NetworkMessageHandler {
 
                 game.addOperation(operation);
             }else{
-                log.warning(`Dont have that OP code: ${op}`);
+                log.warning(`OP code: ${op}. Not yet implemented.`);
                 log.debug(buffer.position);
                 buffer.seek(buffer.byteLength);
             }

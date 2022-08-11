@@ -3,6 +3,7 @@
  * (Creates default account & characters for login etc...)
  */
 
+import { MAX_LIGHT_LEVEL, MIN_LIGHT_LEVEL } from "./Constants/Game.const.ts";
 import { PLAYER_SEX } from "./Constants/Player.const.ts";
 
 export const DEVELOPMENT_MODE = true;
@@ -39,14 +40,14 @@ export const TCP_GAMESERVER_PORT = 7373;
 //Day/night settings
 export const WORLD_DYNAMIC_LIGHT_ENABLED = true;
 export const WORLD_TIME_AT_STARTUP = 360; // 6AM
-export const WORLD_TIME_SPEED_INCREASE_X = 24;
+export const WORLD_TIME_SPEED_INCREASE_X = 24; //24x = 2.5 seconds (=1 minute real world time)
+export const WORLD_LIGHT_LEVEL_AT_STARTUP = MIN_LIGHT_LEVEL; //Values should be between 40 - 250.
 
-export const LIGHT_LEVEL_DAY = 250;
-export const LIGHT_LEVEL_NIGHT = 40;
+export const LIGHT_LEVEL_DAY = MAX_LIGHT_LEVEL;
+export const LIGHT_LEVEL_NIGHT = MIN_LIGHT_LEVEL;
 export const SUNRISE_START = 360; // 6AM
-export const SUNRISE_STOP = 540; // 9AM
-export const SUNSET_START = 1020; // 5PM
-export const SUNSET_END = 1140; // 7PM
+export const SUNSET_START = 1080; // 6PM
+export const PLAYER_WORLD_LIGHT_UPDATE_INTERVAL = 2; //How many times per minute to send world light update to players
 
 //Creature base speed
 export const BASE_SPEED = 220;

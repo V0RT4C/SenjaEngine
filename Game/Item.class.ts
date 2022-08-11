@@ -1,6 +1,7 @@
 import { Thing } from 'Thing';
 import { THING_TYPE } from 'Constants';
 import rawItems from "RawItems";
+import { Player } from './Player/Player.class.ts';
 
 export class Item extends Thing {
     constructor(thingId : number){

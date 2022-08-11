@@ -1,14 +1,14 @@
 import log from 'Logger';
 import { SendWorldLightOperation } from 'CoreSendOperations/SendWorldLightOperation.class.ts';
 import { GAME_TICKS_PER_MINUTE, MAX_LIGHT_LEVEL, MIN_LIGHT_LEVEL, ONE_DAY_IN_MINUTES } from "Constants/Game.const.ts";
-import { LIGHT_LEVEL_DAY, LIGHT_LEVEL_NIGHT, SUNRISE_START, SUNRISE_STOP, SUNSET_END, SUNSET_START, WORLD_DYNAMIC_LIGHT_ENABLED, WORLD_TIME_AT_STARTUP, WORLD_TIME_SPEED_INCREASE_X } from '~/config.ts';
+import { LIGHT_LEVEL_DAY, LIGHT_LEVEL_NIGHT, PLAYER_WORLD_LIGHT_UPDATE_INTERVAL, SUNRISE_START, SUNSET_START, WORLD_DYNAMIC_LIGHT_ENABLED, WORLD_LIGHT_LEVEL_AT_STARTUP, WORLD_TIME_AT_STARTUP, WORLD_TIME_SPEED_INCREASE_X } from '~/config.ts';
 import { ILightInfo } from 'Types';
 import { Player } from './Player/Player.class.ts';
 
 export class WorldTime {
 
     private _time = WORLD_TIME_AT_STARTUP;
-    private _worldLight : ILightInfo = { color: 0xD7, level: MIN_LIGHT_LEVEL };
+    private _worldLight : ILightInfo = { color: 0xD7, level: WORLD_LIGHT_LEVEL_AT_STARTUP };
 
     public get worldLight() : ILightInfo {
         return this._worldLight;
@@ -21,42 +21,15 @@ export class WorldTime {
 
             if (WORLD_DYNAMIC_LIGHT_ENABLED){
                 this._updateWorldLight();
-                console.log(this._worldLight.level);
             }
         }
     }
 
     public async updatePlayer(player : Player, gameTicks : number){
-        if (gameTicks % (GAME_TICKS_PER_MINUTE / 10) === 0){
+        if (gameTicks % (GAME_TICKS_PER_MINUTE / PLAYER_WORLD_LIGHT_UPDATE_INTERVAL) === 0){
             const worldLightOp = new SendWorldLightOperation(player.client);
             await worldLightOp.execute();
         }
-    }
-
-    public minutesBetweenSunriseStartAndEnd(){
-        if (SUNRISE_START > SUNRISE_STOP){
-            return SUNRISE_START - SUNRISE_STOP;
-        }else{
-            return SUNRISE_STOP - SUNRISE_START;
-        }
-    }
-
-    public minutesBetweenSunsetStartAndEnd(){
-        if (SUNSET_START > SUNSET_END){
-            return SUNSET_START - SUNSET_END;
-        }else{
-            return SUNSET_END - SUNSET_START;
-        }
-    }
-
-    public lightLevelChangePerMinuteSunrise(){
-        const value = (LIGHT_LEVEL_DAY - LIGHT_LEVEL_NIGHT) / this.minutesBetweenSunriseStartAndEnd();
-        return Math.ceil(value);
-    }
-
-    public lightLevelChangePerMinuteSunset(){
-        const value = (LIGHT_LEVEL_DAY - LIGHT_LEVEL_NIGHT) / this.minutesBetweenSunsetStartAndEnd();
-        return Math.ceil(value);
     }
 
     public getHumanReadableTime(){
@@ -75,15 +48,15 @@ export class WorldTime {
     }
 
     private _updateWorldLight(){
-        if (this._time >= SUNRISE_START && this._time <= SUNRISE_STOP){
+        if (this._time >= SUNRISE_START && this._time < SUNSET_START){
             if (this._worldLight.level < Math.min(LIGHT_LEVEL_DAY, MAX_LIGHT_LEVEL)){
-                const newLightLevel = this._worldLight.level + this.lightLevelChangePerMinuteSunrise();
+                const newLightLevel = this._worldLight.level + 1;
                 this._worldLight.level = newLightLevel <= MAX_LIGHT_LEVEL && newLightLevel >= MIN_LIGHT_LEVEL ? newLightLevel : MAX_LIGHT_LEVEL;
             }
         }
-        else if (this._time >= SUNSET_START && this._time <= SUNSET_END){
+        else if (this._time >= SUNSET_START){
             if (this._worldLight.level > Math.max(LIGHT_LEVEL_NIGHT, MIN_LIGHT_LEVEL)){
-                const newLightLevel = this._worldLight.level - this.lightLevelChangePerMinuteSunset();
+                const newLightLevel = this._worldLight.level - 1;
                 this._worldLight.level = newLightLevel <= MAX_LIGHT_LEVEL && newLightLevel >= MIN_LIGHT_LEVEL ? newLightLevel : MIN_LIGHT_LEVEL;
             }
         }

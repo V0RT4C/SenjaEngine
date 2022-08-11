@@ -19,6 +19,7 @@ import { TurnCreatureWestOP } from './PlayerMovementOperations/TurnCreatureWestO
 import { IncomingChangeOutfitRequestOp } from './IncomingChangeOutfitRequestOp.class.ts';
 import { IncomingSetOutfitOp } from './IncomingSetOutfitOp.class.ts';
 import { IncomingUseItemOp } from './IncomingUseItemOp.class.ts';
+import { IncomingFollowCreatureOp } from './IncomingFollowCreatureOp.class.ts';
 
 export default {
     [MoveThingOP.operationCode]: MoveThingOP,
@@ -41,5 +42,6 @@ export default {
     [IncomingSetOutfitOp.operationCode]: IncomingSetOutfitOp,
     [IncomingUseItemOp.operationCode]: IncomingUseItemOp,
     [MouseClickMoveOP.operationCode]: MouseClickMoveOP,
-    [StopAutoWalkOP.operationCode]: StopAutoWalkOP
+    [StopAutoWalkOP.operationCode]: StopAutoWalkOP,
+    [IncomingFollowCreatureOp.operationCode]: IncomingFollowCreatureOp
 }

@@ -12,6 +12,7 @@ export class IncomingLookAtOp extends LookAtOp {
         this._position = this._msg.readPosition();
         this._thingId = this._msg.readUint16LE();
         this._stackPos = this._msg.readUint8();
+        console.log(this._position);
     }
 }
 

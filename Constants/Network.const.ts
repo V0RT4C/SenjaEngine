@@ -77,12 +77,12 @@ export enum PROTOCOL_RECEIVE {
     CLOSE_CONTAINER                                     = 0x87,
     LOOK_AT                                             = 0x8C,
     SPEAK                                               = 0x96,
-    ATTACK                                              = 0xA1,
-
+    
     CANCEL_MOVE                                         = 0xBE,
-
+    
     CHANGE_FIGHT_MODE                                   = 0xA0, //Attack & Follow modes
-
+    ATTACK                                              = 0xA1,
+    FOLLOW                                              = 0xA2,
     FORCE_QUIT                                          = 0x69,
     PING                                                = 0x1E,
     REQUEST_CHANGE_OUTFIT                               = 0xD2,

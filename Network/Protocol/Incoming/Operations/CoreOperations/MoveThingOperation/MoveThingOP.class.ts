@@ -13,6 +13,8 @@ import { MESSAGE_TYPE, PROTOCOL_RECEIVE, RETURN_MESSAGE, THING_ID } from "Consta
 import { StaticImplements } from "Decorators";
 import { IPosition, StaticOperationCode } from "Types";
 import { TCP } from 'Dependencies';
+import { Thing } from 'Game/Thing.class.ts';
+import { MapTile } from 'Game/Map/MapTile.class.ts';
 
 
 
@@ -26,6 +28,7 @@ export class MoveThingOP extends IncomingGameOperation {
     protected _toPosition!: IPosition;
     protected _count!: number;
     protected _moveSuccess = true;
+    protected _thing! : Thing | null | undefined;
 
     public parseMessage() {
         this._fromPosition = this._msg.readPosition();
@@ -70,6 +73,7 @@ export class MoveThingOP extends IncomingGameOperation {
             );
 
             SendRemoveThingFromTileOperation.writeToNetworkMessage(this._fromPosition, this._stackPos, msg);
+            SendRemoveThingFromTileOperation.updateContainerSpectators(this._thing, this._fromPosition, this._player);
             AddThingToMapOP.writeToNetworkMessage(this._thingId, this._toPosition, msg);
             await msg.sendToPlayersInAwareRange(this._fromPosition, this._toPosition);
         }else{
@@ -113,7 +117,15 @@ export class MoveThingOP extends IncomingGameOperation {
     }
 
     private _moveThingFromGroundToGround() : boolean {
+        const fromTile : MapTile | null = map.getTileAt(this._fromPosition);
+
+        if (fromTile !== null){
+            const thing : Thing | null = fromTile.getThingByStackPos(this._stackPos);
+            this._thing = thing;
+        }
+
         if (map.moveThing(this._fromPosition, this._stackPos, this._toPosition)) {
+            this._player.closeDistantContainers();
             return true;
         } else {
             this._moveSuccess = false;

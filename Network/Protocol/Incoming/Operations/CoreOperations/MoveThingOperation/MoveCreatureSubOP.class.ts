@@ -41,8 +41,13 @@ export class MoveCreatureSubOP extends IncomingGameOperation {
             return false;
         }
 
-        if (Math.abs(this._fromPosition.x - this._toPosition.x) > 1 ||
-            Math.abs(this._fromPosition.y - this._toPosition.y) > 1){
+        if (
+            (Math.abs(this._fromPosition.x - this._toPosition.x) > 1 ||
+            Math.abs(this._fromPosition.y - this._toPosition.y) > 1) ||
+            (Math.abs(this._player.position.x - this._fromPosition.x) > 1 ||
+            Math.abs(this._player.position.y - this._fromPosition.y) > 1
+            ))
+        {
             return false;
         }
 

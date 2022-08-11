@@ -1,14 +1,12 @@
 import { Item } from "Item";
+import { Player } from "./Player/Player.class.ts";
 
 export class Container extends Item {
-    private _containerId! : number;
+    private _containerIds : { [playerId : number] : number } = {};
     private _items : Array<Item> = [];
     private _capacity = 8;
     private _parent : Container | null = null;
 
-    public get containerId() : number {
-        return this._containerId;
-    }
 
     public get items() : Array<Item> {
         return this._items;
@@ -16,18 +14,6 @@ export class Container extends Item {
 
     public get capacity() : number {
         return this._rawItem?.attributes?.capacity ? this._rawItem?.attributes?.capacity : this._capacity;
-    }
-
-    public isFull() : boolean {
-        return this._items.length === this._capacity;
-    }
-
-    public get parent() : Container | null {
-        if (this._parent === undefined){
-            return null;
-        }else{
-            return this._parent;
-        }
     }
 
     public set capacity(value : number) {
@@ -42,12 +28,32 @@ export class Container extends Item {
         }
     }
 
-    public set containerId(id : number){
-        this._containerId = id;
+    public isFull() : boolean {
+        return this._items.length === this._capacity;
+    }
+
+    public get parent() : Container | null {
+        if (this._parent === undefined){
+            return null;
+        }else{
+            return this._parent;
+        }
     }
 
     public set parent(container : Container | null){
         this._parent = container;
+    }
+
+    public setContainerId(id : number, player : Player) : void {
+        this._containerIds[player.id] = id;
+    }
+
+    public getContainerId(player : Player) : number {
+        if (this._containerIds[player.id] != undefined){
+            return this._containerIds[player.id];
+        }else{
+            return -1;
+        }
     }
 
     public addItem(item : Item) : boolean {
@@ -104,12 +110,31 @@ export class Container extends Item {
             if (removedItem === undefined){
                 return null;
             }else{
+                if (removedItem instanceof Container){
+                    removedItem.parent = null;
+                }
                 return removedItem;
             }
         }
     }
 
+    public removeContainerId(player : Player) : void {
+        if (this._containerIds[player.id] !== undefined){
+            delete this._containerIds[player.id];
+        }
+    }
+
     public hasParent() : boolean {
         return this._parent !== undefined;
+    }
+
+    public getPlayerSpectatorIds(){
+        return Object.keys(this._containerIds).map((id) => Number(id));
+    }
+
+    public onMove(): void {
+        for (const item of this._items){
+            item.position = this.position;
+        }
     }
 }

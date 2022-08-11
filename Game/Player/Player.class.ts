@@ -109,12 +109,12 @@ export class Player extends Creature {
         if (this.containerIsOpen(container)){
             return false;
         }
-
+        
         if (this._containerIds.length === 0){
             return false;
         }
-    
-        container.containerId = this._containerIds.pop() as number;
+        
+        container.setContainerId(this._containerIds.pop() as number, this);
         this._openContainers.push(container);
         return true;
     }
@@ -137,7 +137,7 @@ export class Player extends Creature {
 
         for (let i=0; i < this._openContainers.length; i++){
             if (this._openContainers[i] === container){
-                id = container.containerId;
+                id = container.getContainerId(this);
                 break;
             }
         }
@@ -156,7 +156,8 @@ export class Player extends Creature {
     public closeContainerById(id : number) : boolean {
 
         for (let i=0; i < this._openContainers.length; i++){
-            if (this._openContainers[i].containerId === id){
+            if (this._openContainers[i].getContainerId(this) === id){
+                this._openContainers[i].removeContainerId(this);
                 this._openContainers.splice(i, 1);
                 this._containerIds.push(id);
                 return true;
@@ -169,7 +170,7 @@ export class Player extends Creature {
     public getContainerById(id : number) : Container | null {
 
         for (const container of this._openContainers){
-            if (container.containerId === id){
+            if (container.getContainerId(this) === id){
                 return container;
             }
         }
@@ -192,9 +193,10 @@ export class Player extends Creature {
                 (Math.abs(container.position.x - this.position.x) > 1 || 
                 Math.abs(container.position.y - this.position.y) > 1 ||
                 container.position.z !== this.position.z)
-                && container.position.x !== -1
+                && (container.position.x !== -1)
                 ){
-                    game.addOperation(new CloseContainerOp(this, container.containerId));
+                    const containerId = container.getContainerId(this);
+                    game.addOperation(new CloseContainerOp(this, containerId));
                 }
         }
     }

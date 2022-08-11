@@ -13,6 +13,7 @@ import { MapTile } from "MapTile";
 import { Thing } from "Thing";
 import { Item } from "Item";
 import { Container } from "Game/Container.class.ts";
+import players from '../../../../../../Game/Player/Players.class.ts';
 
 
 export class MoveThingToInventorySubOP extends IncomingGameOperation {
@@ -27,6 +28,7 @@ export class MoveThingToInventorySubOP extends IncomingGameOperation {
 
     private _slotId! : number;
     private _containerId! : number;
+    private _container! : Container;
     private _toInventory = false;
 
     private _itemAddedToGround = false;
@@ -72,9 +74,15 @@ export class MoveThingToInventorySubOP extends IncomingGameOperation {
             await updateInventoryMessage.execute();
         }else{
             //To container
-            const msg = OutgoingNetworkMessage.withClient(this._player.client, AddThingToContainerOP.messageSize);
-            AddThingToContainerOP.writeToNetworkMessage(this._containerId, this._thingId, msg);
-            await msg.send();
+            const toContainerSpectators = players.getPlayersFromIds(this._container.getPlayerSpectatorIds());
+
+            for (const p of toContainerSpectators){
+                if (p.containerIsOpen(this._container)){
+                    const containerId = p.getContainerIdByContainer(this._container);
+                    const addThingToContainerOp = new AddThingToContainerOP(containerId, this._thingId, p.client);
+                    await addThingToContainerOp.execute();
+                }
+            }
         }
 
         if (this._itemAddedToGround){
@@ -107,10 +115,12 @@ export class MoveThingToInventorySubOP extends IncomingGameOperation {
             const itemAtInventorySpot : Item | null = this._player.inventory.getItemAndRemoveFromInventory(this._containerId);
 
             if (this._player.inventory.addItem(thing as Item, this._containerId)){
+                thing.onMove();
 
                 if (itemAtInventorySpot !== null){
                     //Ok, now we need to add item that was at the inventory spot to ground
                     fromTile.addDownThing(itemAtInventorySpot);
+                    itemAtInventorySpot.onMove();
                     this._itemAddedToGround = true;
                     this._itemAddToGroundId = itemAtInventorySpot.thingId;
                 }
@@ -127,7 +137,10 @@ export class MoveThingToInventorySubOP extends IncomingGameOperation {
                 return false;
             }
 
+            this._container = container;
+
             if (container.addItem(thing as Item)){
+                thing.onMove();
                 return true;
             }else{
                 return false;

@@ -51,6 +51,7 @@ export class MapTile {
 
     public setGround(ground : Thing) : void {
         log.debug(`MapTile::setGround`);
+        ground.position = this.position;
         this._ground = ground;
         if (ground instanceof Item){
             this.setFlagsFromItem(ground);
@@ -64,8 +65,7 @@ export class MapTile {
     public addTopThing(thing : Thing){
         log.debug(`MapTile::addTopThing`);
         thing.position = this.position;
-        let idx = this._topItems.push(thing);
-        thing.tileIndex = idx;
+        this._topItems.push(thing);
 
         if (thing instanceof Item){
             this.setFlagsFromItem(thing);
@@ -79,8 +79,7 @@ export class MapTile {
     public addDownThing(thing : Thing){
         log.debug(`MapTile::addDownThing`);
         thing.position = this._position;
-        let idx = this._downItems.unshift(thing);
-        thing.tileIndex = idx;
+        this._downItems.unshift(thing);
 
         if (thing instanceof Item){
             this.setFlagsFromItem(thing);

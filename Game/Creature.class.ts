@@ -411,7 +411,7 @@ export abstract class Creature extends Thing {
         const tile : MapTile | null = map.getTileAt(this._pos);
 
         if (tile === null){
-            return 681.81;
+            return 680;
         }
 
         return Math.floor(tile.getMovementSpeedMS(speed ? speed : this.speed));
@@ -450,8 +450,8 @@ export abstract class Creature extends Thing {
             moveSpeed = BASE_SPEED * 2;
         }
 
-        const ms = this.getCurrentTileStepTimeMS(moveSpeed) * this.getLastMoveCost();
-        return ms <= 65535 ? ms : 65535;
+        const ms = Math.floor(this.getCurrentTileStepTimeMS(moveSpeed) * this.getLastMoveCost());
+        return ms <= 65534 ? ms : 65534;
     }
 
     public getLastMoveCost() : number {

@@ -23,6 +23,7 @@ class Game {
     private _loop : Loop = new Loop(this._mainloopLogic.bind(this), 1000 / GAME_BEAT_MS);
     private _ticks = 0;
     private _gameBeatMs = GAME_BEAT_MS;
+    private _averageExecutionTime = 0;
 
     public get loop() : Loop {
         return this._loop;
@@ -48,11 +49,12 @@ class Game {
         return this._worldTime.getHumanReadableTime();
     }
 
-    private async _mainloopLogic() : Promise<void> {
+    private _mainloopLogic() : void {
+        const start = Date.now();
         while(this._operationsCache.length > 0){
             const nextOperation = this._operationsCache.pop() as GameOperation;
             if (nextOperation !== undefined){
-                await nextOperation.execute();
+                nextOperation.execute();
             }
         }
 
@@ -65,6 +67,13 @@ class Game {
         worldTime.processWorldTime(this._ticks);
 
         this._ticks++;
+        const end = Date.now();
+        this._averageExecutionTime += (end - start);
+
+        if (this._ticks % 10000 === 0){
+            log.info(`Average execution time: ${this._averageExecutionTime / 10000}ms.`);
+            this._averageExecutionTime = 0;
+        }
     }
 
     public removePlayerFromGame(player : Player){
