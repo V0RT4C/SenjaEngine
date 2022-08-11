@@ -5,6 +5,7 @@ import { Player } from 'Player';
 import { IPosition } from "Types";
 import { Item } from "Item";
 import { GAME_BEAT_MS } from '../../Constants/Game.const.ts';
+import { THING_FLAG } from '../../Constants/Things.const.ts';
 
 export class MapTile {
     constructor(x: number, y: number, z: number){
@@ -105,10 +106,18 @@ export class MapTile {
         }
     }
 
-    public removeDownThing(stackPos : number) : void {
+    public removeDownThing(stackPos : number) : Item | null {
         if (this._downItems[stackPos]){
-            this._downItems.splice(stackPos, 1);
-            this.resetFlags();
+            const result = this._downItems.splice(stackPos, 1);
+
+            if (result.length === 1){
+                this.resetFlags();
+                return result[0] as Item;
+            }else{
+                return null;
+            }
+        }else{
+            return null;
         }
     }
 
@@ -329,5 +338,9 @@ export class MapTile {
 
         interval = Math.max(interval, serverBeat);
         return interval;
+    }
+
+    public hasFlag(flag : THING_FLAG) : boolean {
+        return this._flags[flag] === true;
     }
 }

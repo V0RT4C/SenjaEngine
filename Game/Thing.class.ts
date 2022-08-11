@@ -98,4 +98,24 @@ export abstract class Thing {
     public set position(pos : IPosition) {
         this._pos = pos;
     }
+
+    public isItem() : boolean {
+        return this._thingType === THING_TYPE.ITEM;
+    }
+
+    public isMonster() : boolean {
+        return this._thingType === THING_TYPE.MONSTER;
+    }
+
+    public isPlayer() : boolean {
+        return this._thingType === THING_TYPE.PLAYER;
+    }
+
+    public isNPC() : boolean {
+        return this._thingType === THING_TYPE.NPC;
+    }
+
+    public isCreature() : boolean {
+        return false;
+    }
 }

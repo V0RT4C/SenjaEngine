@@ -1,7 +1,6 @@
 import { Thing } from 'Thing';
 import { THING_TYPE } from 'Constants';
 import rawItems from "RawItems";
-import { Player } from './Player/Player.class.ts';
 
 export class Item extends Thing {
     constructor(thingId : number){
@@ -27,8 +26,32 @@ export class Item extends Thing {
         return this._rawItem;
     }
 
+    public get article() : string {
+        return this._rawItem.article !== undefined ? this._rawItem.article : "";
+    }
+
+    public get weight() : number {
+        return this._rawItem.attributes.weight !== undefined ? this._rawItem.attributes.weight : 0;
+    }
+
+    public get attack() : number {
+        return this._rawItem.attributes.attack !== undefined ? this._rawItem.attributes.attack : 0;
+    }
+
+    public get defence() : number {
+        return this._rawItem.attributes.defence !== undefined ? this._rawItem.attributes.defence : 0;
+    }
+
+    public get description() : string {
+        return this._rawItem.description ? this._rawItem.description : "";
+    }
+
     public isContainer(){
         return this._rawItem.group === 'container';
+    }
+
+    public isWeapon(){
+        return this._rawItem.group === 'weapon';
     }
 
     public isMovable(){

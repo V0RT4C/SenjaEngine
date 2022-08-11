@@ -188,3 +188,8 @@ export interface TCPServerOptions extends Deno.ConnectOptions {
 export interface IIncomingGameOperation {
     _msg: IncomingNetworkMessage
 }
+
+export interface I_ItemFlags {
+    unpassable?: boolean;
+    floorChangeDown?: boolean;
+}

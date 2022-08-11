@@ -14,6 +14,7 @@ import { OTBMReader, OTBMItem, OTBMTile, OTBMTileArea } from 'Dependencies';
 import rawItems from "RawItems";
 import { TileArea } from 'https://deno.land/x/v0rt4c_otbm@0.1.2/mod.ts';
 import { Player } from '../Player/Player.class.ts';
+import { THING_FLAG } from '../../Constants/Things.const.ts';
 
 class Map {
     constructor(width : number, height : number){
@@ -174,22 +175,68 @@ class Map {
             return false;
         }
 
-        if (!item.isMovable()){
-            return false;
-        }
-
-        if (!fromTile.removeDownThingByThing(item)){
-            return false;
-        }
-
-        const toTile : MapTile | null = map.getTileAt(toPos);
+        let toTile : MapTile | null = map.getTileAt(toPos);
 
         if (toTile === null){
             return false;
         }
 
-        toTile.addDownThing(item);
+        if (!item.isMovable()){
+            return false;
+        }
 
+        if (toTile.isFloorChange()){
+            log.debug(`Is floor change tile`);
+            if (item instanceof Creature){
+                return false;
+            }
+
+            if (toTile.hasFlag(THING_FLAG.FLOOR_CHANGE_DOWN)){
+                log.debug(`Is floor change down tile`);
+                return this.teleportThing(fromPos, stackPos, { x: fromPos.x, y: fromPos.y + 1, z: fromPos.z+1 });
+            }
+
+            return false;
+        }else{
+            if (!fromTile.removeDownThingByThing(item)){
+                return false;
+            }
+            
+            toTile.addDownThing(item);
+            return true;
+        }
+
+    }
+
+    public teleportThing(fromPosition : IPosition, fromStackPos : number, toPosition : IPosition) : boolean {
+        log.debug('Map::teleportThing');
+        const fromTile : MapTile | null = map.getTileAt(fromPosition);
+
+        if (fromTile === null){
+            log.debug(`fromTile is null`);
+            return false;
+        }
+
+        const toTile : MapTile | null = map.getTileAt(toPosition);
+
+        if (toTile === null){
+            log.debug(`toTile is null`);
+            return false;
+        }
+
+        const item : Thing | null = fromTile.getThingByStackPos(fromStackPos);
+
+        if (item === null){
+            log.debug(`item is null`);
+            return false;
+        }
+
+        if (!fromTile.removeDownThingByThing(item)){
+            log.debug(`Failed to remove thing`);
+            return false;
+        }
+
+        toTile.addDownThing(item);
         return true;
     }
 

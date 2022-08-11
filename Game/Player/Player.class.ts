@@ -38,7 +38,6 @@ export class Player extends Creature {
     private _containerIds : Array<number> = Array.from((new Array(10)).keys());
     private _sex : PLAYER_SEX = PLAYER_SEX.MALE;
     protected _thingType = THING_TYPE.PLAYER;
-    protected _type = CREATURE_TYPE.CREATURE_TYPE_PLAYER;
     protected _skull : SKULL = SKULL.NONE;
     protected _partyShield : PARTY_SHIELD = PARTY_SHIELD.SHIELD_NONE;
     protected _chaseMode : CHASE_MODE = CHASE_MODE.OFF;

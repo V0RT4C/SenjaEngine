@@ -7,7 +7,7 @@ import { IOutfit, IPosition } from "Types";
 import { BASE_SPEED } from "Config";
 import { Skills } from "Game/Skills.class.ts";
 import { MapTile } from './Map/MapTile.class.ts';
-import { GAME_BEAT_MS } from '../Constants/Game.const.ts';
+import { GAME_BEAT_MS, THING_TYPE } from '../Constants/Game.const.ts';
 import game from './Game.class.ts';
 import { WALK_DIRECTION } from '../Constants/Map.const.ts';
 
@@ -36,8 +36,6 @@ export abstract class Creature extends Thing {
     protected _nextAllowableWalkTimeMS = 0;
     protected _autoWalkId = -1;
     protected _scheduledWalkTasks : WALK_DIRECTION[] = [];
-
-    protected abstract _type : CREATURE_TYPE;
 
     public get extId() : number {
         return this._extId;
@@ -139,9 +137,6 @@ export abstract class Creature extends Thing {
         return BASE_SPEED ? (BASE_SPEED + (2*(this._level - 1))) : 220;
     }
 
-    public get type() : CREATURE_TYPE {
-        return this._type;
-    }
 
     public get lastWalkTimeMS() : number {
         return this._lastWalkTimeMS;
@@ -356,14 +351,6 @@ export abstract class Creature extends Thing {
         return Math.ceil((this._health / this.maxHealth) * 100);
     }
 
-    public isPlayer() : boolean {
-        return this._type === CREATURE_TYPE.CREATURE_TYPE_PLAYER;
-    }
-
-    public isNPC() : boolean {
-        return this._type === CREATURE_TYPE.CREATURE_TYPE_NPC;
-    }
-
     public canSee(position : IPosition) : boolean {
         const { x, y, z } = position;
 
@@ -502,4 +489,7 @@ export abstract class Creature extends Thing {
         return map.getTileAt(this.position);
     }
 
+    public isCreature(): boolean {
+        return true;
+    }
 }

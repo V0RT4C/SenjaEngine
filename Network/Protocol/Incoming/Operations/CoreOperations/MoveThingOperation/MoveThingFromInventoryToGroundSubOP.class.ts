@@ -12,7 +12,7 @@ import { Item } from "Item";
 import { TCP } from 'Dependencies';
 import { INVENTORY_SLOT } from "Constants";
 import { IPosition } from "Types";
-import players from '../../../../../../Game/Player/Players.class.ts';
+import players from 'Game/Player/Players.class.ts';
 
 
 

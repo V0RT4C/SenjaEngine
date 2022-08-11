@@ -26363,6 +26363,7 @@
   {
     "serverId": 2392,
     "clientId": 3280,
+    "article": "a",
     "name": "fire sword",
     "flags": {
       "useable": true,
@@ -26372,9 +26373,11 @@
     "attributes": {
       "weight": 23,
       "lightLevel": 3,
-      "lightColor": 199
+      "lightColor": 199,
+      "attack": 24,
+      "defence": 20
     },
-    "description": "the blade is a magic flame.",
+    "description": "The blade is a magic flame.",
     "group": "weapon"
   },
   {
@@ -26601,7 +26604,9 @@
       "moveable": true
     },
     "attributes": {
-      "weight": 0
+      "weight": 64,
+      "attack": 53,
+      "defence": 38
     },
     "description": "Strong powers flow in this magic sword.",
     "group": "weapon"
