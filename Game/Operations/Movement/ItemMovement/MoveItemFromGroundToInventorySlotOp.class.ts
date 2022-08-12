@@ -70,6 +70,18 @@ export class MoveItemFromGroundToInventorySlot extends GameOperation {
             return;
         }
 
+        if (fromTile.getTopDownThing() === null){
+            this._cancelMessage = RETURN_MESSAGE.NOT_POSSIBLE;
+            return;
+        }
+        else {
+            const topThing : Item = fromTile.getTopDownThing() as Item;
+            if (!topThing.isPickupable()){
+                this._cancelMessage = RETURN_MESSAGE.NOT_POSSIBLE;
+                return;
+            }
+        }
+
         const item : Item | null = fromTile.getThingByStackPos(this._stackPosition) as Item;
 
         if (item === null){

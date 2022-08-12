@@ -1,14 +1,12 @@
+import players from "Game/Player/Players.class.ts";
 import { OutgoingNetworkMessage } from "Network/Lib/OutgoingNetworkMessage.class.ts";
 import { OutgoingSendOperation } from "OutgoingSendOperations/OutgoingSendOperation.abtract.ts";
 import { IPosition } from "Types";
 import { PROTOCOL_SEND } from "Constants";
-import { Thing } from "../../../../../Game/Thing.class.ts";
-import map from "../../../../../Game/Map/Map.class.ts";
-import { MapTile } from "../../../../../Game/Map/MapTile.class.ts";
-import { Container } from "../../../../../Game/Container.class.ts";
-import players from "../../../../../Game/Player/Players.class.ts";
+import { Thing } from "Game/Thing.class.ts";
+import { Container } from "Game/Container.class.ts";
 import { SendCloseContainerOperation } from "./SendCloseContainerOperation.class.ts";
-import { Player } from "../../../../../Game/Player/Player.class.ts";
+import { Player } from "Game/Player/Player.class.ts";
 
 export class SendRemoveThingFromTileOperation implements OutgoingSendOperation {
     constructor(

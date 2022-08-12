@@ -27,6 +27,18 @@ export enum CREATURE_DIRECTION {
     INVALID_DIRECTION
 }
 
+export enum DIRECTION {
+    NORTH = 0,
+    EAST,
+    SOUTH,
+    WEST,
+    NORTH_EAST,
+    SOUTH_EAST,
+    SOUTH_WEST,
+    NORTH_WEST,
+    INVALID_DIRECTION
+}
+
 export enum WALK_DIRECTION {
     EAST = 1,
     NORTH_EAST,

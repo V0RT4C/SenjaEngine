@@ -58,5 +58,9 @@ export class Item extends Thing {
         return this._rawItem.flags.moveable === true;
     }
 
+    public isPickupable(){
+        return this._rawItem.flags.pickupable === true;
+    }
+
     public onMove(){}
 }

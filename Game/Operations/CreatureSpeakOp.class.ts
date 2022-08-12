@@ -9,9 +9,12 @@ import { SendTextMessageOperation } from 'CoreSendOperations/SendTextMessageOper
 import { Creature } from "Creature";
 import { MapTile } from "MapTile";
 import { Item } from "Item";
-import { MESSAGE_TYPE, RETURN_MESSAGE, SPEAK_TYPE } from "Constants";
+import { CREATURE_DIRECTION, MESSAGE_TYPE, RETURN_MESSAGE, SPEAK_TYPE } from "Constants";
 import { Player } from '../Player/Player.class.ts';
 import { SendCancelMessageOperation } from '../../Network/Protocol/Outgoing/SendOperations/CoreSendOperations/SendCancelMessageOperation.class.ts';
+import rawItems from '../RawItems.class.ts';
+import { Container } from '../Container.class.ts';
+import { TeleportCreatureOp } from './Movement/CreatureMovement/TeleportCreatureOp.class.ts';
 
 export class CreatureSpeakOp extends GameOperation {
     constructor(
@@ -46,8 +49,14 @@ export class CreatureSpeakOp extends GameOperation {
                                 this._cancelMessage = RETURN_MESSAGE.UNKNOWN_ERROR;
                                 return;
                             }
-    
-                            tile.addDownThing(new Item(itemId));
+                            const rawItem = rawItems.getItemById(itemId);
+
+                            if (rawItem && rawItem.group === 'container'){
+                                tile.addDownThing(new Container(itemId));
+                            }else{
+                                tile.addDownThing(new Item(itemId));
+                            }
+                            
                             const msg = new AddThingToMapOP(itemId, this._speakingCreature.position);
                             await msg.execute();
                         }
@@ -72,6 +81,28 @@ export class CreatureSpeakOp extends GameOperation {
                     this._commandFunction = async () => {
                         const timeMsg = new SendTextMessageOperation(`Game world time: ${game.getHumanReadableTime()}`, MESSAGE_TYPE.RED_MESSAGE_CONSOLE, (this._speakingCreature as Player).client);
                         await timeMsg.execute();
+                    }
+                }
+                break;
+                case '!tp': {
+                    const steps = Number(this._speakMessage.split(' ')[1]);
+                    if (isNaN(steps)){
+                        this._cancelMessage = 'Invalid input';
+                        return;
+                    }else{
+                        this._commandFunction = () => {
+                            if (this._speakingCreature.direction === CREATURE_DIRECTION.NORTH){
+                                game.addOperation(new TeleportCreatureOp(this._speakingCreature, this._speakingCreature.position, { x: this._speakingCreature.position.x, y: this._speakingCreature.position.y - steps, z: 7 }));
+                            }
+                            else if (this._speakingCreature.direction === CREATURE_DIRECTION.EAST){
+                                game.addOperation(new TeleportCreatureOp(this._speakingCreature, this._speakingCreature.position, { x: this._speakingCreature.position.x + steps, y: this._speakingCreature.position.y, z: 7 }));
+                            }
+                            else if (this._speakingCreature.direction === CREATURE_DIRECTION.SOUTH){
+                                game.addOperation(new TeleportCreatureOp(this._speakingCreature, this._speakingCreature.position, { x: this._speakingCreature.position.x, y: this._speakingCreature.position.y + steps, z: 7 }));
+                            }else{
+                                game.addOperation(new TeleportCreatureOp(this._speakingCreature, this._speakingCreature.position, { x: this._speakingCreature.position.x - steps, y: this._speakingCreature.position.y, z: 7 }));
+                            }
+                        }
                     }
                 }
                 break;

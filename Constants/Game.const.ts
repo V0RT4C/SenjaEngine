@@ -66,5 +66,6 @@ export enum RETURN_MESSAGE {
     CANNOT_LOGOUT_HERE = 'You can not logout here.',
     NOT_POSSIBLE = 'Sorry, not possible.',
     UNKNOWN_ERROR = 'Sorry, action aborted due to a bug on the server.',
-    FEATURE_NOT_IMPLEMENTED = 'Sorry, this feature is not implemented yet.'
+    FEATURE_NOT_IMPLEMENTED = 'Sorry, this feature is not implemented yet.',
+    NO_ITEM = 'There is no item to move.'
 }

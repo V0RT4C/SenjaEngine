@@ -148,6 +148,10 @@ export class MapTile {
         }
     }
 
+    public getTopDownThing() : Thing | null {
+        return this._downItems[0] !== undefined ? this._downItems[0] : null;
+    }
+
     public getThingStackPos(thing : Thing) : number {
         let stackPos : number = 0;
 
