@@ -1,7 +1,6 @@
 import { OutgoingNetworkMessage } from "Network/Lib/OutgoingNetworkMessage.class.ts";
 import { OutgoingSendOperation } from "OutgoingSendOperations/OutgoingSendOperation.abtract.ts";
 import map from "Map";
-import { TCP } from 'Dependencies';
 import { IPosition } from "Types";
 import { CLIENT_VIEWPORT, MAP, NETWORK_MESSAGE_SIZES, PROTOCOL_SEND } from "Constants";
 import { SendBottomRowMapDescriptionOperation } from "./SendBottomRowMapDescriptionOperation.class.ts";
@@ -64,7 +63,7 @@ export class SendPlayerFloorChangeDownOperation implements OutgoingSendOperation
         }
 
 
-        SendRightRowMapDescriptionOperation.writeToNetworkMessage({ x: oldPosition.x, y: newPosition.y, z: newPosition.z }, player, msg);
+        SendRightRowMapDescriptionOperation.writeToNetworkMessage({ x: oldPosition.x, y: newPosition.y - 2, z: newPosition.z }, player, msg);
         SendBottomRowMapDescriptionOperation.writeToNetworkMessage({ x: oldPosition.x, y: newPosition.y - 1, z: newPosition.z }, player, msg);
         // map.getMapDescriptionAsBytes(
         //     {

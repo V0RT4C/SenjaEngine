@@ -8,7 +8,8 @@ import rawItems from 'RawItems';
 
 
 rawItems.loadItemsFromJSONFile('./Data/items/items.json');
-map.loadMapFromOTBM('./Data/world/senjaworld_v1.1.otbm');
+map.loadMapFromOTBM('./Data/world/senjaworld_v2.otbm');
+//console.log(map.getTileAt({ x: 1077, y: 1024, z: 9 }));
 
 game.loop.start();
 

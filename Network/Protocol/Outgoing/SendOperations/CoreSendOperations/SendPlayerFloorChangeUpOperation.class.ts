@@ -2,7 +2,6 @@ import { OutgoingNetworkMessage } from "Network/Lib/OutgoingNetworkMessage.class
 import { OutgoingSendOperation } from "OutgoingSendOperations/OutgoingSendOperation.abtract.ts";
 import { SendLeftRowMapDescriptionOperation } from "CoreSendOperations/SendLeftRowMapDescriptionOperation.class.ts";
 import { SendTopRowMapDescriptionOperation } from "CoreSendOperations/SendTopRowMapDescriptionOperation.class.ts";
-import { TCP } from 'Dependencies';
 import { CLIENT_VIEWPORT, MAP, NETWORK_MESSAGE_SIZES, PROTOCOL_SEND } from "Constants";
 import { IPosition } from "Types";
 import map from "Map";

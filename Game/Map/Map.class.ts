@@ -359,9 +359,13 @@ class Map {
                                             mapTile.addDownThing(new Container((item as OTBMItem).id));
                                         }else{
                                             if (rawItem.flags.hasStackOrder){
-                                                mapTile.addTopThing(new Item((item as OTBMItem).id));
+                                                const it = new Item((item as OTBMItem).id);
+                                                it.setOTBMAttributes(item.properties);
+                                                mapTile.addTopThing(it);
                                             }else{
-                                                mapTile.addDownThing(new Item((item as OTBMItem).id));
+                                                const it = new Item((item as OTBMItem).id);
+                                                it.setOTBMAttributes(item.properties);
+                                                mapTile.addDownThing(it);
                                             }
                                         }
                                     }

@@ -9,6 +9,7 @@ import game from '../Game.class.ts';
 import map from '../Map/Map.class.ts';
 import { MapTile } from '../Map/MapTile.class.ts';
 import { Player } from '../Player/Player.class.ts';
+import { TeleportCreatureOp } from '../Operations/Movement/CreatureMovement/TeleportCreatureOp.class.ts';
 
 export class CreatureMovementTasks {
     public static async processPlayerWalk(player : Player){
@@ -55,6 +56,9 @@ export class CreatureMovementTasks {
             if (newTile !== null){
                 if (newTile.isFloorChange()){
                     game.addOperation(new FloorChangeOP(player));
+                }
+                else if (newTile.isTeleport()){
+                    game.addOperation(new TeleportCreatureOp(player, player.position, newTile.getDestination()));
                 }
             }
 

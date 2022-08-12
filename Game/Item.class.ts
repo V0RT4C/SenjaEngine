@@ -1,6 +1,7 @@
 import { Thing } from 'Thing';
 import { THING_TYPE } from 'Constants';
 import rawItems from "RawItems";
+import { IPosition } from '../@types/App.d.ts';
 
 export class Item extends Thing {
     constructor(thingId : number){
@@ -13,6 +14,7 @@ export class Item extends Thing {
     }
     protected _thingType = THING_TYPE.ITEM;
     protected _rawItem! : any;
+    protected _otbmAttributes : any = {};
 
     public get flags() : any {
         return this._rawItem !== null && this._rawItem.flags ? this._rawItem.flags : {};
@@ -60,6 +62,22 @@ export class Item extends Thing {
 
     public isPickupable(){
         return this._rawItem.flags.pickupable === true;
+    }
+
+    public isTeleport() : boolean {
+        return this._otbmAttributes.destination !== undefined;
+    }
+
+    public getDestination() : IPosition {
+        if (this._otbmAttributes.destination !== undefined){
+            return this._otbmAttributes.destination;
+        }else{
+            return { x: -1, y: -1, z: -1 };
+        }
+    }
+
+    public setOTBMAttributes(otbmAttributes : any){
+        this._otbmAttributes = otbmAttributes;
     }
 
     public onMove(){}

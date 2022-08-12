@@ -23,6 +23,7 @@ export class MapTile {
     private _downItems : Array<Thing> = []; //Downitems are unshifted to array
     private _position : IPosition = {} as IPosition;
     private _flags : any = {};
+    private _attributes : any = {};
     private _friction = 150;
 
     public get position() : IPosition {
@@ -303,6 +304,8 @@ export class MapTile {
         if (item.flags.unpassable){
             this._flags.unpassable = true;
         }
+
+        this.setIsTeleport(item);
     }
 
     public resetFlags(){
@@ -322,6 +325,12 @@ export class MapTile {
             if (item instanceof Item){
                 this.setFlagsFromItem(item);
             }
+        }
+    }
+
+    public setIsTeleport(item : Item){
+        if (item.isTeleport()){
+            this._attributes.destination = item.getDestination();
         }
     }
 
@@ -351,6 +360,18 @@ export class MapTile {
 
         interval = Math.max(interval, serverBeat);
         return interval;
+    }
+
+    public isTeleport(){
+        return this._attributes.destination !== undefined;
+    }
+
+    public getDestination(){
+        if (this._attributes.destination !== undefined){
+            return this._attributes.destination;
+        }else{
+            return { x: -1, y: -1, z: -1 };
+        }
     }
 
     public hasFlag(flag : THING_FLAG) : boolean {
