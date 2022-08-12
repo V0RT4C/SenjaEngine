@@ -21,13 +21,13 @@ export class UseItemInContainerOp extends GameOperation {
     private _useContainerId! : number;
     private _closeContainer = false;
 
-    protected _internalOperations(): boolean {
+    protected _internalOperations(): void {
         log.debug(`UseItemInContainerOp`);
         log.debug(`Use item in containerId: ${this._containerId}, slotPosition: ${this._slotId}`);
         return this._playerUseItemInContainer();
     }
 
-    protected async _networkOperations(): Promise<boolean> {
+    protected async _networkOperations(): Promise<void> {
         if (this._cancelMessage === undefined && this._useItemIsContainer){
             if (this._closeContainer){
                 const closeContainerOp = new SendCloseContainerOperation(this._useContainerId, this._player.client);
@@ -44,7 +44,6 @@ export class UseItemInContainerOp extends GameOperation {
                 await cancelMsgOp.execute();
             }
         }
-        return true;
     }
 
     protected _playerUseItemInContainer(){
@@ -53,7 +52,7 @@ export class UseItemInContainerOp extends GameOperation {
         if (container === null){
             log.warning(`[UseItemInContainerOp] - No container with id ${this._containerId} open for player ${this._player.name}`);
             this._cancelMessage = RETURN_MESSAGE.UNKNOWN_ERROR;
-            return true;
+            return;
         }
 
         const item : Item | null = container.getItemBySlotId(this._slotId);
@@ -61,13 +60,13 @@ export class UseItemInContainerOp extends GameOperation {
         if (item === null){
             log.warning(`[UseItemInContainerOp] - No item at slot id ${this._slotId}`);
             this._cancelMessage = RETURN_MESSAGE.UNKNOWN_ERROR;
-            return true;
+            return;
         }
 
         if (item.thingId !== this._itemId){
             log.warning(`[UseItemInContainerOp] - Item at slotId: ${this._slotId} is not the same as the itemId sent as a parameter to the constructor`);
             this._cancelMessage = RETURN_MESSAGE.UNKNOWN_ERROR;
-            return true;
+            return;
         }
 
         if (item.isContainer()){
@@ -75,19 +74,19 @@ export class UseItemInContainerOp extends GameOperation {
             const openSuccess = this._player.addOpenContainer(item as Container);
             const containerId = (item as Container).getContainerId(this._player);
             this._useContainerId = containerId;
-            console.log(containerId);
+
             if (!openSuccess){
                 log.debug(`[UseItemInContainerOp] - Failed to open container. Player: ${this._player.name}. Total containers open: ${this._player.openContainers.length}.`);
                 this._closeContainer = true;
                 this._player.closeContainerById(containerId);
-                return true;
+                return;
             }else{
-                return true;
+                return;
             }
         }else{
             log.debug(`[UseItemInContainerOp] - Item is not a container`);
             this._cancelMessage = RETURN_MESSAGE.FEATURE_NOT_IMPLEMENTED;
-            return true;
+            return;
         }
     }
 }

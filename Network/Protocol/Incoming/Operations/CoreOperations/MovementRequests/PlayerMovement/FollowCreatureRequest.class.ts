@@ -2,10 +2,10 @@ import { FollowCreatureOp } from "Game/Operations/FollowCreatureOp.class.ts";
 import { PROTOCOL_RECEIVE } from "Constants/Network.const.ts";
 import { StaticImplements } from "Decorators";
 import { StaticOperationCode } from "Types";
-import { IncomingGameOp } from "../IncomingGameOp.abstract.ts";
+import { IncomingGameRequest } from "../../../IncomingGameRequest.abstract.ts";
 
 @StaticImplements<StaticOperationCode>()
-export class IncomingFollowCreatureOp extends IncomingGameOp {
+export class FollowCreatureRequest extends IncomingGameRequest {
 
     public static operationCode = PROTOCOL_RECEIVE.FOLLOW;
     protected _creatureExtId! : number;

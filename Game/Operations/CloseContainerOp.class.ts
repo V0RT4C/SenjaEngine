@@ -5,25 +5,22 @@ import { GameOperation } from '../GameOperation.abstract.ts';
 import { Player } from '../Player/Player.class.ts';
 
 export class CloseContainerOp extends GameOperation {
-    constructor(protected readonly _player : Player, containerId? : number){ 
+    constructor(
+        private readonly _player : Player, 
+        private readonly _containerId : number
+        ){ 
         super(); 
-        if (containerId){
-            this._containerId = containerId;
-        }
     }
 
-    protected _containerId! : number;
-
-    protected _internalOperations(): boolean {
+    protected _internalOperations(): void {
         log.debug('CloseContainerOp');
-        log.debug(`Close container with id ${this._containerId}`);
-        return this._player.closeContainerById(this._containerId);
+        log.debug(`[CloseContainerOp] - Close container with id ${this._containerId}`);
+        this._player.closeContainerById(this._containerId);
     }
 
-    protected async _networkOperations(): Promise<boolean> {
+    protected async _networkOperations(): Promise<void> {
         const msg = OutgoingNetworkMessage.withClient(this._player.client, SendCloseContainerOperation.messageSize);
         SendCloseContainerOperation.writeToNetworkMessage(this._containerId, msg);
         await msg.send();
-        return true;
     }
 }

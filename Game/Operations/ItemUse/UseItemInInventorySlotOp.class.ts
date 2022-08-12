@@ -20,13 +20,13 @@ export class UseItemInInventorySlotOp extends GameOperation {
     private _useItemIsContainer = false;
     private _useItemId! : number;
 
-    protected _internalOperations(): boolean {
+    protected _internalOperations(): void {
         log.debug(`UseItemInInventoryOp`);
         log.debug(`Use item in inventory. Slot: ${this._inventorySlotId}.`);
         return this._playerUseItemInInventorySlot();
     }
 
-    protected async _networkOperations(): Promise<boolean> {
+    protected async _networkOperations(): Promise<void> {
         if (this._cancelMessage === undefined && this._useItemIsContainer){
             if (this._closeContainer){
                 const closeContainerOp = new SendCloseContainerOperation(this._useItemId, this._player.client);
@@ -43,7 +43,6 @@ export class UseItemInInventorySlotOp extends GameOperation {
                 await cancelMsgOp.execute();
             }
         }
-        return true;
     }
 
     protected _playerUseItemInInventorySlot(){
@@ -52,7 +51,7 @@ export class UseItemInInventorySlotOp extends GameOperation {
         if (item === null){
             log.warning(`[UseItemInInventorySlotOp] - Item at inventorySlotId: ${this._inventorySlotId} is null`);
             this._cancelMessage = RETURN_MESSAGE.UNKNOWN_ERROR;
-            return true;
+            return;
         }
 
         if (item.isContainer()){
@@ -64,21 +63,21 @@ export class UseItemInInventorySlotOp extends GameOperation {
             if (containerId === -1){
                 log.warning(`[UseItemInInventorySlotOp] - Container not found or is not an open container for player: ${this._player.name}`);
                 this._cancelMessage = RETURN_MESSAGE.UNKNOWN_ERROR;
-                return true;
+                return;
             }
 
             if (!openSuccess){
                 log.debug(`[UseItemInInventorySlotOp] - Closing containerId: ${this._useItemId}`);
                 this._closeContainer = true;
                 this._player.closeContainerById(containerId);
-                return true;
+                return;
             }else{
-                return true;
+                return;
             }
         }else{
             log.debug(`[UseItemInInventorySlotOp] - Item is not a container`);
             this._cancelMessage = RETURN_MESSAGE.FEATURE_NOT_IMPLEMENTED;
-            return true;
+            return;
         }
     }
 }

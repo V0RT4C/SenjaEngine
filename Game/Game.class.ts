@@ -12,7 +12,7 @@ import { SendRemoveThingFromTileOperation } from '../Network/Protocol/Outgoing/S
 import { GAME_BEAT_MS } from 'Constants/Game.const.ts';
 import { CreatureMovementTasks } from './Tasks/CreatureMovementTasks.class.ts';
 import { PingTask } from './Tasks/PingTask.class.ts';
-import { IncomingGameOp } from '../Network/Protocol/Incoming/Operations/IncomingGameOp.abstract.ts';
+import { IncomingGameRequest } from '../Network/Protocol/Incoming/Operations/IncomingGameRequest.abstract.ts';
 
 
 class Game {
@@ -20,7 +20,7 @@ class Game {
     private _players = players;
     private _worldTime = worldTime;
     private _knownCreatures : Set<number> = new Set();
-    private _operationsCache : Array<GameOperation | IncomingGameOp> = [];
+    private _operationsCache : Array<GameOperation | IncomingGameRequest> = [];
     private _loop : Loop = new Loop(this._mainloopLogic.bind(this), 1000 / GAME_BEAT_MS);
     private _ticks = 0;
     private _gameBeatMs = GAME_BEAT_MS;

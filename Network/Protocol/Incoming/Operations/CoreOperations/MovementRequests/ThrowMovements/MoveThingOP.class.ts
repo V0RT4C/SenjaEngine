@@ -4,9 +4,6 @@ import { IncomingGameOperation } from "ProtocolIncoming/Operations/IncomingGameO
 import { OutgoingNetworkMessage } from "Network/Lib/OutgoingNetworkMessage.class.ts";
 import { SendRemoveThingFromTileOperation } from "CoreSendOperations/SendRemoveThingFromTileOperation.class.ts";
 import { AddThingToMapOP } from "CoreSendOperations/AddThingToMapOP.class.ts";
-import { MoveCreatureSubOP } from "CoreOperations/MoveThingOperation/MoveCreatureSubOP.class.ts";
-import { MoveThingFromInventoryToGroundSubOP} from "CoreOperations/MoveThingOperation/MoveThingFromInventoryToGroundSubOP.class.ts";
-import { MoveThingFromInventoryToInventorySubOP } from "CoreOperations/MoveThingOperation/MoveThingFromInventoryToInventorySubOP.class.ts";
 import { SendTextMessageOperation } from "CoreSendOperations/SendTextMessageOperation.class.ts";
 import { MESSAGE_TYPE, PROTOCOL_RECEIVE, RETURN_MESSAGE, THING_ID } from "Constants";
 import { StaticImplements } from "Decorators";
@@ -15,8 +12,10 @@ import { TCP } from 'Dependencies';
 import { Thing } from 'Game/Thing.class.ts';
 import { MapTile } from 'Game/Map/MapTile.class.ts';
 import { MoveItemFromGroundToContainerOp } from 'Game/Operations/Movement/ItemMovement/MoveItemFromGroundToContainerOp.class.ts';
-import { MoveItemFromGroundToInventorySlot } from '../../../../../../Game/Operations/Movement/ItemMovement/MoveItemFromGroundToInventorySlotOp.class.ts';
-
+import { MoveItemFromGroundToInventorySlot } from 'Game/Operations/Movement/ItemMovement/MoveItemFromGroundToInventorySlotOp.class.ts'
+import { MoveThingFromInventoryToGroundSubOP } from './MoveThingFromInventoryToGroundSubOP.class.ts';
+import { MoveThingFromInventoryToInventorySubOP } from './MoveThingFromInventoryToInventorySubOP.class.ts';
+import { MoveCreatureSubOP } from './MoveCreatureSubOP.class.ts';
 
 
 @StaticImplements<StaticOperationCode>()

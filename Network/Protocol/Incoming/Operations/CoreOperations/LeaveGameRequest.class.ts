@@ -1,11 +1,11 @@
-import { IncomingGameOp } from '../IncomingGameOp.abstract.ts';
 import { LeaveGameOp } from 'Game/Operations/LeaveGameOp.class.ts';
 import { StaticImplements } from "Decorators";
 import { PROTOCOL_RECEIVE } from "Constants";
 import { StaticOperationCode } from "Types";
+import { IncomingGameRequest } from '../IncomingGameRequest.abstract.ts';
 
 @StaticImplements<StaticOperationCode>()
-export class IncomingLeaveGameOp extends IncomingGameOp {
+export class LeaveGameRequest extends IncomingGameRequest {
     public static operationCode = PROTOCOL_RECEIVE.LEAVE_GAME;
 
     public async execute(): Promise<void> {

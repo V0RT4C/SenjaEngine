@@ -6,7 +6,7 @@ import { OutgoingNetworkMessage } from "Network/Lib/OutgoingNetworkMessage.class
 import { IncomingGameOperation } from "ProtocolIncoming/Operations/IncomingGameOperation.abstract.ts";
 import { SendMoveCreatureOperation } from "CoreSendOperations/SendMoveCreatureOperation.class.ts";
 import { SendTextMessageOperation } from "CoreSendOperations/SendTextMessageOperation.class.ts";
-import { FloorChangeOP } from "../PlayerMovementOperations/FloorChangeOP.class.ts";
+import { FloorChangeOP } from "Game/Operations/Movement/CreatureMovement/FloorChangeOP.class.ts";
 import { Creature } from "Creature";
 import game from "Game";
 import { TCP } from 'Dependencies';

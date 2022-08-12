@@ -1,7 +1,7 @@
 import log from 'Logger';
 import { WALK_DIRECTION } from "../../Constants/Map.const.ts";
 import { MESSAGE_TYPE } from '../../Constants/Network.const.ts';
-import { FloorChangeOP } from '../../Network/Protocol/Incoming/Operations/CoreOperations/PlayerMovementOperations/FloorChangeOP.class.ts';
+import { FloorChangeOP } from 'Game/Operations/Movement/CreatureMovement/FloorChangeOP.class.ts';
 import { SendCancelWalkOperation } from '../../Network/Protocol/Outgoing/SendOperations/CoreSendOperations/SendCancelWalkOperation.class.ts';
 import { SendMoveCreatureOperation } from "../../Network/Protocol/Outgoing/SendOperations/CoreSendOperations/SendMoveCreatureOperation.class.ts";
 import { SendTextMessageOperation } from '../../Network/Protocol/Outgoing/SendOperations/CoreSendOperations/SendTextMessageOperation.class.ts';

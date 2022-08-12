@@ -1,11 +1,11 @@
 import { PROTOCOL_RECEIVE } from "Constants";
 import { IPosition, StaticOperationCode } from "Types";
 import { StaticImplements } from "Decorators";
-import { IncomingGameOp } from "../IncomingGameOp.abstract.ts";
 import { LookAtOp } from "Game/Operations/LookAtOp.class.ts";
+import { IncomingGameRequest } from "../IncomingGameRequest.abstract.ts";
 
 @StaticImplements<StaticOperationCode>()
-export class IncomingLookAtOp extends IncomingGameOp {
+export class LookAtRequest extends IncomingGameRequest {
     public static operationCode = PROTOCOL_RECEIVE.LOOK_AT;
 
     private _position! : IPosition;

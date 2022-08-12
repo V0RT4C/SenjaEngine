@@ -13,8 +13,8 @@ export class LookAtOp extends GameOperation {
     constructor(
         protected readonly _player : Player, 
         protected readonly _position : IPosition, 
-        protected _thingId? : number, 
-        protected _stackPosition? : number,
+        protected readonly _thingId : number, 
+        protected readonly _stackPosition : number,
         thing? : Thing,
         isCloseItem? : boolean
         ){ 
@@ -30,12 +30,12 @@ export class LookAtOp extends GameOperation {
     protected _isCloseItem = false;
 
 
-    protected _internalOperations(): boolean {
+    protected _internalOperations(): void {
         log.debug(`LookAtOp`);
-        log.debug(`{ x: ${this._position.x}, y: ${this._position.y}, z: ${this._position.z}, thingId: ${this._thingId}, stackPosition: ${this._stackPosition}}`);
+        log.debug(`[LookAtOp] - { x: ${this._position.x}, y: ${this._position.y}, z: ${this._position.z}, thingId: ${this._thingId}, stackPosition: ${this._stackPosition}}`);
 
         if (this._thing !== null && this._thing !== undefined){
-            return true;
+            return;
         }
         else if (this._position.x === 65535){
             this._isCloseItem = true;
@@ -67,10 +67,10 @@ export class LookAtOp extends GameOperation {
             }
         }
 
-        return true;
+        return;
     }
 
-    protected async _networkOperations(): Promise<boolean> {
+    protected async _networkOperations(): Promise<void> {
         let message : string;
 
         if (this._thing !== null && this._isCloseItem){
@@ -108,7 +108,6 @@ export class LookAtOp extends GameOperation {
 
         const textMessage = new SendTextMessageOperation(message, MESSAGE_TYPE.GREEN_MESSAGE_SCREEN_CENTER_AND_CONSOLE, this._player.client);
         await textMessage.execute();
-        return true;
     }
 
     protected _getSelfMessage(){

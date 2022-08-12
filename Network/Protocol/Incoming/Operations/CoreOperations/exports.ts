@@ -1,47 +1,47 @@
-import { IncomingCreatureSpeakOp } from './IncomingCreatureSpeakOp.class.ts';
-import { EnterGameOP } from './EnterGameOP.class.ts';
-import { IncomingCloseContainerOp } from './IncomingCloseContainerOp.class.ts';
-import { IncomingLeaveGameOp } from './IncomingLeaveGameOp.class.ts';
-import { IncomingLookAtOp } from './IncomingLookAtOp.class.ts';
-import { MoveThingOP } from './MoveThingOperation/MoveThingOP.class.ts';
-import { IncomingPingOp } from './IncomingPingOp.class.ts';
-import { IncomingPlayerModesOp } from './IncomingPlayerModesOp.class.ts';
-import { MouseClickMoveOP } from './PlayerMovementOperations/MouseClickMoveOP.class.ts';
-import { MoveEastOP } from './PlayerMovementOperations/MoveEastOP.class.ts';
-import { MoveNorthOP } from './PlayerMovementOperations/MoveNorthOP.class.ts';
-import { MoveSouthOP } from './PlayerMovementOperations/MoveSouthOP.class.ts';
-import { MoveWestOP } from './PlayerMovementOperations/MoveWestOP.class.ts';
-import { StopAutoWalkOP } from './PlayerMovementOperations/StopAutoWalkOP.class.ts';
-import { TurnCreatureEastOP } from './PlayerMovementOperations/TurnCreatureEastOP.class.ts';
-import { TurnCreatureNorthOP } from './PlayerMovementOperations/TurnCreatureNorthOP.class.ts';
-import { TurnCreatureSouthOP } from './PlayerMovementOperations/TurnCreatureSouthOP.class.ts';
-import { TurnCreatureWestOP } from './PlayerMovementOperations/TurnCreatureWestOP.class.ts';
-import { IncomingChangeOutfitRequestOp } from './IncomingChangeOutfitRequestOp.class.ts';
-import { IncomingSetOutfitOp } from './IncomingSetOutfitOp.class.ts';
-import { IncomingUseItemOp } from './IncomingUseItemOp.class.ts';
-import { IncomingFollowCreatureOp } from './IncomingFollowCreatureOp.class.ts';
+import { CloseContainerRequest } from "./CloseContainerRequest.class.ts";
+import { CreatureSpeakRequest } from "./CreatureSpeakRequest.class.ts";
+import { LeaveGameRequest } from "./LeaveGameRequest.class.ts";
+import { LookAtRequest } from "./LookAtRequest.class.ts";
+import { FollowCreatureRequest } from "./MovementRequests/PlayerMovement/FollowCreatureRequest.class.ts";
+import { MoveSouthRequest } from "./MovementRequests/PlayerMovement/MoveSouthRequest.class.ts";
+import { MoveWestRequest } from "./MovementRequests/PlayerMovement/MoveWestRequest.class.ts";
+import { MoveEastRequest } from "./MovementRequests/PlayerMovement/MoveEastRequest.class.ts";
+import { MoveNorthRequest } from "./MovementRequests/PlayerMovement/MoveNorthRequest.class.ts";
+import { StopAutoWalkRequest } from "./MovementRequests/PlayerMovement/StopAutoWalkRequest.class.ts";
+import { PingRequest } from "./PingRequest.class.ts";
+import { SetOutfitRequest } from "./SetOutfitRequest.class.ts";
+import { SetPlayerModesRequest } from "./SetPlayerModesRequest.class.ts";
+import { UseItemRequest } from "./UseItemRequest.class.ts";
+import { MoveThingOP } from './MovementRequests/ThrowMovements/MoveThingOP.class.ts';
+import { EnterGameOP } from './SpecialCaseRequests/EnterGameOP.class.ts';
+import { IncomingChangeOutfitRequestOp } from './SpecialCaseRequests/IncomingChangeOutfitRequestOp.class.ts';
+import { MouseClickMoveOP } from './MovementRequests/PlayerMovement/MouseClickMoveOP.class.ts';
+import { TurnEastRequest } from "./MovementRequests/PlayerMovement/TurnEastRequest.class.ts";
+import { TurnNorthRequest } from "./MovementRequests/PlayerMovement/TurnNorthRequest.class.ts";
+import { TurnSouthRequest } from "./MovementRequests/PlayerMovement/TurnSouthRequest.class.ts";
+import { TurnWestRequest } from "./MovementRequests/PlayerMovement/TurnWestRequest.class.ts";
 
 export default {
     [MoveThingOP.operationCode]: MoveThingOP,
-    [MoveNorthOP.operationCode]: MoveNorthOP,
-    [MoveEastOP.operationCode]: MoveEastOP,
-    [MoveSouthOP.operationCode]: MoveSouthOP,
-    [MoveWestOP.operationCode]: MoveWestOP,
-    [TurnCreatureNorthOP.operationCode]: TurnCreatureNorthOP,
-    [TurnCreatureEastOP.operationCode]: TurnCreatureEastOP,
-    [TurnCreatureSouthOP.operationCode]: TurnCreatureSouthOP,
-    [TurnCreatureWestOP.operationCode]: TurnCreatureWestOP,
-    [IncomingCloseContainerOp.operationCode]: IncomingCloseContainerOp,
-    [IncomingCreatureSpeakOp.operationCode]: IncomingCreatureSpeakOp,
+    [MoveNorthRequest.operationCode]: MoveNorthRequest,
+    [MoveEastRequest.operationCode]: MoveEastRequest,
+    [MoveSouthRequest.operationCode]: MoveSouthRequest,
+    [MoveWestRequest.operationCode]: MoveWestRequest,
+    [TurnNorthRequest.operationCode]: TurnNorthRequest,
+    [TurnEastRequest.operationCode]: TurnEastRequest,
+    [TurnSouthRequest.operationCode]: TurnSouthRequest,
+    [TurnWestRequest.operationCode]: TurnWestRequest,
+    [CloseContainerRequest.operationCode]: CloseContainerRequest,
+    [CreatureSpeakRequest.operationCode]: CreatureSpeakRequest,
     [EnterGameOP.operationCode]: EnterGameOP,
-    [IncomingLeaveGameOp.operationCode]: IncomingLeaveGameOp,
-    [IncomingLookAtOp.operationCode]: IncomingLookAtOp,
-    [IncomingPingOp.operationCode]: IncomingPingOp,
-    [IncomingPlayerModesOp.operationCode]: IncomingPlayerModesOp,
+    [LeaveGameRequest.operationCode]: LeaveGameRequest,
+    [LookAtRequest.operationCode]: LookAtRequest,
+    [PingRequest.operationCode]: PingRequest,
+    [SetPlayerModesRequest.operationCode]: SetPlayerModesRequest,
     [IncomingChangeOutfitRequestOp.operationCode]: IncomingChangeOutfitRequestOp,
-    [IncomingSetOutfitOp.operationCode]: IncomingSetOutfitOp,
-    [IncomingUseItemOp.operationCode]: IncomingUseItemOp,
+    [SetOutfitRequest.operationCode]: SetOutfitRequest,
+    [UseItemRequest.operationCode]: UseItemRequest,
     [MouseClickMoveOP.operationCode]: MouseClickMoveOP,
-    [StopAutoWalkOP.operationCode]: StopAutoWalkOP,
-    [IncomingFollowCreatureOp.operationCode]: IncomingFollowCreatureOp
+    [StopAutoWalkRequest.operationCode]: StopAutoWalkRequest,
+    [FollowCreatureRequest.operationCode]: FollowCreatureRequest
 }

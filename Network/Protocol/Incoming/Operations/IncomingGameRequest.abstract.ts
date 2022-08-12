@@ -3,7 +3,7 @@ import { IncomingNetworkMessage } from "Network/Lib/IncomingNetworkMessage.class
 import { PROTOCOL_RECEIVE } from "Constants/Network.const.ts";
 import { Player } from "Game/Player/Player.class.ts";
 
-export abstract class IncomingGameOp {
+export abstract class IncomingGameRequest {
     constructor(msg : IncomingNetworkMessage){
         this._msg = msg;
         const player = players.getPlayerById(this._msg.client?.conn?.rid as number);

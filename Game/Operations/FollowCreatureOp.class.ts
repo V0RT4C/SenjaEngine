@@ -10,12 +10,9 @@ export class FollowCreatureOp extends GameOperation {
         super();
     }
 
-    protected _internalOperations(): boolean {
+    protected _internalOperations(): void {
         log.debug(`FollowCreatureOp`);
-        return true;
     }
 
-    protected _networkOperations(): boolean {
-        return true;
-    }
+    protected async _networkOperations(): Promise<void> {}
 }

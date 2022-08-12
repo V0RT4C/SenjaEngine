@@ -9,7 +9,7 @@ import { AddThingToContainerOP } from "CoreSendOperations/AddThingToContainerOP.
 import { Item } from "Item";
 import { Container } from "Container";
 import { IPosition } from "Types";
-import players from '../../../../../../Game/Player/Players.class.ts';
+import players from 'Game/Player/Players.class.ts';
 
 
 

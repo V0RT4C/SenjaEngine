@@ -1,5 +1,5 @@
 import log from 'Logger';
-import { IncomingGameOperation } from "../../IncomingGameOperation.abstract.ts";
+import { IncomingGameOperation } from "../../../IncomingGameOperation.abstract.ts";
 import { StaticImplements } from "Decorators";
 import { StaticOperationCode } from "Types";
 import { PROTOCOL_RECEIVE } from "Constants";

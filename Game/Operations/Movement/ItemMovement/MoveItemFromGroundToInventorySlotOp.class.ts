@@ -24,24 +24,26 @@ export class MoveItemFromGroundToInventorySlot extends GameOperation {
     private _itemMovedToGroundId : number | undefined;
     private _itemMovedToInventoryId! : number;
 
-    protected _internalOperations(): boolean  {
+    protected _internalOperations(): void  {
         log.debug('MoveItemFromGroundToInventorySlotOp');
         
         if (this._toSlotId > 11) {
             //Not an inventory slot
-            return false;
+            this._cancelMessage = RETURN_MESSAGE.THERE_IS_NO_WAY;
+            return;
         }
 
         if (this._toSlotId == 0) {
             //Special condition, player drops an item to the "capacity window" when the inventory is minimized,
             //we should add this item to the most appropriate slot/container
-            return false;
+            this._cancelMessage = RETURN_MESSAGE.THERE_IS_NO_WAY;
+            return
         }
 
         return this._playerMoveThingFromGroundToInventory();
     }
 
-    protected async _networkOperations(): Promise<boolean> {
+    protected async _networkOperations(): Promise<void> {
         if (this._cancelMessage === undefined){
             const removeThingFromMapMessage = new SendRemoveThingFromTileOperation(this._fromPosition, this._stackPosition);
             await removeThingFromMapMessage.execute();
@@ -57,17 +59,15 @@ export class MoveItemFromGroundToInventorySlot extends GameOperation {
             const cancelMsgOp = new SendCancelMessageOperation(this._cancelMessage, this._player.client);
             await cancelMsgOp.execute();
         }
-
-        return true;
     }
 
-    protected _playerMoveThingFromGroundToInventory() : boolean {
+    protected _playerMoveThingFromGroundToInventory() : void {
         const fromTile : MapTile | null = map.getTileAt(this._fromPosition);
 
         if (fromTile === null){
             log.warning(`[MoveItemFromGroundToInventoryOp] - fromTile at ${stringifyPosition(this._fromPosition)} is null`);
             this._cancelMessage = RETURN_MESSAGE.UNKNOWN_ERROR;
-            return true;
+            return;
         }
 
         const item : Item | null = fromTile.getThingByStackPos(this._stackPosition) as Item;
@@ -75,19 +75,19 @@ export class MoveItemFromGroundToInventorySlot extends GameOperation {
         if (item === null){
             log.warning(`[MoveItemFromGroundToInventoryOp] - No thing found at stackPosition ${this._stackPosition}, Position: ${stringifyPosition(this._fromPosition)}`);
             this._cancelMessage = RETURN_MESSAGE.UNKNOWN_ERROR;
-            return true;
+            return;
         }
 
         if (!item.isItem()){
             this._cancelMessage = RETURN_MESSAGE.NOT_POSSIBLE;
-            return true;
+            return;
         }
 
         const removeSuccess = fromTile.removeDownThingByThing(item);
         if (!removeSuccess){
             log.warning(`[MoveItemFromGroundToInventoryOp] - Failed to remove item from tile at position ${stringifyPosition(this._fromPosition)}`);
             this._cancelMessage = RETURN_MESSAGE.UNKNOWN_ERROR;
-            return true;
+            return;
         }
 
         const itemAtInventorySpot : Item | null = this._player.inventory.getItemAndRemoveFromInventory(this._toSlotId);
@@ -103,11 +103,11 @@ export class MoveItemFromGroundToInventorySlot extends GameOperation {
                 this._itemMovedToGroundId = itemAtInventorySpot.thingId;
             }
 
-            return true;
+            return;
         }else{
             log.warning(`[MoveItemFromGroundToInventoryOp] - Failed to add item with id: ${item.thingId} to ${this._player.name}'s inventory.`);
             this._cancelMessage = RETURN_MESSAGE.UNKNOWN_ERROR;
-            return true;
+            return;
         }
     }
 }
