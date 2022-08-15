@@ -1,12 +1,12 @@
 [
   {
     "name": "Out of this world",
-    "ip": "192.168.8.220",
+    "ip": "127.0.0.1",
     "port": 7373
   },
   {
     "name": "Not of this world",
-    "ip": "192.168.8.220",
+    "ip": "127.0.0.1",
     "port": 7373
   }
 ]
