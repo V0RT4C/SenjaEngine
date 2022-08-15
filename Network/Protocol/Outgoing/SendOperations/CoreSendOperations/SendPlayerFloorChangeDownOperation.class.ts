@@ -62,9 +62,13 @@ export class SendPlayerFloorChangeDownOperation implements OutgoingSendOperation
             }
         }
 
-
-        SendRightRowMapDescriptionOperation.writeToNetworkMessage({ x: oldPosition.x, y: newPosition.y - 2, z: newPosition.z }, player, msg);
-        SendBottomRowMapDescriptionOperation.writeToNetworkMessage({ x: oldPosition.x, y: newPosition.y - 1, z: newPosition.z }, player, msg);
+        if (oldPosition.y !== newPosition.y){
+            SendRightRowMapDescriptionOperation.writeToNetworkMessage({ x: oldPosition.x, y: newPosition.y - 2, z: newPosition.z }, player, msg);
+            SendBottomRowMapDescriptionOperation.writeToNetworkMessage({ x: oldPosition.x, y: newPosition.y - 1, z: newPosition.z }, player, msg);
+        }else{
+            SendRightRowMapDescriptionOperation.writeToNetworkMessage({ x: oldPosition.x, y: newPosition.y - 1, z: newPosition.z }, player, msg);
+            SendBottomRowMapDescriptionOperation.writeToNetworkMessage({ x: oldPosition.x, y: newPosition.y, z: newPosition.z }, player, msg);
+        }
         // map.getMapDescriptionAsBytes(
         //     {
         //         x: oldPosition.x + (CLIENT_VIEWPORT.MAX_X + 1),

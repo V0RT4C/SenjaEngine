@@ -1,11 +1,11 @@
+import map from "Map";
 import { OutgoingNetworkMessage } from "Network/Lib/OutgoingNetworkMessage.class.ts";
 import { OutgoingSendOperation } from "OutgoingSendOperations/OutgoingSendOperation.abtract.ts";
 import { SendLeftRowMapDescriptionOperation } from "CoreSendOperations/SendLeftRowMapDescriptionOperation.class.ts";
 import { SendTopRowMapDescriptionOperation } from "CoreSendOperations/SendTopRowMapDescriptionOperation.class.ts";
 import { CLIENT_VIEWPORT, MAP, NETWORK_MESSAGE_SIZES, PROTOCOL_SEND } from "Constants";
+import { Player } from "Game/Player/Player.class.ts";
 import { IPosition } from "Types";
-import map from "Map";
-import { Player } from "../../../../../Game/Player/Player.class.ts";
 
 export class SendPlayerFloorChangeUpOperation implements OutgoingSendOperation {
     constructor(

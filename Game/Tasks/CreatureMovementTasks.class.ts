@@ -17,31 +17,32 @@ export class CreatureMovementTasks {
             let walkSuccess = false;
 
             const oldStackPosition = player.getStackPosition();
+            const task = player.scheduledWalkTasks.pop();
 
-            switch(player.scheduledWalkTasks.pop()){
+            switch(task?.direction){
                 case WALK_DIRECTION.NORTH:
-                    walkSuccess = player.moveNorth();
+                    walkSuccess = player.moveNorth(task?.force);
                     break;
                 case WALK_DIRECTION.NORTH_EAST:
-                    walkSuccess = player.moveNorthEast();
+                    walkSuccess = player.moveNorthEast(task?.force);
                     break;
                 case WALK_DIRECTION.NORTH_WEST:
-                    walkSuccess = player.moveNorthWest();
+                    walkSuccess = player.moveNorthWest(task?.force);
                     break;
                 case WALK_DIRECTION.EAST:
-                    walkSuccess = player.moveEast();
+                    walkSuccess = player.moveEast(task?.force);
                     break;
                 case WALK_DIRECTION.SOUTH_EAST:
-                    walkSuccess = player.moveSouthEast();
+                    walkSuccess = player.moveSouthEast(task?.force);
                     break;
                 case WALK_DIRECTION.SOUTH:
-                    walkSuccess = player.moveSouth();
+                    walkSuccess = player.moveSouth(task?.force);
                     break;
                 case WALK_DIRECTION.SOUTH_WEST:
-                    walkSuccess = player.moveSouthWest();
+                    walkSuccess = player.moveSouthWest(task?.force);
                     break;
                 case WALK_DIRECTION.WEST:
-                    walkSuccess = player.moveWest();
+                    walkSuccess = player.moveWest(task?.force);
                     break;
                 case WALK_DIRECTION.FLOOR_DOWN:
                     walkSuccess = player.moveDown();
@@ -58,7 +59,7 @@ export class CreatureMovementTasks {
                     game.addOperation(new FloorChangeOP(player));
                 }
                 else if (newTile.isTeleport()){
-                    game.addOperation(new TeleportCreatureOp(player, player.position, newTile.getDestination()));
+                    game.addOperation(new TeleportCreatureOp(player, { ...player.position }, newTile.getDestination()));
                 }
             }
 

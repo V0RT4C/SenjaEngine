@@ -9,11 +9,20 @@ Instead it aims to become a modular extensible server with all the base function
 Right now the game communicates using TCP sockets, just like the traditional Tibia game does. However, web socket communication
 will be implemented once the server is getting mature enough and stable, so that future web clients can connect to it as well..  
 
-Right now the server works, You can login, walk around, move items / creatures and open containers. You can also communicate
-and some commands are working. You can create new items and put them on the map by writing !item [itemid]. You can also set
-how much light you character emits by writing !light [lightlevel] ex: !light 9.
+Right now the server works, You can login, walk around, move items / creatures and open containers. You can also communicate and some commands are working.
 
 This server is still in its very infancy. Don't expect too much.
+There are bugs. If you find any, please report them here https://github.com/V0RT4C/SenjaEngine/issues
+
+## All working commands
+**!tp** [steps] (Teleports you x amount of steps in the direction your character is pointing)  
+**!up** (Teleports you up one floor)  
+**!down** (Teleports you down one floor)  
+**!goto** ["playername"] (Will Teleport you to a player)  
+**!time** (Will send you a message to the game client console with the current world time)  
+**!light** [lightlevel] Will set the light level that your character emits  
+**!item** [clientItemId] Will spawn an item of the specified type underneath your character
+
 
 ## Running the server
 To run the server you need to install Deno to your system. It's kind of like NodeJS but better :)
@@ -25,11 +34,12 @@ Instructions for installing Deno can be found here: https://deno.land/
 4. run: deno run --allow-net --allow-read --allow-write --allow-env main.ts (OR) make app executable by chmod+x app and then run the app file
 
 ## Logging in
-To log in you need to use a Tibia client that supports Protocol version 7.6 as that's the only protocol that I know works
-for sure right now. I recommend using this client: https://github.com/OTCv8/otclientv8
+To log in you need to use a Tibia client that supports Protocol version 7.6 as that's the protocol im focusing on right now. I recommend using this client: https://github.com/OTCv8/otclientv8
 
 When dev mode is enabled in config a sqlite db will be setup with an account and two players.
 Use this login info: 8899/8899
+
+If you want to connect from multiple clients you need to edit the IP in Data/worlds.json to match your IP.
 
 ![Alt text](screenshot.webp?raw=true "Screenshot")
 
@@ -44,9 +54,9 @@ The tasks below are the tasks that I'm currently focusing on.
 - [x] Multiplayer
 
 #### Game
-- [ ] World time
+- [X] World time
 - [X] World light
-- [ ] World light changes based on time
+- [X] World light changes based on time
 - [ ] NPC system
 - [ ] Spawn system
 - [ ] Level advancement
@@ -54,8 +64,8 @@ The tasks below are the tasks that I'm currently focusing on.
 - [ ] Combat system
 
 #### Map
-- [ ] Read OTBM files
-- [ ] Multi-floor functionality
+- [X] Read OTBM files
+- [X] Multi-floor functionality
 
 #### Player
 
@@ -64,12 +74,12 @@ The tasks below are the tasks that I'm currently focusing on.
 - [X] Walk east
 - [X] Walk south
 - [X] Walk west
-- [ ] Walk North-east
-- [ ] Walk South-east
-- [ ] Walk North-west
-- [ ] Walk South-west
-- [ ] Autowalk
-- [ ] Mouse-click walk (Related to autowalk)
+- [X] Walk North-east (Not keyboard yet)
+- [X] Walk South-east (Not keyboard yet)
+- [X] Walk North-west (Not keyboard yet)
+- [X] Walk South-west (Not keyboard yet)
+- [X] Autowalk
+- [X] Mouse-click walk (Related to autowalk)
 
 ***Appearance***
 - [X] Change outfit
@@ -103,8 +113,8 @@ The tasks below are the tasks that I'm currently focusing on.
 ***Containers***
 - [X] Open containers
 - [X] Close containers
-- [ ] Events for when state of container changes
-- [ ] Update all clients spectating a container when a container state changes
+- [X] Events for when state of container changes
+- [X] Update all clients spectating a container when a container state changes
 
 ***Safe trade***
 - [ ] Request trade

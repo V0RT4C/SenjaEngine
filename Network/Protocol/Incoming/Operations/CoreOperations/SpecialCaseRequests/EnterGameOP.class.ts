@@ -24,6 +24,8 @@ import { TCP } from 'Dependencies';
 import { GameOperation } from "Game/GameOperation.abstract.ts";
 import { IncomingNetworkMessage } from "Network/Lib/IncomingNetworkMessage.class.ts";
 import { AddCreatureToMapOP } from "CoreSendOperations/AddCreatureToMapOP.class.ts";
+import events from 'Game/Events/EventEmitter.ts';
+import { EVENT } from '../../../../../../Constants/events.const.ts';
 
 @StaticImplements<StaticOperationCode>()
 export class EnterGameOP extends GameOperation {
@@ -114,7 +116,7 @@ export class EnterGameOP extends GameOperation {
             SendPlayerStatsOperation.writeToNetworkMessage(this._player, msg);
             SendWorldLightOperation.writeToNetworkMessage(game.worldLight.level, game.worldLight.color, msg);
             SendFullInventoryOperation.writeToNetworkMessage(this._player, msg);
-            SendTextMessageOperation.writeToNetworkMessage(WELCOME_MESSAGE, MESSAGE_TYPE.RED_MESSAGE_CONSOLE, msg);
+            SendTextMessageOperation.writeToNetworkMessage(`${WELCOME_MESSAGE}${`\nYour last visit ${this._player.previousVisit !== 0 ? `was on: ${(new Date(this._player.previousVisit).toDateString())}, ${(new Date(this._player.previousVisit).toTimeString())}` : 'was: never'}`}`, MESSAGE_TYPE.RED_MESSAGE_CONSOLE, msg);
             SendFullMapDescriptionOperation.writeToNetworkMessage(this._player.position, this._player, msg);
             await msg.send();
 
@@ -127,7 +129,9 @@ export class EnterGameOP extends GameOperation {
             const msg3 = new OutgoingNetworkMessage(AddCreatureToMapOP.messageSize);
             AddCreatureToMapOP.writeToNetworkMessage(this._player, this._player, msg3);
             await msg3.sendToPlayersInAwareRange(this._player.position, undefined, this._player);
-
+            
+            this._player.onLogin();
+            events.emit(EVENT.PLAYER_LOGIN, { name: this._player.name });
             return true;
         }else{
             return false;

@@ -4,7 +4,6 @@ import { Creature } from 'Creature';
 import { CHASE_MODE, PARTY_SHIELD, PLAYER_SEX, SAFE_FIGHT_MODE, SKULL, THING_TYPE } from 'Constants';
 import { Inventory } from "Game/Player/Inventory.class.ts";
 import { Container } from "Game/Container.class.ts";
-import { SendCloseContainerOperation } from '../../Network/Protocol/Outgoing/SendOperations/CoreSendOperations/SendCloseContainerOperation.class.ts';
 import game from '../Game.class.ts';
 import { CloseContainerOp } from '../Operations/CloseContainerOp.class.ts';
 
@@ -42,6 +41,8 @@ export class Player extends Creature {
     protected _partyShield : PARTY_SHIELD = PARTY_SHIELD.SHIELD_NONE;
     protected _chaseMode : CHASE_MODE = CHASE_MODE.OFF;
     protected _safeFightMode : SAFE_FIGHT_MODE = SAFE_FIGHT_MODE.ON;
+    protected _loggedInAt = 0;
+    protected _previousVisit = 0;
 
     public get id() : number {
         return this._id;
@@ -107,6 +108,17 @@ export class Player extends Creature {
         return this._openContainers;
     }
 
+    public get loggedInAt() : number {
+        return this._loggedInAt;
+    }
+
+    public set previousVisit(timestamp : number){
+        this._previousVisit = timestamp;
+    }
+
+    public get previousVisit() : number {
+        return this._previousVisit;
+    }
 
     public addOpenContainer(container : Container){
         if (this.containerIsOpen(container)){
@@ -213,5 +225,9 @@ export class Player extends Creature {
     private _connectionListener = () => {
         log.debug(`Player ${this._name} lost tcp connection.`);
         //If in combat, start timer
+    }
+
+    public onLogin(): void {
+        this._loggedInAt = Date.now();
     }
 }

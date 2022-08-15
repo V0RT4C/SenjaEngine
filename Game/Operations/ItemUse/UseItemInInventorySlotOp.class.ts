@@ -76,7 +76,6 @@ export class UseItemInInventorySlotOp extends GameOperation {
             }
         }else{
             log.debug(`[UseItemInInventorySlotOp] - Item is not a container`);
-            this._cancelMessage = RETURN_MESSAGE.FEATURE_NOT_IMPLEMENTED;
             return;
         }
     }

@@ -30,15 +30,14 @@ export class SendMoveCreatureOperation implements OutgoingSendOperation {
 
     public async execute(){
         const spectators = players.getPlayersInAwareRange(this._oldPosition, this._newPosition);
+        //console.log(this._oldPosition);
+        //console.log(this._newPosition);
 
         for (const player of spectators){
             if (!player.client.isOpen){ continue; }
             
             if (player.extId === this._creature.extId){
                 const msg = OutgoingNetworkMessage.withClient(player.client, NETWORK_MESSAGE_SIZES.BUFFER_MAXSIZE);
-                //If teleport
-                //  TODO
-                //
                 if (this._teleport){
                     const removeOp = new SendRemoveCreatureFromTileOperation(this._oldPosition, this._oldStackPosition, this._creature, player);
                     await removeOp.execute();

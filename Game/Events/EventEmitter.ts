@@ -1,13 +1,15 @@
-class EventEmitter {
-    private _events : { [any:string]: ((p : any) => void)[] } = {};
+import { EVENT } from "../../Constants/events.const.ts";
 
-    public on<T>(event : string, cb: (param: T) => void) : any {
+class EventEmitter {
+    private _events : { [key in EVENT]: ((p : any) => void)[] } = {} as { [key in EVENT]: ((p : any) => void)[] };
+
+    public on<T>(event : EVENT, cb: (param: T) => void) : any {
         this._events[event] = this._events[event] ? this._events[event] : [];
         this._events[event].push(cb);
         return () => this._unsubscribeListener(event, cb);
     }
 
-    public emit<T>(event : string, data : T){
+    public emit<T>(event : EVENT, data : T){
         if (this._events[event] && this._events[event].length > 0){
             for (const e of this._events[event]){
                 e(data);
@@ -15,7 +17,7 @@ class EventEmitter {
         }
     }
 
-    private _unsubscribeListener(event : string, listener : (p : any) => void) : void {
+    private _unsubscribeListener(event : EVENT, listener : (p : any) => void) : void {
         let idx = -1;
 
         for (let i=0; i < this._events[event].length; i++){

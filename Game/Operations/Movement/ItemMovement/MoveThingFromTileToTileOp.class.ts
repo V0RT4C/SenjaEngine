@@ -31,7 +31,6 @@ export class MoveThingFromTileToTileOp extends GameOperation {
 
     protected async _networkOperations(): Promise<void> {
         if (this._cancelMessage === undefined){
-            console.log("HLLO")
             const msg = new OutgoingNetworkMessage(SendRemoveThingFromTileOperation.messageSize + AddThingToMapOP.messageSize + 100);
             SendRemoveThingFromTileOperation.writeToNetworkMessage(this._fromPosition, this._fromStackPosition, msg);
             SendRemoveThingFromTileOperation.updateContainerSpectators(this._movingThing, this._fromPosition, this._player);
@@ -44,6 +43,11 @@ export class MoveThingFromTileToTileOp extends GameOperation {
     }
 
     protected _playerMoveThingFromTileToTile(){
+        if (!this._player.canReach(this._fromPosition)){
+            this._cancelMessage = RETURN_MESSAGE.TOO_FAR_AWAY;
+            return;
+        }
+        
         const fromTile : MapTile | null = map.getTileAt(this._fromPosition);
 
         if (fromTile === null){

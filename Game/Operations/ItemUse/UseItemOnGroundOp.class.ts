@@ -11,6 +11,8 @@ import { Container } from '../../Container.class.ts';
 import { SendCloseContainerOperation } from 'CoreSendOperations/SendCloseContainerOperation.class.ts';
 import { SendOpenContainerOperation } from 'CoreSendOperations/SendOpenContainerOperation.class.ts';
 import { SendCancelMessageOperation } from 'CoreSendOperations/SendCancelMessageOperation.class.ts';
+import events from '../../Events/EventEmitter.ts';
+import { EVENT } from '../../../Constants/events.const.ts';
 
 export class UseItemOnGroundOp extends GameOperation {
     constructor(
@@ -104,7 +106,12 @@ export class UseItemOnGroundOp extends GameOperation {
             }
         }else{
             log.debug(`[UseItemOnGroundOp] - Item is not a container`);
-            this._cancelMessage = RETURN_MESSAGE.FEATURE_NOT_IMPLEMENTED;
+            events.emit(EVENT.PLAYER_USE_ITEM_ON_GROUND, { 
+                player: this._player, 
+                item, 
+                itemPosition: this._itemPosition, 
+                itemStackPosition: this._itemStackPosition 
+            });
             return;
         }
     }

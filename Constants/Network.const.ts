@@ -71,7 +71,7 @@ export enum PROTOCOL_RECEIVE {
 
     MOVE_THING                                          = 0x78,
     USE_ITEM                                            = 0x82,
-    USE_ITEM_EX                                         = 0x83,
+    USE_ITEM_ON                                         = 0x83,
 
     BATTLE_WINDOW                                       = 0x84,
     CLOSE_CONTAINER                                     = 0x87,

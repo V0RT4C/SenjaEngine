@@ -149,6 +149,7 @@ export interface IDBPlayer {
         lookLegs: number;
         lookFeet: number;
     };
+    lightLevel: number;
     magicLevel: number;
     mana: number;
     maxMana: number;
@@ -162,7 +163,7 @@ export interface IDBPlayer {
     lastIp: string;
     skull: number;
     skullEndTime: number;
-    lastLogout: number;
+    lastSave: number;
     onlineTimeMinutes: number;
     skillFist: number;
     skillFistTries: number;

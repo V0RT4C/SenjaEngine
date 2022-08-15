@@ -51,7 +51,15 @@ export class FloorChangeOP extends GameOperation {
         }
         else if (fromTile.flags.floorChangeDown){
             log.debug(`Player ${this._player.name} - floor change down.`);
-            const toTile = map.getTileAt({ x, y: y+1, z: z+1 });
+            let toTile = map.getTileAt({ x, y, z: z+1 });
+
+            if (toTile === null){
+                return false;
+            }
+
+            if (toTile.isFloorChange()){
+                toTile = map.getTileAt({ x, y: y+1, z: z+1 });
+            }
 
             if (toTile === null){
                 return false;

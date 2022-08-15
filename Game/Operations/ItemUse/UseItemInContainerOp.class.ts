@@ -7,6 +7,8 @@ import { RETURN_MESSAGE } from 'Constants/Game.const.ts';
 import { SendCancelMessageOperation } from 'CoreSendOperations/SendCancelMessageOperation.class.ts';
 import { SendCloseContainerOperation } from 'CoreSendOperations/SendCloseContainerOperation.class.ts';
 import { SendOpenContainerOperation } from 'CoreSendOperations/SendOpenContainerOperation.class.ts';
+import events from '../../Events/EventEmitter.ts';
+import { EVENT } from '../../../Constants/events.const.ts';
 
 export class UseItemInContainerOp extends GameOperation {
     constructor(
@@ -85,7 +87,7 @@ export class UseItemInContainerOp extends GameOperation {
             }
         }else{
             log.debug(`[UseItemInContainerOp] - Item is not a container`);
-            this._cancelMessage = RETURN_MESSAGE.FEATURE_NOT_IMPLEMENTED;
+            events.emit(EVENT.PLAYER_USE_ITEM_IN_CONTAINER, { player: this._player, item, containerId: this._containerId, slotId: this._slotId });
             return;
         }
     }

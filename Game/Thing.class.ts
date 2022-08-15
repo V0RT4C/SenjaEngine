@@ -16,6 +16,7 @@ export abstract class Thing {
 
     //Set of actions to perform when thing moves
     public abstract onMove() : void;
+    public abstract onAppear() : void;
 
     public get name() : string {
         return this._name;

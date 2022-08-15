@@ -1,7 +1,11 @@
+import log from 'Logger';
 import { Thing } from 'Thing';
 import { THING_TYPE } from 'Constants';
 import rawItems from "RawItems";
 import { IPosition } from '../@types/App.d.ts';
+import game from './Game.class.ts';
+import { stringifyPosition } from './Lib/string.lib.ts';
+import { UpdateTileItemOp } from './Operations/UpdateTileItemOp.class.ts';
 
 export class Item extends Thing {
     constructor(thingId : number){
@@ -48,6 +52,10 @@ export class Item extends Thing {
         return this._rawItem.description ? this._rawItem.description : "";
     }
 
+    public get text() : string {
+        return this._otbmAttributes.text ? this._otbmAttributes.text : "";
+    }
+
     public isContainer(){
         return this._rawItem.group === 'container';
     }
@@ -81,4 +89,5 @@ export class Item extends Thing {
     }
 
     public onMove(){}
+    public onAppear(){}
 }

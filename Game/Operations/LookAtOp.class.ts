@@ -128,9 +128,9 @@ export class LookAtOp extends GameOperation {
 
     protected _getItemMessage(item : Item, close = false){
         if (close){
-            return `You see ${item.article ? item.article + ' ' : ''}${item.name}${item.isWeapon() ? ` Atk:(${item.attack} Def:${item.defence})` : ''}.${(this._thing as Item).weight ? `\nIt weighs ${item.weight} o.z.` : ''}${item.description ? `\n${item.description}` : ''}`;
+            return `You see ${item.article ? item.article + ' ' : ''}${item.name}${item.isWeapon() ? ` Atk:(${item.attack} Def:${item.defence})` : ''}.${(this._thing as Item).weight ? `\nIt weighs ${item.weight} o.z.` : ''}${item.description ? `\n${item.description}` : ''}${item.text ? `\nYou read: ${item.text}` : ''}`;
         }else{
-            return `You see ${item.article ? item.article + ' ' : ''}${item.name}.`
+            return `You see ${item.article ? item.article + ' ' : ''}${item.name}.${item.text ? `\nYou read: ${item.text}` : ''}`
         }
     }
 

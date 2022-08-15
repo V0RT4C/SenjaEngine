@@ -6,13 +6,18 @@ import { WALK_DIRECTION } from 'Constants/Map.const.ts';
 export class CreatureWalkOp extends GameOperation {
     constructor(
         private readonly _creature : Creature,
-        private readonly _walkDirection : WALK_DIRECTION
+        private readonly _walkDirection : WALK_DIRECTION,
+        private readonly _force? : boolean
     ){ super(); }
 
     protected _internalOperations(): void {
         log.debug('MoveCreatureOp')
         this._autoWalkCheck();
-        this._creature.addWalkTask(this._walkDirection);
+        if (this._force){
+            this._creature.addWalkTask(this._walkDirection, this._force);
+        }else{
+            this._creature.addWalkTask(this._walkDirection);
+        }
     }
 
     protected async _networkOperations(): Promise<void> {}

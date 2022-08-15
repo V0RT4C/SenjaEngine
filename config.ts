@@ -7,7 +7,7 @@ import { MAX_LIGHT_LEVEL, MIN_LIGHT_LEVEL } from "./Constants/Game.const.ts";
 import { PLAYER_SEX } from "./Constants/Player.const.ts";
 
 export const DEVELOPMENT_MODE = true;
-export const WELCOME_MESSAGE = 'Welcome to Senja Engine V.0.0.2\nYour last visit was: never';
+export const WELCOME_MESSAGE = 'Welcome to Senja Engine V.0.0.3';
 
 /**
  * Log level
@@ -60,8 +60,8 @@ export const BASE_SPEED = 220;
 export const DEFAULT_PLAYER_SEX = PLAYER_SEX.MALE;
 
 //Default Spawn position
-export const DEFAULT_PLAYER_SPAWN_POSITION_X = 1039;
-export const DEFAULT_PLAYER_SPAWN_POSITION_Y = 1041;
+export const DEFAULT_PLAYER_SPAWN_POSITION_X = 1021;
+export const DEFAULT_PLAYER_SPAWN_POSITION_Y = 968;
 export const DEFAULT_PLAYER_SPAWN_POSITION_Z = 7;
 
 //Default Outfit
@@ -73,14 +73,14 @@ export const DEFAULT_LOOKFEET = 76;
 
 //Default player inventory items {itemId|null}
 
-export const INVENTORY_SLOT_HELMET          = null;
-export const INVENTORY_SLOT_AMULET          = null;
-export const INVENTORY_SLOT_BACKPACK        = null;
-export const INVENTORY_SLOT_ARMOR           = null;
-export const INVENTORY_SLOT_SHIELD          = null;
-export const INVENTORY_SLOT_WEAPON          = null;
-export const INVENTORY_SLOT_LEGS            = null;
-export const INVENTORY_SLOT_BOOTS           = null;
-export const INVENTORY_SLOT_RING            = null;
-export const INVENTORY_SLOT_AMMUNITION      = null;
+// export const INVENTORY_SLOT_HELMET          = null;
+// export const INVENTORY_SLOT_AMULET          = null;
+// export const INVENTORY_SLOT_BACKPACK        = null;
+// export const INVENTORY_SLOT_ARMOR           = null;
+// export const INVENTORY_SLOT_SHIELD          = null;
+// export const INVENTORY_SLOT_WEAPON          = null;
+// export const INVENTORY_SLOT_LEGS            = null;
+// export const INVENTORY_SLOT_BOOTS           = null;
+// export const INVENTORY_SLOT_RING            = null;
+// export const INVENTORY_SLOT_AMMUNITION      = null;
 

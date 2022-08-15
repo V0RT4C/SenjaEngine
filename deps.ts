@@ -17,7 +17,7 @@ export { DB as sqliteDB } from 'https://deno.land/x/sqlite@v3.4.0/mod.ts';
 /**
  * OTBM Library
  */
-export { OTBMReader, Item as OTBMItem, Tile as OTBMTile, TileArea as OTBMTileArea } from 'https://deno.land/x/v0rt4c_otbm@0.1.2/mod.ts';
+export { OTBMReader, OTBMHouseTile, OTBMTile, OTBMItem, OTBMTileArea, OTBMNode, OTBMRootNode } from 'https://deno.land/x/v0rt4c_otbm@0.2.0/mod.ts';
 
 /**
  * QUAD TREE

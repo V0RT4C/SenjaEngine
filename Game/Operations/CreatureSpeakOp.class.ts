@@ -15,6 +15,7 @@ import { SendCancelMessageOperation } from '../../Network/Protocol/Outgoing/Send
 import rawItems from '../RawItems.class.ts';
 import { Container } from '../Container.class.ts';
 import { TeleportCreatureOp } from './Movement/CreatureMovement/TeleportCreatureOp.class.ts';
+import players from '../Player/Players.class.ts';
 
 export class CreatureSpeakOp extends GameOperation {
     constructor(
@@ -92,20 +93,45 @@ export class CreatureSpeakOp extends GameOperation {
                     }else{
                         this._commandFunction = () => {
                             if (this._speakingCreature.direction === CREATURE_DIRECTION.NORTH){
-                                game.addOperation(new TeleportCreatureOp(this._speakingCreature, this._speakingCreature.position, { x: this._speakingCreature.position.x, y: this._speakingCreature.position.y - steps, z: 7 }));
+                                game.addOperation(new TeleportCreatureOp(this._speakingCreature, {...this._speakingCreature.position}, { x: this._speakingCreature.position.x, y: this._speakingCreature.position.y - steps, z: this._speakingCreature.position.z }));
                             }
                             else if (this._speakingCreature.direction === CREATURE_DIRECTION.EAST){
-                                game.addOperation(new TeleportCreatureOp(this._speakingCreature, this._speakingCreature.position, { x: this._speakingCreature.position.x + steps, y: this._speakingCreature.position.y, z: 7 }));
+                                game.addOperation(new TeleportCreatureOp(this._speakingCreature, {...this._speakingCreature.position}, { x: this._speakingCreature.position.x + steps, y: this._speakingCreature.position.y, z: this._speakingCreature.position.z }));
                             }
                             else if (this._speakingCreature.direction === CREATURE_DIRECTION.SOUTH){
-                                game.addOperation(new TeleportCreatureOp(this._speakingCreature, this._speakingCreature.position, { x: this._speakingCreature.position.x, y: this._speakingCreature.position.y + steps, z: 7 }));
+                                game.addOperation(new TeleportCreatureOp(this._speakingCreature, {...this._speakingCreature.position}, { x: this._speakingCreature.position.x, y: this._speakingCreature.position.y + steps, z: this._speakingCreature.position.z }));
                             }else{
-                                game.addOperation(new TeleportCreatureOp(this._speakingCreature, this._speakingCreature.position, { x: this._speakingCreature.position.x - steps, y: this._speakingCreature.position.y, z: 7 }));
+                                game.addOperation(new TeleportCreatureOp(this._speakingCreature, {...this._speakingCreature.position}, { x: this._speakingCreature.position.x - steps, y: this._speakingCreature.position.y, z: this._speakingCreature.position.z }));
                             }
                         }
                     }
                 }
                 break;
+                case '!up': {
+                    this._commandFunction = () => {
+                        game.addOperation(new TeleportCreatureOp(this._speakingCreature, {...this._speakingCreature.position}, { x: this._speakingCreature.position.x, y: this._speakingCreature.position.y, z: this._speakingCreature.position.z - 1 }));
+                    }
+                }
+                break;
+                case '!down': {
+                    this._commandFunction = () => {
+                        game.addOperation(new TeleportCreatureOp(this._speakingCreature, {...this._speakingCreature.position}, { x: this._speakingCreature.position.x, y: this._speakingCreature.position.y, z: this._speakingCreature.position.z + 1 }));
+                    }
+                }
+                break;
+                case '!goto': {
+                    const name = this._speakMessage.match(/"(.*?)"/);
+
+                    if (name !== null && Array.isArray(name) && name.length === 2){
+                        this._commandFunction = () => {
+                            const player = players.getPlayerByName(name[1]);
+                            
+                            if (player !== null && player !== this._player){
+                                game.addOperation(new TeleportCreatureOp(this._speakingCreature, {...this._speakingCreature.position}, { x: player.position.x, y: player.position.y, z: player.position.z }));
+                            }
+                        }
+                    }
+                }
             }
         }
     }

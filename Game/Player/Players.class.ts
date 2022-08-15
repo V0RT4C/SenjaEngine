@@ -46,7 +46,7 @@ class Players {
         let player : Player | undefined;
 
         for (const id in this._list){
-            if (this._list[id].name === name){
+            if (this._list[id].name.toUpperCase() === name.toUpperCase()){
                 player = this._list[id];
                 break;
             }
@@ -91,6 +91,8 @@ class Players {
        player.maxMana = rawPlayer.maxMana;
        player.level = rawPlayer.level;
        player.experience = rawPlayer.experience;
+       player.lightInfo.level = rawPlayer.lightLevel;
+       player.previousVisit = rawPlayer.lastSave;
        return player;
     }
 

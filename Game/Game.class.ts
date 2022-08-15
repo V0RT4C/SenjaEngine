@@ -66,13 +66,13 @@ class Game {
         }
 
         worldTime.processWorldTime(this._ticks);
-
+        
         this._ticks++;
         const end = Date.now();
         this._averageExecutionTime += (end - start);
-
-        if (this._ticks % 100 === 0){
-            log.info(`Average execution time: ${this._averageExecutionTime / 100}ms.`);
+        
+        if (this._ticks % 1000 === 0){
+            log.info(`Average execution time: ${this._averageExecutionTime / 1000}ms.`);
             this._averageExecutionTime = 0;
         }
     }

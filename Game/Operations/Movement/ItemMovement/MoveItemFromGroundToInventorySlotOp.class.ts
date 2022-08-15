@@ -62,6 +62,11 @@ export class MoveItemFromGroundToInventorySlot extends GameOperation {
     }
 
     protected _playerMoveThingFromGroundToInventory() : void {
+        if (!this._player.canReach(this._fromPosition)){
+            this._cancelMessage = RETURN_MESSAGE.TOO_FAR_AWAY;
+            return;
+        }
+        
         const fromTile : MapTile | null = map.getTileAt(this._fromPosition);
 
         if (fromTile === null){

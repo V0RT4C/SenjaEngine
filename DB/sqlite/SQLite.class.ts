@@ -129,6 +129,7 @@ export class SQLite extends Database {
                 player.outfit.lookHead,
                 player.outfit.lookLegs,
                 player.outfit.lookType,
+                player.lightLevel,
                 player.magicLevel,
                 player.mana,
                 player.maxMana,
@@ -144,7 +145,7 @@ export class SQLite extends Database {
                 player.lastIp,
                 player.skull,
                 player.skullEndTime,
-                player.lastLogout,
+                player.lastSave,
                 player.onlineTimeMinutes,
                 player.skillFist,
                 player.skillFistTries,
@@ -180,7 +181,10 @@ export class SQLite extends Database {
         lookFeet = ${player.outfit.lookFeet},
         position_x = ${player.position.x},
         position_y = ${player.position.y},
-        position_z = ${player.position.z} 
+        position_z = ${player.position.z},
+        light_level = ${player.lightInfo.level},
+        last_login = ${player.loggedInAt},
+        last_save = ${Date.now()}
         WHERE name = '${player.name}'
         `);
     }

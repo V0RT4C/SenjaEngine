@@ -10,12 +10,9 @@ import { MAP, VIEWPORT, SKULL, PARTY_SHIELD } from 'Constants';
 import { IPosition } from "Types";
 import { Container } from "Game/Container.class.ts";
 import npcs from 'Game/NPC/NPCS.class.ts';
-import { OTBMReader, OTBMItem, OTBMTile, OTBMTileArea } from 'Dependencies';
+import { OTBMReader, OTBMItem, OTBMTile, OTBMNode, OTBMRootNode } from 'Dependencies';
 import rawItems from "RawItems";
-import { TileArea } from 'https://deno.land/x/v0rt4c_otbm@0.1.2/mod.ts';
 import { Player } from '../Player/Player.class.ts';
-import { THING_FLAG } from '../../Constants/Things.const.ts';
-import { DIRECTION } from '../../Constants/Map.const.ts';
 
 class Map {
     constructor(width : number, height : number){
@@ -79,7 +76,7 @@ class Map {
         }
     }
 
-    public moveCreatureByExtId(fromPos : IPosition, toPos : IPosition, creatureExtId : number) : boolean {
+    public moveCreatureByExtId(fromPos : IPosition, toPos : IPosition, creatureExtId : number, force = false) : boolean {
         log.debug('Map::moveCreatureByExtId');
         let toTile : MapTile | null = this.getTileAt(toPos);
         log.debug('ToTile')
@@ -87,18 +84,11 @@ class Map {
             return false;
         }
 
-        if (fromPos.z === toPos.z && !toTile.isWalkable()){
+        if (fromPos.z === toPos.z && !toTile.isWalkable() && !force){
             log.debug('Is not walkable')
             return false;
         }
         log.debug('IsWalkable')
-
-        // if (toTile.isFloorChange()){
-        //     if (toTile.flags.floorChangeNorth){
-        //         toPos.y-=1;
-        //         toPos.z-=1;
-        //     }
-        // }
 
         if (fromPos.x === -1 || toPos.x === -1){
             throw new Error('Maptile posx is -1 ');
@@ -217,9 +207,9 @@ class Map {
             return false;
         }
 
-        if (!toTile.isWalkable()){
-            return false;
-        }
+        // if (!toTile.isWalkable()){
+        //     return false;
+        // }
 
 
         if (thing.isCreature()){
@@ -324,75 +314,123 @@ class Map {
     }
 
     public loadMapFromOTBM(path : string){
-        log.debug('Map::loadMapFromOTBM');
-        log.info(`[MAP] - Loading map from ${path}...`);
         const otbmBuffer = Deno.readFileSync(path);
-        const reader = new OTBMReader();
-        reader.setOTBM(otbmBuffer);
-        const nodeTree = reader.getNodeTree();
-        if (nodeTree.firstChild?.properties?.description){
-            log.info(`[MAP] - ${nodeTree.firstChild?.properties.description.join(', ')}`)
-        }
-        log.info(`[MAP] - Map size ${nodeTree.width}x${nodeTree.height}...`);
-        let tileArea : OTBMTileArea | null = nodeTree.children[0].firstChild as unknown as OTBMTileArea;
+        const reader = new OTBMReader(otbmBuffer);
+        log.info('[MAP] - Loading .OTBM map...');
+        const rootNode = reader.getRootNode() as OTBMRootNode;
 
-        if (tileArea !== null){
-            while(tileArea !== null && tileArea instanceof TileArea) {
-                if (tileArea.children.length > 0){
-                    let tile : OTBMTile | null = tileArea.firstChild as OTBMTile;
+        log.info(`[MAP] - Version ${rootNode.version}.`);
 
-                    if (tile !== null){
-                        while(tile !== null){
-
-                            if (tile.properties.tileId){
-                                const mapTile = new MapTile(tile.realX, tile.realY, tile.z);
-                                mapTile.setGround(new Item(tile.properties.tileId as number));
-                                if (tile.children.length > 0){
-                                    for (const item of tile.children){
-                                        const rawItem = rawItems.getItemById((item as any).id);
-                                        if (rawItem.group === 'ground' && !rawItem.flags.hasStackOrder){
-                                            if (mapTile.getGround() === null){
-                                                mapTile.setGround(new Item((item as OTBMItem).id));
-                                            }
-                                        }
-                                        else if (rawItem.group === 'container'){
-                                            mapTile.addDownThing(new Container((item as OTBMItem).id));
-                                        }else{
-                                            if (rawItem.flags.hasStackOrder){
-                                                const it = new Item((item as OTBMItem).id);
-                                                it.setOTBMAttributes(item.properties);
-                                                mapTile.addTopThing(it);
-                                            }else{
-                                                const it = new Item((item as OTBMItem).id);
-                                                it.setOTBMAttributes(item.properties);
-                                                mapTile.addDownThing(it);
-                                            }
-                                        }
-                                    }
-                                }
-                                if (!this.addTile(mapTile)){
-                                    throw new Error(`Failed to add tile x:${tile.realX}, y:${tile.realY}, z:${tile.z}`)
-                                }
-                            }else{
-                                if (tile.children.length > 0){
-                                    const mapTile = new MapTile(tile.realX, tile.realY, tile.z);
-                                    mapTile.setGround(new Item((tile.children[0] as OTBMItem).id))
-                                    if (!this.addTile(mapTile)){
-                                        throw new Error(`Failed to add tile x:${tile.realX}, y:${tile.realY}, z:${tile.z}`)
-                                    }
-                                }else{
-                                    log.debug(`Failed to add tile x:${tile.realX}, y:${tile.realY}, z:${tile.z}`);
-                                }
-                            }
-                            tile = tile.nextSibling as OTBMTile;
-                        }
-                    }
+        if (rootNode.firstChild){
+            if (rootNode.firstChild.attributes.description){
+                for (const desc of rootNode.firstChild.attributes.description){
+                    log.info(`[MAP] - ${desc}.`)
                 }
-                tileArea = tileArea.nextSibling as OTBMTileArea;
             }
         }
 
-        log.info(`[MAP] - Map loaded...`);
+        log.info(`[MAP] - Dimensions: ${rootNode.width}x${rootNode.height}.`);
+
+        let currentTilePos : IPosition = { x: 0, y: 0, z: 0 };
+
+        const readNode = (node : OTBMNode) : any => {
+            const childNodes = [];
+
+            if (node instanceof OTBMTile){
+                currentTilePos = { x: node.realX, y: node.realY, z: node.z };
+                createTile(node);
+            }
+
+            if (node instanceof OTBMItem){
+                const tile : MapTile | null = this.getTileAt(currentTilePos);
+                createItemOrAddMapTile(node, tile);
+            }
+
+            for (const childNode of node.children){
+                childNodes.push(readNode(childNode));
+            }
+
+            return childNodes;
+        }
+
+        const createTile = (node : OTBMTile) => {
+            const mapTile : MapTile = new MapTile(node.realX, node.realY, node.z);
+            //console.log(`x: ${node.realX}, y: ${node.realY}, z: ${node.z}`)
+            if (node.attributes.tileId){
+                const item = new Item(node.attributes.tileId);
+                item.setOTBMAttributes(node.attributes);
+                mapTile.setGround(item);
+                if (!this.addTile(mapTile)){
+                    throw new Error(`Failed to add tile x:${node.realX}, y:${node.realY}, z:${node.z}`)
+                }
+            }
+        }
+
+        const createItemOrAddMapTile = (node : OTBMItem, tile : MapTile | null) => {
+            if (tile !== null){            
+                createItem(node, tile);
+            }else{
+                const tile : MapTile = new MapTile(currentTilePos.x, currentTilePos.y, currentTilePos.z);
+                createItem(node, tile);
+                this.addTile(tile);
+            }
+        }
+
+        const createItem = (node : OTBMItem, tile: MapTile) => {
+            const rawItem = rawItems.getItemById((node as OTBMItem).id);
+            let item : Item;
+
+            if (rawItem.flags.hasStackOrder){
+                if (rawItem.group === 'container'){
+                    item = addContainer(node);
+                    tile.addTopThing(item);
+                }else{
+                    item = new Item(node.id);
+                    item.setOTBMAttributes(node.attributes);
+                    tile.addTopThing(item);
+                }
+            }else{
+                if (rawItem.group === 'container'){
+                    item = addContainer(node);
+                    tile.addDownThing(item);
+                }else{
+                    item = new Item(node.id);
+                    item.setOTBMAttributes(node.attributes);
+                    tile.addDownThing(item);
+                } 
+            }
+
+            //@ts-ignore
+            (node as any)._children = [];
+        }
+
+        const addContainer = (node : OTBMItem, container? : Container) => {
+            const rawItem = rawItems.getItemById(node.id);
+            let item : Item;
+            
+            if (rawItem.group === 'container'){
+                item = new Container(node.id);
+            }else{
+                item = new Item(node.id);
+            }
+
+            item.position = currentTilePos;
+
+            if (container !== undefined){
+                container.addItem(item);
+            }
+
+            if (item instanceof Container && node.children.length > 0){
+                for (const nodeChild of node.children.reverse()){
+                    addContainer(nodeChild as OTBMItem, item);
+                }
+            }
+
+            item.setOTBMAttributes(node.attributes);
+            return item;
+        }
+
+        readNode(reader.getRootNode())
     }
 
     public getMapDescriptionAsBytes(position : IPosition, width: number, height: number, player : Player, msg : OutgoingNetworkMessage) : OutgoingNetworkMessage {

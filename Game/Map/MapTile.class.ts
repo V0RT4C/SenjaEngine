@@ -57,7 +57,7 @@ export class MapTile {
     public setGround(ground : Thing) : void {
         log.debug(`MapTile::setGround`);
 
-        ground.setPosition(this.position);
+        ground.setPosition({...this.position});
 
         this._ground = ground;
         if (ground instanceof Item){
@@ -71,7 +71,7 @@ export class MapTile {
 
     public addTopThing(thing : Thing){
         log.debug(`MapTile::addTopThing`);
-        thing.setPosition(this.position);
+        thing.setPosition({...this.position});
         
         this._topItems.push(thing);
 
@@ -87,7 +87,7 @@ export class MapTile {
     public addDownThing(thing : Thing){
         log.debug(`MapTile::addDownThing`);
         
-        thing.setPosition(this.position);
+        thing.setPosition({...this.position});
         log.debug(`Thing position now: { x:${thing.position.x}, y:${thing.position.y}, z:${thing.position.z} }`);
 
         this._downItems.unshift(thing);
@@ -116,18 +116,21 @@ export class MapTile {
         }
     }
 
-    public removeDownThing(stackPos : number) : Item | null {
-        if (this._downItems[stackPos]){
-            const result = this._downItems.splice(stackPos, 1);
+    public replaceDownThing(oldThing : Thing, newThing : Thing) : boolean {
+        let idx = -1;
 
-            if (result.length === 1){
-                this.resetFlags();
-                return result[0] as Item;
-            }else{
-                return null;
+        for (let i=0; i < this.downItems.length; i++){
+            if (this._downItems[i] === oldThing){
+                idx = i;
+                break;
             }
+        }
+
+        if (idx !== -1){
+            this._downItems[idx] = newThing;
+            return true;
         }else{
-            return null;
+            return false;
         }
     }
 
@@ -219,6 +222,42 @@ export class MapTile {
         return null;
     }
 
+    public replaceThingByStackPos(stackPos : number, newThing : Thing) : boolean {
+        if (stackPos < 0 || stackPos > (1 + this._topItems.length + this._creatures.length + this.downItems.length)){
+            return false;
+        }
+
+        if (stackPos === 0){
+            this.setGround(newThing);
+            return true;
+        }
+
+        stackPos--;
+
+        //Do splash check here later
+
+        if (stackPos < this._topItems.length){
+            this._topItems[stackPos] = newThing;
+            return true;
+        }
+
+        stackPos-=this._topItems.length;
+
+        if (stackPos < this._creatures.length){
+            this._creatures[stackPos] = newThing as Creature;
+            return true;
+        }
+
+        stackPos-=this._creatures.length;
+
+        if (stackPos < this._downItems.length){
+            this._downItems[stackPos] = newThing;
+            return true;
+        }
+
+        return false;
+    }
+
     public getPlayers(){
         const players : Array<Player> = [];
 
@@ -266,7 +305,7 @@ export class MapTile {
             return false;
         }
 
-        creature.setPosition(this.position);
+        creature.setPosition({...this.position});
         this._creatures.unshift(creature);
         return true;
     }
@@ -368,7 +407,7 @@ export class MapTile {
 
     public getDestination(){
         if (this._attributes.destination !== undefined){
-            return this._attributes.destination;
+            return {...this._attributes.destination};
         }else{
             return { x: -1, y: -1, z: -1 };
         }
