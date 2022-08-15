@@ -1,3 +1,5 @@
+import { IncomingNetworkMessage } from "../Network/Lib/IncomingNetworkMessage.class.ts";
+
 export interface IGameOperation {
     execute() : Promise<void>,
     _internalOperations(...args : any) : boolean | Promise<boolean>,
@@ -147,6 +149,7 @@ export interface IDBPlayer {
         lookLegs: number;
         lookFeet: number;
     };
+    lightLevel: number;
     magicLevel: number;
     mana: number;
     maxMana: number;
@@ -160,7 +163,7 @@ export interface IDBPlayer {
     lastIp: string;
     skull: number;
     skullEndTime: number;
-    lastLogout: number;
+    lastSave: number;
     onlineTimeMinutes: number;
     skillFist: number;
     skillFistTries: number;
@@ -177,4 +180,17 @@ export interface IDBPlayer {
     skillFishing: number;
     skillFishingTries: number;
     deleted: boolean;
+}
+
+export interface TCPServerOptions extends Deno.ConnectOptions {
+    chunkSize?: number;
+}
+
+export interface IIncomingGameOperation {
+    _msg: IncomingNetworkMessage
+}
+
+export interface I_ItemFlags {
+    unpassable?: boolean;
+    floorChangeDown?: boolean;
 }

@@ -2,3 +2,4 @@
 .idea
 .vscode
 sqlite.db
+Log/*.log*

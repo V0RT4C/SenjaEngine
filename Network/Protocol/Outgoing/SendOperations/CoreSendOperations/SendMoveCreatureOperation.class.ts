@@ -7,12 +7,17 @@ import { SendTopRowMapDescriptionOperation } from "CoreSendOperations/SendTopRow
 import { SendBottomRowMapDescriptionOperation } from "CoreSendOperations/SendBottomRowMapDescriptionOperation.class.ts";
 import { SendLeftRowMapDescriptionOperation } from "CoreSendOperations/SendLeftRowMapDescriptionOperation.class.ts";
 import { SendRightRowMapDescriptionOperation } from "CoreSendOperations/SendRightRowMapDescriptionOperation.class.ts";
-import { SendAddCreatureToMapOperation } from "CoreSendOperations/SendAddCreatureToMapOperation.class.ts";
+import { SendFullMapDescriptionOperation } from "CoreSendOperations/SendFullMapDescriptionOperation.class.ts";
 
 import players from "Game/Player/Players.class.ts";
 
 import { Creature } from "Creature";
 import { IPosition } from "Types";
+import { NETWORK_MESSAGE_SIZES } from "Constants";
+import { SendPlayerFloorChangeUpOperation } from "CoreSendOperations/SendPlayerFloorChangeUpOperation.class.ts";
+import { SendPlayerFloorChangeDownOperation } from "./SendPlayerFloorChangeDownOperation.class.ts";
+import { AddCreatureToMapOP } from "./AddCreatureToMapOP.class.ts";
+import { SendWaitWalkOP } from "./SendWaitWalkOP.class.ts";
 
 export class SendMoveCreatureOperation implements OutgoingSendOperation {
     constructor(
@@ -20,94 +25,109 @@ export class SendMoveCreatureOperation implements OutgoingSendOperation {
         private readonly _oldPosition : IPosition,
         private readonly _newPosition : IPosition,
         private readonly _oldStackPosition : number,
-        private readonly _newStackPosition : number
+        private readonly _teleport = false
     ){}
 
     public async execute(){
         const spectators = players.getPlayersInAwareRange(this._oldPosition, this._newPosition);
+        //console.log(this._oldPosition);
+        //console.log(this._newPosition);
 
         for (const player of spectators){
-            const msg = OutgoingNetworkMessage.withClient(player.client,
-                SendRemoveCreatureFromTileOperation.messageSize +
-                SendMoveCreatureByStackPosOperation.messageSize +
-                SendMoveCreatureByExtIdOperation.messageSize +
-                SendTopRowMapDescriptionOperation.messageSize +
-                SendBottomRowMapDescriptionOperation.messageSize +
-                SendLeftRowMapDescriptionOperation.messageSize +
-                SendRightRowMapDescriptionOperation.messageSize +
-                SendAddCreatureToMapOperation.messageSize
-            );
+            if (!player.client.isOpen){ continue; }
+            
+            if (player.extId === this._creature.extId){
+                const msg = OutgoingNetworkMessage.withClient(player.client, NETWORK_MESSAGE_SIZES.BUFFER_MAXSIZE);
+                if (this._teleport){
+                    const removeOp = new SendRemoveCreatureFromTileOperation(this._oldPosition, this._oldStackPosition, this._creature, player);
+                    await removeOp.execute();
 
-            if (player === this._creature){
-                //If teleport
-                //  TODO
-                //
-
-                if (this._oldPosition.z === 7 && this._newPosition.z >= 8){
-                    SendRemoveCreatureFromTileOperation.writeToNetworkMessage(this._oldPosition, this._oldStackPosition, this._creature, msg);
+                    const mapDescriptionOp = new SendFullMapDescriptionOperation(this._newPosition, player);
+                    await mapDescriptionOp.execute();
                 }else{
-                    if (this._oldStackPosition < 10){
-                        SendMoveCreatureByStackPosOperation.writeToNetworkMessage(this._oldPosition, this._oldStackPosition, msg);
-                        msg.writePosition(this._newPosition);
-                    }else{
-                        SendMoveCreatureByExtIdOperation.writeToNetworkMessage(this._newPosition, this._creature.extId, msg);
+                    if ((this._oldPosition.z === 7 && this._newPosition.z >= 8)){
+                        const removeOp = new SendRemoveCreatureFromTileOperation(this._oldPosition, this._oldStackPosition, this._creature, player);
+                        await removeOp.execute();
                     }
-
-                }
-
-                if (this._newPosition.z > this._oldPosition.z){
-                    console.log('Move down creature: TODO');
-                }
-                else if (this._newPosition.z < this._oldPosition.z){
-                    console.log('Move up creature: TODO');
-                }
-
-                if (this._oldPosition.y > this._newPosition.y){
-                    const msg = OutgoingNetworkMessage.withClient(player.client);
-                    const position = { x: this._oldPosition.x, y: this._newPosition.y, z: this._newPosition.z };
-                    SendTopRowMapDescriptionOperation.writeToNetworkMessage(position, msg);
-                    await msg.send();
-                }
-                else if (this._oldPosition.y < this._newPosition.y){
-                    const msg = OutgoingNetworkMessage.withClient(player.client);
-                    const position = { x: this._oldPosition.x, y: this._newPosition.y, z: this._newPosition.z };
-                    SendBottomRowMapDescriptionOperation.writeToNetworkMessage(position, msg);
-                    await msg.send();
-                }
-
-                if (this._oldPosition.x < this._newPosition.x){
-                    const msg = OutgoingNetworkMessage.withClient(player.client);
-                    SendRightRowMapDescriptionOperation.writeToNetworkMessage(this._newPosition, msg);
-                    await msg.send();
-                }
-                else if (this._oldPosition.x > this._newPosition.x){
-                    const msg = OutgoingNetworkMessage.withClient(player.client);
-                    SendLeftRowMapDescriptionOperation.writeToNetworkMessage(this._newPosition, msg);
-                    await msg.send();
-                }
-            }
-            else if (player.canSee(this._oldPosition) && player.canSee(this._newPosition)){
-                if (this._oldPosition.z === 7 && this._newPosition.z >= 8){
-                    SendRemoveCreatureFromTileOperation.writeToNetworkMessage(this._oldPosition, this._oldStackPosition, this._creature, msg);
-                    SendAddCreatureToMapOperation.writeToNetworkMessage(this._creature, msg);
-                }else{
-                    if (this._oldStackPosition < 10){
-                        SendMoveCreatureByStackPosOperation.writeToNetworkMessage(this._oldPosition, this._oldStackPosition, msg);
-                        msg.writePosition(this._newPosition);
-                    }else{
-                        SendMoveCreatureByExtIdOperation.writeToNetworkMessage(this._newPosition, this._creature.extId, msg);
+                    else if (this._oldPosition.z >= 8 && this._newPosition.z === 7){
+                        AddCreatureToMapOP.writeToNetworkMessage(this._creature, player, msg);
                     }
-
+                    else{
+                        if (this._oldStackPosition < 10){
+                            SendMoveCreatureByStackPosOperation.writeToNetworkMessage(this._oldPosition, this._oldStackPosition, msg);
+                            msg.writePosition(this._newPosition);
+                        }else{
+                            SendMoveCreatureByExtIdOperation.writeToNetworkMessage(this._newPosition, this._creature.extId, msg);
+                        }
+    
+                    }
+    
+                    if (this._newPosition.z > this._oldPosition.z){
+                        const op = new SendPlayerFloorChangeDownOperation(this._oldPosition, this._newPosition, player);
+                        await op.execute();
+                    }
+                    else if (this._newPosition.z < this._oldPosition.z){
+                        const op = new SendPlayerFloorChangeUpOperation(this._oldPosition, this._newPosition, player);
+                        await op.execute();
+                    }
+    
+                    if (this._oldPosition.y > this._newPosition.y){
+                        const position = { x: this._oldPosition.x, y: this._newPosition.y, z: this._newPosition.z };
+                        const op = new SendTopRowMapDescriptionOperation(position, player);
+                        await op.execute();
+                    }
+                    else if (this._oldPosition.y < this._newPosition.y){
+                        const position = { x: this._oldPosition.x, y: this._newPosition.y, z: this._newPosition.z };
+                        const op = new SendBottomRowMapDescriptionOperation(position, player);
+                        await op.execute();
+                    }
+    
+                    if (this._oldPosition.x < this._newPosition.x){
+                        const op = new SendRightRowMapDescriptionOperation(this._newPosition, player);
+                        await op.execute();
+                    }
+                    else if (this._oldPosition.x > this._newPosition.x){
+                        const op = new SendLeftRowMapDescriptionOperation(this._newPosition, player);
+                        await op.execute();
+                    }
+    
+                    if (player.lastMoveWasDiagonal() || player.lastMoveWasFloorChange()){
+                        const ops = new SendWaitWalkOP(player.getCurrentTileStepTimeWithCostsMS(), player.client);
+                        await ops.execute();
+                    }
+    
+                    await msg.send();
                 }
             }
-            else if (player.canSee(this._oldPosition)) {
-                SendRemoveCreatureFromTileOperation.writeToNetworkMessage(this._oldPosition, this._oldStackPosition, this._creature, msg);
-            }
-            else if (player.canSee(this._newPosition)){
-                SendAddCreatureToMapOperation.writeToNetworkMessage(this._creature, msg);
-            }
+            else {
+                const msg = OutgoingNetworkMessage.withClient(player.client, NETWORK_MESSAGE_SIZES.BUFFER_MAXSIZE);
+                if (player.canSee(this._oldPosition) && player.canSee(this._newPosition)){
+                    if (this._oldPosition.z === 7 && this._newPosition.z >= 8){
+                        const removeOp = new SendRemoveCreatureFromTileOperation(this._oldPosition, this._oldStackPosition, this._creature, player);
+                        removeOp.execute();
+                        const addOp = new AddCreatureToMapOP(this._creature, player);
+                        await addOp.execute();
+                    }else{
+                        if (this._oldStackPosition < 10){
+                            SendMoveCreatureByStackPosOperation.writeToNetworkMessage(this._oldPosition, this._oldStackPosition, msg);
+                            msg.writePosition(this._newPosition);
+                        }else{
+                            SendMoveCreatureByExtIdOperation.writeToNetworkMessage(this._newPosition, this._creature.extId, msg);
+                        }
+    
+                    }
+                }
+                else if (player.canSee(this._oldPosition)) {
+                    const removeOp = new SendRemoveCreatureFromTileOperation(this._oldPosition, this._oldStackPosition, this._creature, player);
+                    removeOp.execute();
+                }
+                else if (player.canSee(this._newPosition)){
+                    const addOp = new AddCreatureToMapOP(this._creature, player);
+                    await addOp.execute();
+                }
 
-            await msg.send();
+                await msg.send();
+            }
         }
     }
 }

@@ -1,13 +1,20 @@
+import log from 'Logger';
 import { Thing } from 'Thing';
 import { Creature } from 'Creature';
 import { Player } from 'Player';
 import { IPosition } from "Types";
+import { Item } from "Item";
+import { GAME_BEAT_MS } from '../../Constants/Game.const.ts';
+import { THING_FLAG } from '../../Constants/Things.const.ts';
 
 export class MapTile {
     constructor(x: number, y: number, z: number){
         this._position.x = x;
         this._position.y = y;
         this._position.z = z;
+        if (this._position.x === -1){
+            throw new Error('Maptile cant have -1 as x position')
+        }
     }
 
     private _ground! : Thing;
@@ -15,6 +22,9 @@ export class MapTile {
     private _creatures : Array<Creature> = []; //Creatures are unshifted to array
     private _downItems : Array<Thing> = []; //Downitems are unshifted to array
     private _position : IPosition = {} as IPosition;
+    private _flags : any = {};
+    private _attributes : any = {};
+    private _friction = 150;
 
     public get position() : IPosition {
         return this._position;
@@ -36,24 +46,55 @@ export class MapTile {
         return this._downItems;
     }
 
+    public get flags() : any {
+        return this._flags;
+    }
+
     public getGround() : Thing | null {
         return this._ground;
     }
 
     public setGround(ground : Thing) : void {
+        log.debug(`MapTile::setGround`);
+
+        ground.setPosition({...this.position});
+
         this._ground = ground;
+        if (ground instanceof Item){
+            this.setFlagsFromItem(ground);
+
+            if (ground.attributes.speed){
+                this._friction = ground.attributes.speed;
+            }
+        }
     }
 
     public addTopThing(thing : Thing){
-        thing.position = this.position;
-        let idx = this._topItems.push(thing);
-        thing.tileIndex = idx;
+        log.debug(`MapTile::addTopThing`);
+        thing.setPosition({...this.position});
+        
+        this._topItems.push(thing);
+
+        if (thing instanceof Item){
+            this.setFlagsFromItem(thing);
+
+            if (thing.attributes.speed){
+                this._friction = thing.attributes.speed;
+            }
+        }
     }
 
     public addDownThing(thing : Thing){
-        thing.position = this._position;
-        let idx = this._downItems.unshift(thing);
-        thing.tileIndex = idx;
+        log.debug(`MapTile::addDownThing`);
+        
+        thing.setPosition({...this.position});
+        log.debug(`Thing position now: { x:${thing.position.x}, y:${thing.position.y}, z:${thing.position.z} }`);
+
+        this._downItems.unshift(thing);
+
+        if (thing instanceof Item){
+            this.setFlagsFromItem(thing);
+        }
     }
 
     public removeDownThingByThing(thing : Thing) : boolean {
@@ -68,16 +109,51 @@ export class MapTile {
 
         if (idx !== -1){
             this._downItems.splice(idx, 1);
+            this.resetFlags();
             return true;
         }else{
             return false;
         }
     }
 
-    public removeDownThing(stackPos : number) : void {
-        if (this._downItems[stackPos]){
-            this._downItems.splice(stackPos, 1);
+    public replaceDownThing(oldThing : Thing, newThing : Thing) : boolean {
+        let idx = -1;
+
+        for (let i=0; i < this.downItems.length; i++){
+            if (this._downItems[i] === oldThing){
+                idx = i;
+                break;
+            }
         }
+
+        if (idx !== -1){
+            this._downItems[idx] = newThing;
+            return true;
+        }else{
+            return false;
+        }
+    }
+
+    public getRealTopThing() : Thing | null {
+        if (this._creatures.length > 0){
+            return this._creatures[this._creatures.length - 1];
+        }
+        else if (this._downItems.length > 0){
+            return this._downItems[this._downItems.length - 1];
+        }
+        else if (this._topItems.length > 0){
+            return this._topItems[this._topItems.length - 1];
+        }
+        else if (this.getGround() !== null){
+            return this._ground;
+        }
+        else {
+            return null;
+        }
+    }
+
+    public getTopDownThing() : Thing | null {
+        return this._downItems[0] !== undefined ? this._downItems[0] : null;
     }
 
     public getThingStackPos(thing : Thing) : number {
@@ -146,6 +222,42 @@ export class MapTile {
         return null;
     }
 
+    public replaceThingByStackPos(stackPos : number, newThing : Thing) : boolean {
+        if (stackPos < 0 || stackPos > (1 + this._topItems.length + this._creatures.length + this.downItems.length)){
+            return false;
+        }
+
+        if (stackPos === 0){
+            this.setGround(newThing);
+            return true;
+        }
+
+        stackPos--;
+
+        //Do splash check here later
+
+        if (stackPos < this._topItems.length){
+            this._topItems[stackPos] = newThing;
+            return true;
+        }
+
+        stackPos-=this._topItems.length;
+
+        if (stackPos < this._creatures.length){
+            this._creatures[stackPos] = newThing as Creature;
+            return true;
+        }
+
+        stackPos-=this._creatures.length;
+
+        if (stackPos < this._downItems.length){
+            this._downItems[stackPos] = newThing;
+            return true;
+        }
+
+        return false;
+    }
+
     public getPlayers(){
         const players : Array<Player> = [];
 
@@ -159,10 +271,9 @@ export class MapTile {
     }
 
     public getCreatureByExtId(creatureExtId : number) : Creature | null {
-
         for (let i=0; i < this._creatures.length; i++){
             if (this._creatures[i].extId === creatureExtId){
-                return this._creatures.slice(i, 1)[0];
+                return this._creatures[i];
             }
         }
 
@@ -180,7 +291,7 @@ export class MapTile {
         }
 
         if (idx === -1){
-            console.log('Failed to remove creature');
+            log.warning('Failed to remove creature');
             return false;
         }else{
             this._creatures.splice(idx, 1);
@@ -190,11 +301,11 @@ export class MapTile {
 
     public addCreature(creature : Creature) : boolean {
         if (creature === undefined){
-            console.log('Creature was undefined');
+            log.warning('Creature was undefined');
             return false;
         }
 
-        creature.position = this.position;
+        creature.setPosition({...this.position});
         this._creatures.unshift(creature);
         return true;
     }
@@ -204,7 +315,105 @@ export class MapTile {
         this._creatures = [];
     }
 
+    public setFlagsFromItem(item : Item) : void {
+        if (item.flags.floorChangeDown){
+            this._flags.floorChangeDown = true;
+        }
+
+        if (item.flags.floorChangeNorth){
+            this._flags.floorChangeNorth = true;
+        }
+
+        if (item.flags.floorChangeEast){
+            this._flags.floorChangeEast = true;
+        }
+
+        if (item.flags.floorChangeSouth){
+            this._flags.floorChangeSouth = true;
+        }
+
+        if (item.flags.floorChangeWest){
+            this._flags.floorChangeWest = true;
+        }
+
+        if (item.flags.blockPathfinder){
+            this._flags.blockPathfinder = true;
+        }
+
+        if (item.flags.unpassable){
+            this._flags.unpassable = true;
+        }
+
+        this.setIsTeleport(item);
+    }
+
+    public resetFlags(){
+        this._flags = {};
+
+        if (this._ground instanceof Item){
+            this.setFlagsFromItem(this._ground);
+        }
+
+        for (const item of this._topItems){
+            if (item instanceof Item){
+                this.setFlagsFromItem(item);
+            }
+        }
+
+        for (const item of this._downItems){
+            if (item instanceof Item){
+                this.setFlagsFromItem(item);
+            }
+        }
+    }
+
+    public setIsTeleport(item : Item){
+        if (item.isTeleport()){
+            this._attributes.destination = item.getDestination();
+        }
+    }
+
+    public isFloorChange() : boolean {
+        return this._flags.floorChangeDown === true ||
+               this._flags.floorChangeNorth === true ||
+               this._flags.floorChangeEast === true ||
+               this._flags.floorChangeSouth === true ||
+               this._flags.floorChangeWest === true
+    }
+
     public isWalkable() : boolean {
-        return this._creatures.length === 0;
+        return !this._flags.unpassable && this._creatures.length === 0;
+    }
+
+    public getMovementSpeedMS(creatureSpeed : number) : number {
+        const friction = this._friction ? this._friction : 150;
+        
+        let interval = 1000;
+
+        if (friction > 0 && creatureSpeed > 0){
+            interval = 1000 * friction;
+        }
+
+        interval /= creatureSpeed;
+        const serverBeat = GAME_BEAT_MS; //ms
+
+        interval = Math.max(interval, serverBeat);
+        return interval;
+    }
+
+    public isTeleport(){
+        return this._attributes.destination !== undefined;
+    }
+
+    public getDestination(){
+        if (this._attributes.destination !== undefined){
+            return {...this._attributes.destination};
+        }else{
+            return { x: -1, y: -1, z: -1 };
+        }
+    }
+
+    public hasFlag(flag : THING_FLAG) : boolean {
+        return this._flags[flag] === true;
     }
 }

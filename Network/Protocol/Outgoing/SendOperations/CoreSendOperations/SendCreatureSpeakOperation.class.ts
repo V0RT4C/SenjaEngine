@@ -40,9 +40,11 @@ export class SendCreatureSpeakOperation implements OutgoingSendOperation {
             const spectators = players.getPlayersInYellAwareRange(this._position);
 
             for (const player of spectators){
-                const msg = OutgoingNetworkMessage.withClient(player.client, SendCreatureSpeakOperation.messageSize);
-                SendCreatureSpeakOperation.writeToNetworkMessage(this._message, this._speakType, this._position, this._speakerName, msg);
-                await msg.send();
+                if (player.client.isOpen){
+                    const msg = OutgoingNetworkMessage.withClient(player.client, SendCreatureSpeakOperation.messageSize);
+                    SendCreatureSpeakOperation.writeToNetworkMessage(this._message, this._speakType, this._position, this._speakerName, msg);
+                    await msg.send();
+                }
             }
         }
     }

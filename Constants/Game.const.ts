@@ -1,3 +1,10 @@
+export const GAME_BEAT_MS = 50;
+export const GAME_TICKS_PER_MINUTE = (1000 / GAME_BEAT_MS) * 60;
+
+export const MAX_LIGHT_LEVEL = 250;
+export const MIN_LIGHT_LEVEL = 40;
+export const ONE_DAY_IN_MINUTES = 1440;
+
 export enum CREATURE_ID_RANGE {
     PLAYER_START_ID                       = 0x10000000,
     PLAYER_END_ID                         = 0x40000000,
@@ -57,9 +64,8 @@ export enum RETURN_MESSAGE {
     CANNOT_ATTACK_THIS_PERSON = 'You may not attack this person.',
     YOU_MUST_LEARN_SPELL_FIRST = 'You must learn this spell first.',
     CANNOT_LOGOUT_HERE = 'You can not logout here.',
-    NOT_POSSIBLE = 'Sorry, not possible.'
-
-
-
-
+    NOT_POSSIBLE = 'Sorry, not possible.',
+    UNKNOWN_ERROR = 'Sorry, action aborted due to a bug on the server.',
+    FEATURE_NOT_IMPLEMENTED = 'Sorry, this feature is not implemented yet.',
+    NO_ITEM = 'There is no item to move.'
 }

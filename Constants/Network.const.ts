@@ -30,12 +30,16 @@ export enum PROTOCOL_SEND {
     CREATURE_OUTFIT                                     = 0x8E,
     PLAYER_DATA                                         = 0xA0,
     PLAYER_SKILLS                                       = 0xA1,
+    PLAYER_MODES                                        = 0xA7,
     CREATURE_SPEAK                                      = 0xAA,
     PONG                                                = 0x1D, //Not a 7.4 version OP
     REQUEST_PING_BACK_OTCLIENT                          = 0x1E,
     TEXT_MESSAGE                                        = 0xB4,
     CANCEL_WALK                                         = 0xB5,
-    EDIT_OUTFIT                                       = 0xC8
+    WAIT_WALK                                           = 0xB6,
+    FLOOR_CHANGE_UP                                     = 0xBE,
+    FLOOR_CHANGE_DOWN                                   = 0xBF,
+    EDIT_OUTFIT                                         = 0xC8
 }
 
 export enum PROTOCOL_RECEIVE {
@@ -51,7 +55,7 @@ export enum PROTOCOL_RECEIVE {
     MOVE_EAST                                           = 0x66,
     MOVE_SOUTH                                          = 0x67,
     MOVE_WEST                                           = 0x68,
-    STOP_WALK                                           = 0x69,
+    STOP_AUTO_WALK                                      = 0x69,
     MOVE_NORTH_EAST                                     = 0x6A,
     MOVE_SOUTH_EAST                                     = 0x6B,
     MOVE_SOUTH_WEST                                     = 0x6C,
@@ -67,18 +71,18 @@ export enum PROTOCOL_RECEIVE {
 
     MOVE_THING                                          = 0x78,
     USE_ITEM                                            = 0x82,
-    USE_ITEM_EX                                         = 0x83,
+    USE_ITEM_ON                                         = 0x83,
 
     BATTLE_WINDOW                                       = 0x84,
     CLOSE_CONTAINER                                     = 0x87,
     LOOK_AT                                             = 0x8C,
     SPEAK                                               = 0x96,
-    ATTACK                                              = 0xA1,
-
+    
     CANCEL_MOVE                                         = 0xBE,
-
+    
     CHANGE_FIGHT_MODE                                   = 0xA0, //Attack & Follow modes
-
+    ATTACK                                              = 0xA1,
+    FOLLOW                                              = 0xA2,
     FORCE_QUIT                                          = 0x69,
     PING                                                = 0x1E,
     REQUEST_CHANGE_OUTFIT                               = 0xD2,

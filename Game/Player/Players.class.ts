@@ -22,6 +22,18 @@ class Players {
         return this.getPlayerByName(name) !== null;
     }
 
+    public getPlayersFromIds(ids : number[]){
+        const players = [];
+
+        for (const id of ids){
+            if (this._list[id]){
+                players.push(this._list[id]);
+            }
+        }
+
+        return players;
+    }
+
     public getPlayerById(id : number) : Player | null {
         if (this._list[id]){
             return this._list[id];
@@ -34,7 +46,7 @@ class Players {
         let player : Player | undefined;
 
         for (const id in this._list){
-            if (this._list[id].name === name){
+            if (this._list[id].name.toUpperCase() === name.toUpperCase()){
                 player = this._list[id];
                 break;
             }
@@ -53,7 +65,7 @@ class Players {
     }
 
     public createPlayer(name : string, client : TCP.Client) : Player {
-        return new Player(name, this._currId++, client);
+        return new Player(name, ++this._currId, client);
     }
 
     public loadPlayerFromDatabase(name : string, client : TCP.Client) : Player | null {
@@ -79,6 +91,8 @@ class Players {
        player.maxMana = rawPlayer.maxMana;
        player.level = rawPlayer.level;
        player.experience = rawPlayer.experience;
+       player.lightInfo.level = rawPlayer.lightLevel;
+       player.previousVisit = rawPlayer.lastSave;
        return player;
     }
 

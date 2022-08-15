@@ -1,3 +1,4 @@
+import log from 'Logger';
 import { Item } from "Item";
 import { INVENTORY_SLOT } from "Constants";
 import { Container } from "Game/Container.class.ts";
@@ -54,7 +55,7 @@ export class Inventory {
         return this._ammunition;
     }
 
-    public getItemAndRemoveFromInventory(inventorySlot : INVENTORY_SLOT) : Item | null {
+    public getItemReferenceFromInventory(inventorySlot : INVENTORY_SLOT) : Item | null {
         if (inventorySlot > 10 || inventorySlot < 1){
             //Not an inventory slot
             return null;
@@ -65,43 +66,33 @@ export class Inventory {
         switch(inventorySlot){
             case INVENTORY_SLOT.HELMET:
                 item = this._helmet;
-                this._helmet = null;
                 break;
             case INVENTORY_SLOT.AMULET:
                 item = this._amulet;
-                this._amulet = null;
                 break;
             case INVENTORY_SLOT.BACKPACK:
                 item = this._backpack;
-                this._backpack = null;
                 break;
             case INVENTORY_SLOT.ARMOR:
                 item = this._armor;
-                this._armor = null;
                 break;
             case INVENTORY_SLOT.SHIELD:
                 item = this._shield;
-                this._shield = null;
                 break;
             case INVENTORY_SLOT.WEAPON:
                 item = this._weapon;
-                this._weapon = null;
                 break;
             case INVENTORY_SLOT.LEGS:
                 item = this._legs;
-                this._legs = null;
                 break;
             case INVENTORY_SLOT.BOOTS:
                 item = this._boots;
-                this._boots = null;
                 break;
             case INVENTORY_SLOT.RING:
                 item = this._ring;
-                this._ring = null;
                 break;
             case INVENTORY_SLOT.AMMUNITION:
                 item = this._ammunition;
-                this._ammunition = null;
                 break;
             default:
                 return null;
@@ -110,11 +101,68 @@ export class Inventory {
         return item;
     }
 
+    public deleteItemFromInventory(inventorySlot : INVENTORY_SLOT) : boolean {
+        if (inventorySlot > 10 || inventorySlot < 1){
+            //Not an inventory slot
+            return false;
+        }
+
+
+        switch(inventorySlot){
+            case INVENTORY_SLOT.HELMET:
+                this._helmet = null;
+                break;
+            case INVENTORY_SLOT.AMULET:
+                this._amulet = null;
+                break;
+            case INVENTORY_SLOT.BACKPACK:
+                this._backpack = null;
+                break;
+            case INVENTORY_SLOT.ARMOR:
+                this._armor = null;
+                break;
+            case INVENTORY_SLOT.SHIELD:
+                this._shield = null;
+                break;
+            case INVENTORY_SLOT.WEAPON:
+                this._weapon = null;
+                break;
+            case INVENTORY_SLOT.LEGS:
+                this._legs = null;
+                break;
+            case INVENTORY_SLOT.BOOTS:
+                this._boots = null;
+                break;
+            case INVENTORY_SLOT.RING:
+                this._ring = null;
+                break;
+            case INVENTORY_SLOT.AMMUNITION:
+                this._ammunition = null;
+                break;
+            default:
+                return false;
+        }
+
+        return true;
+    }
+
+    public getItemAndRemoveFromInventory(inventorySlot : INVENTORY_SLOT) : Item | null {
+        const item = this.getItemReferenceFromInventory(inventorySlot);
+
+        if (item === null){
+            return null;
+        }
+
+        this.deleteItemFromInventory(inventorySlot);
+        return item;
+    }
+
     public addItem(item : Item, inventorySlot : INVENTORY_SLOT) : boolean {
         if (inventorySlot > 10 || inventorySlot < 1){
             //Not an inventory slot
             return false;
         }
+
 
         switch(inventorySlot){
             case INVENTORY_SLOT.HELMET:
@@ -151,7 +199,8 @@ export class Inventory {
                 return false;
         }
 
-        item.position = { x: 65535, y: inventorySlot, z: 0 };
+        item.position.x = -1;
+        log.debug(`Item position now: { x:${item.position.x}, y:${item.position.y}, z:${item.position.z} }`);
         return true;
     }
 }
