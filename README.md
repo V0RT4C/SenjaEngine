@@ -125,3 +125,7 @@ The tasks below are the tasks that I'm currently focusing on.
 ---------
 ### Other
 - [ ] Add checks in bytes class so there is no overflow when writing
+
+## Known issues
+- [ ] Server crashes when there is some network issue with a client  
+(This will be fixed when I rewrite the TCP connection logic)
